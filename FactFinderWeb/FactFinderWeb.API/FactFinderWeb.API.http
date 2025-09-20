@@ -1,0 +1,6 @@
+@FactFinderWeb.API_HostAddress = http://localhost:5073
+
+GET {{FactFinderWeb.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,173 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    var AdminUserId = Context.Session.GetString("AdminUserId");
+    var AdminUserFullName = Context.Session.GetString("AdminUserFullName");
+    var AdminUserRole = Context.Session.GetString("AdminUserRole");
+    AdminUserRole = string.IsNullOrEmpty(AdminUserRole) ? "advisor" : AdminUserRole;
+    bool isLoggedIn = !string.IsNullOrEmpty(AdminUserId);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FactFinder</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FactFinderWeb.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+
+        <div class="header-banner">
+            <img src="/images/header.jpg" alt="Mainstream Logo Banner" class="banner-img" />
+        </div>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="admin" asp-action="dashboard">FactFinder Admin</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    @{
+                        @if (isLoggedIn)
+                        {
+                            <ul class="navbar-nav flex-grow-1 flex-row-reverse bd-highlight  nav">
+
+                                <li class="nav-item  text-info">
+                                 <a class="nav-link text-dark hdrlink" asp-area="" asp-controller="Admin" asp-action="Logout">Logout</a>
+                                </li>
+                            @{
+                                if (AdminUserRole.ToLower() == "superadmin" || AdminUserRole.ToLower() == "admin")
+                                {
+                                <li class="nav-item"><a class="nav-link text-dark hdrlink" asp-controller="Admin" asp-action="adminTeamlist">Admin User List</a></li>
+                                    <li class="nav-item"><a class="nav-link text-dark hdrlink" asp-controller="Admin" asp-action="AddRegisterAdmin">Add AdminUser</a></li>
+                                 }
+                                }
+                                <li class="nav-item text-info">
+                                <a class="nav-link text-dark hdrlink" asp-area="" asp-controller="Admin" asp-action="Dashboard">User List</a>
+                                </li>
+                                <li class="nav-item text-info ">
+                                    <a class="nav-link text-dark hdrlink" asp-area="" asp-controller="Admin" asp-action="ProfileDashboard">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark">Welcome, @AdminUserFullName</a>
+                                </li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <ul class="navbar-nav flex-grow-1 flex-row-reverse bd-highlight  nav">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark hdrlink" asp-area="" asp-controller="Admin" asp-action="Login">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark hdrlink" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark hdrlink" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                </li>
+                            </ul>
+                        }
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+  
+    <footer class="border-top footer text-muted d-flex justify-content-center align-items-center" style="padding: 5px 20px;">
+        © 2025 Mainstream Investments Services Pvt. Ltd., All Rights Reserved.
+    </footer>
+
+    <div id="session-warning" style="display:none; position:fixed; top:20px; right:20px; background:#fff3cd; border:1px solid #ffeeba; padding:20px; z-index:10000; box-shadow:0 0 10px rgba(0,0,0,0.2);">
+        <strong>Session Expiring Soon!</strong>
+        <p>Your session will expire in 2 minutes. Do you want to stay logged in?</p>
+        <button class="btn btn-warning" onclick="stayLoggedIn()">Stay Logged In</button>
+    </div>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+    <!--session start-->
+    <script>
+        const sessionTimeout =30 * 60 * 1000; // 20 minutes
+        const warningBefore = 2 * 60 * 1000;   // Warn 2 minutes before
+        let warningTimeout, logoutTimeout;
+        let warningShown = false;
+
+        function resetTimers() {
+            clearTimeout(warningTimeout);
+            clearTimeout(logoutTimeout);
+            warningShown = false;
+
+            warningTimeout = setTimeout(showWarningPopup, sessionTimeout - warningBefore);
+            logoutTimeout = setTimeout(() => {
+                window.location.href = '/Login'; // Auto logout Account
+            }, sessionTimeout);
+        }
+
+        function showWarningPopup() {
+            warningShown = true;
+            const popup = document.getElementById("session-warning");
+            if (popup) popup.style.display = 'block';
+        }
+
+        function stayLoggedIn() {
+            fetch('/KeepAlive/Ping', {
+                method: 'GET',
+                credentials: 'include'
+            }).then(() => {
+                resetTimers();
+                const popup = document.getElementById("session-warning");
+                if (popup) popup.style.display = 'none';
+            });
+        }
+
+        // Detect activity to reset session
+        ['click', 'mousemove', 'keydown'].forEach(event => {
+            document.addEventListener(event, () => {
+                if (!warningShown) resetTimers();
+            });
+        });
+
+        // Start timers on load
+        resetTimers();
+
+        // Auto keep session alive every 15 min (in case no user activity)
+        setInterval(() => {
+            fetch('/KeepAlive/Ping', {
+                method: 'GET',
+                credentials: 'include'
+            });
+        }, 5 * 60 * 1000);
+    </script>
+
+    <!--session end-->
+
+    @{
+            /*
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>*/
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

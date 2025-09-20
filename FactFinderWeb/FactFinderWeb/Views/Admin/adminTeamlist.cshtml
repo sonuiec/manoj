@@ -1,0 +1,68 @@
+﻿@using FactFinderWeb.ModelsView
+
+@{
+    ViewData["Title"] = "Admin Team List";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var currentSort = Context.Request.Query["sortOrder"];
+}
+
+<style>
+    .formfield {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+        color: #333;
+        text-align: left;
+    }
+</style>
+
+<div class=" bg-primary text-white px-5 py-2 text-center"><h2>Admin Team List</h2></div>
+<div class="table-responsive">
+    <table class="table table-striped mt-3 table-bordered">
+        <thead class="table-primary">
+        <tr>
+            <th class="text-center"> <a> S. No. </a> </th>
+            <th><a asp-route-sortOrder="@(currentSort == "" ? "name_desc" : "")"> Name  </a> </th>
+            <th> <a asp-route-sortOrder="@(currentSort == "email" ? "email_desc" : "email")"> Email </a> </th>
+            <th> Contact  </th>
+            <th> Admin Role  </th>
+            
+            <th class="text-center">Registration Date</th>
+            <th> Active </th>
+            <th> View Detail </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            //@MVAdminProfile  <td> @user.Department</td>  <td class="text-center"> @user.CreateDate.ToString("dd/MM/yyyy")</td><th> Department  </th><td> Department  </td>
+            int dataindex = 1;
+            foreach (var user in Model)
+            {
+                <tr>
+                    <td class="text-center">@dataindex</td>
+                    <td> @user.AdminUserFullName</td>
+                    <td> @user.AdminUserEmail</td>
+                        <td> @user.Mobile  </td>
+                    <td> @user.AdminRole</td>
+                        <td class="text-center">@Convert.ToDateTime(user.CreateDate).ToString("dd/MM/yyyy")</td>
+                    <td class="text-center"> @user.AccountStatus</td>
+                        <td class="text-center"><a href="/admin/adminuserdata/@user.Id" target="_blank">View Detail</a></td>
+                </tr>
+                dataindex++;
+            }
+        }
+    </tbody>
+</table>
+
+</div>
+
+@section Scripts {
+    <script>
+        let goals = JSON.parse(localStorage.getItem("test")) || [];
+
+   
+    </script>
+
+} 
