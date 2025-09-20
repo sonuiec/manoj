@@ -1,8 +1,12 @@
 ﻿@using FactFinderWeb.ModelsView
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Http;
+
 @model MVKnowledgeRisk
 @{
     ViewData["Title"] = "Knowledge that matters";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
+    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
 }
 
 <style>
@@ -67,7 +71,7 @@
 
 
     <!-- form -->
-    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded" asp-controller="Comprehensive" asp-action="KnowledgeThatMatters">
+    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded" asp-controller="@userPlan" asp-action="KnowledgeThatMatters">
         <!--plan details -->
         <fieldset class="d-flex flex-column gap-2">
             <legend style="color: #3B3737" class="fw-bold">Risk Profile</legend>
@@ -148,9 +152,9 @@
         </fieldset>
 
         <div class="d-flex justify-content-end mt-3 mx-2 ">
-            <a asp-action="Alertness" class="btn btn-secondary  px-2 py-1 rounded mx-1">Previous</a>
+            <a asp-action="Alertness" asp-controller="@userPlan" class="btn btn-secondary  px-2 py-1 rounded mx-1">Previous</a>
 
-            <button name="btnSubmit" id="btnSubmit" class="btn btn-primary px-3 py-1 rounded  mx-2">Next</button>
+            <button name="btnSubmit" id="btnSubmit" asp-controller="@userPlan" class="btn btn-primary px-3 py-1 rounded  mx-2">Next</button>
             @Html.AntiForgeryToken()
         </div>
         <div class="d-flex justify-content-end mt-1 mx-5 ">

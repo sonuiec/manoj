@@ -1,8 +1,12 @@
 ﻿@using FactFinderWeb.ModelsView
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Http;
+
 @model AwarenessViewModel
 @{
     ViewData["Title"] = "Awareness";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
+    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
 }
 
 <style>
@@ -41,7 +45,7 @@
         </div>
     </div>
     <!-- form -->
-    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded" asp-controller="Comprehensive" asp-action="Awareness">
+    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded" asp-controller="@userPlan" asp-action="Awareness">
         <!--plan details -->
         <fieldset class="d-flex flex-column gap-2">
             <legend style="color: #3B3737" class="fw-bold">Plan Details</legend>
@@ -50,14 +54,18 @@
                     <label class="form-label d-flex align-items-center gap-1" asp-for="ProfileDetail.PlanType">
                         Plan Type<span class="text-danger fw-bold ">*</span>
                     </label>
-                    <select asp-for="ProfileDetail.PlanType" required class="form-select d-none">
+                   @*  <select asp-for="ProfileDetail.PlanType" required class="form-select d-none">
                         <option value="">Select</option>
                         <option value="Zero to one">Zero to one</option>
                         <option value="Basic">Basic</option>
                         <option value="Comprehensive">Comprehensive</option>
                         <option value="Wealth Management">Wealth Management</option>
-                    </select>
-                    <input asp-for="ProfileDetail.PlanType" type="text"   class="form-control inputnumyr"   readonly="readonly" >
+                    </select> *@
+                    <!-- Hidden field that will actually bind to the model -->
+                    <input type="hidden" asp-for="ProfileDetail.PlanType" value="@userPlan" />
+
+                    <!-- Display only, not bound -->
+                    <input type="text" value="@Model.ProfileDetail.PlanType" class="form-control inputnumyr" readonly />
 
                 </div>
                 <div class="col-12 col-md-4">

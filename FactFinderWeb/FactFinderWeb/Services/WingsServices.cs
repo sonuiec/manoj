@@ -96,8 +96,122 @@ namespace FactFinderWeb.Services
             //wingsViewModel.ChildrenList = tblChildren;            
             return tblChildren;
         }
+        public async Task<List<SelectListItem>> WingsBindSelect(string planType)
+        {
+            var tblChildren = await _context.TblffAwarenessChildren
+                .Where(x => x.Profileid == _userID)
+                .Select(x => new ChildrenList
+                {
+                    ChildName = x.ChildName,
+                    ChildAge = x.ChildDob,
+                    ChildGender = x.ChildGender
+                }).ToListAsync();
 
-        public async Task<List<SelectListItem>> WingsBindSelect()
+            var goalOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "Select" }
+    };
+
+            switch (planType)
+            {
+                case "Comprehensive":
+                case "Basic":
+                    goalOptions.Add(new SelectListItem { Value = "Emergency Fund", Text = "Emergency Fund" });
+                    goalOptions.Add(new SelectListItem { Value = "Retirement - Accumulation", Text = "Retirement - Accumulation" });
+
+                    foreach (var child in tblChildren)
+                    {
+                        goalOptions.Add(new SelectListItem
+                        {
+                            Value = "Child Higher Education - " + child.ChildName,
+                            Text = "Child Higher Education - " + child.ChildName
+                        });
+                    }
+
+                    goalOptions.AddRange(new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Purchase of Dream Car", Text = "Purchase of Dream Car" },
+                new SelectListItem { Value = "World Tour", Text = "World Tour" },
+                new SelectListItem { Value = "Purchase of Dream Home", Text = "Purchase of Dream Home" }
+            });
+
+                    foreach (var child in tblChildren)
+                    {
+                        goalOptions.Add(new SelectListItem
+                        {
+                            Value = "Child Marriage - " + child.ChildName,
+                            Text = "Child Marriage - " + child.ChildName
+                        });
+                    }
+
+                    goalOptions.AddRange(new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Seed Capital for Business", Text = "Seed Capital for Business" },
+                new SelectListItem { Value = "Charity", Text = "Charity" }
+            });
+                    break;
+
+                case "Wealth":
+                    goalOptions.AddRange(new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Emergency & Medical Fund", Text = "Emergency & Medical Fund" },
+                new SelectListItem { Value = "Regular Income", Text = "Regular Income" },
+                new SelectListItem { Value = "Wealth Optimisation", Text = "Wealth Optimisation" }
+            });
+
+                    foreach (var child in tblChildren)
+                    {
+                        goalOptions.Add(new SelectListItem
+                        {
+                            Value = "Children Higher Education - " + child.ChildName,
+                            Text = "Children Higher Education - " + child.ChildName
+                        });
+                    }
+
+                    goalOptions.AddRange(new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Purchase of Dream Car", Text = "Purchase of Dream Car" },
+                new SelectListItem { Value = "World Tour", Text = "World Tour" },
+                new SelectListItem { Value = "Purchase of Dream Home", Text = "Purchase of Dream Home" }
+            });
+
+                    foreach (var child in tblChildren)
+                    {
+                        goalOptions.Add(new SelectListItem
+                        {
+                            Value = "Children Marriage - " + child.ChildName,
+                            Text = "Children Marriage - " + child.ChildName
+                        });
+                    }
+
+                    goalOptions.AddRange(new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Seed Capital for Business", Text = "Seed Capital for Business" },
+                new SelectListItem { Value = "Charity", Text = "Charity" }
+            });
+                    break;
+
+                case "ZeroToOne":
+                    goalOptions.Add(new SelectListItem { Value = "Emergency Fund", Text = "Emergency Fund" });
+                    goalOptions.Add(new SelectListItem { Value = "Retirement - Accumulation", Text = "Retirement - Accumulation" });
+
+                    foreach (var child in tblChildren)
+                    {
+                        goalOptions.Add(new SelectListItem
+                        {
+                            Value = "Child Higher Education - " + child.ChildName,
+                            Text = "Child Higher Education - " + child.ChildName
+                        });
+                    }
+
+                    goalOptions.Add(new SelectListItem { Value = "Wealth Creation", Text = "Wealth Creation" });
+                    break;
+            }
+
+            return goalOptions;
+        }
+
+        public async Task<List<SelectListItem>> WingsBindSelectOLD()
         {
                // var wingsViewModel = new WingsViewModel();
                 var tblChildren = await _context.TblffAwarenessChildren

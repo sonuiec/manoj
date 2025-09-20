@@ -1,8 +1,12 @@
 ﻿@using FactFinderWeb.ModelsView
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Http;
+
  @model ExecutionWithPrecisionModelView
 @{
     ViewData["Title"] = "Execution With Precision";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
+    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
 }
 
 <style>
@@ -28,7 +32,7 @@
     <div style="background-color: 	#E6E6FA" class="px-4  py-2 g-4 rounded d-flex flex-column gap-3">
         <div style="color:#006400" class="d-flex justify-content-between align-items-center ">
             <h2 class="mb-0" style="width: 80%;">5. Execution With Precision</h2>
-            <a href="javascript:void(0);" onclick="submitFormAsSave()" class="btn btn-primary px-3 py-1 rounded ">Save</a>
+            <a href="javascript:void(0);" onclick="submitFormAsSave()"  class="btn btn-primary px-3 py-1 rounded ">Save</a>
         </div>
     </div>
 
@@ -42,7 +46,7 @@
     </div>
 
     <!-- form -->
-    <form id="mainForm"  style="background-color: #F5F5F5" class="mt-3 p-3 d-flex flex-column gap-4  rounded" asp-controller="Comprehensive" asp-action="ExecutionWithPrecision">
+    <form id="mainForm" style="background-color: #F5F5F5" class="mt-3 p-3 d-flex flex-column gap-4  rounded" asp-controller="@userPlan" asp-action="ExecutionWithPrecision">
         <!--plan details -->
         <fieldset class="d-flex flex-column gap-2"> 
         <legend style="color: #3B3737" class="fw-bold"> Action plan for Financial Goals </legend>
@@ -185,9 +189,9 @@
         </fieldset>
                 
         <div class="d-flex justify-content-end mt-3 mx-5 ">
-            <a asp-action="KnowledgeThatMatters" class="btn btn-secondary  px-5 py-1 rounded mx-5">Previous</a>
+            <a asp-action="KnowledgeThatMatters" asp-controller="@userPlan" class="btn btn-secondary  px-5 py-1 rounded mx-5">Previous</a>
 
-            <button name="btnSubmit" id="btnSubmit" class="btn btn-primary px-5 py-1 rounded ">Next</button>
+            <button name="btnSubmit" id="btnSubmit" asp-controller="@userPlan" class="btn btn-primary px-5 py-1 rounded ">Next</button>
             @Html.AntiForgeryToken()
         </div>
         <div class="d-flex justify-content-end mt-3 mx-5 ">

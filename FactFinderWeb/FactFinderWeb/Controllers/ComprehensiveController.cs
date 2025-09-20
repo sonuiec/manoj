@@ -17,6 +17,9 @@ namespace FactFinderWeb.Controllers
     //[Route("plan")]
     [Route("Comprehensive/[action]")]
     [Route("Wealth/[action]")]
+    [Route("Basic/[action]")]
+    [Route("Zero2one/[action]")]
+   
     public class ComprehensiveController : Controller
     {
         private readonly ResellerBoyinawebFactFinderWebContext _context;
@@ -34,22 +37,33 @@ namespace FactFinderWeb.Controllers
         int updateRows = 0;
 
         public ComprehensiveController(ResellerBoyinawebFactFinderWebContext context, AwarenessServices awarenessServices, IHttpContextAccessor httpContextAccessor, WingsServices wingsServices, KnowledgeThatMattersServices knowledgeThatMattersServices, ExecutionServices executionServices, InvestServices investServices, AlertnessMappingService alertnessMappingService, JSONDataUtility jSONDataUtility, UtilityHelperServices utilityHelperServices, IWebHostEnvironment env)
-        {
+        { 
             _context = context;
             _AwarenessServices = awarenessServices;
             _WingsServices = wingsServices;
             _KnowledgeThatMattersServices = knowledgeThatMattersServices;
 
-            _httpContext = httpContextAccessor.HttpContext;
-            var userIdStr = _httpContext.Session.GetString("UserId");
+           _httpContext = httpContextAccessor.HttpContext;
+           // var userIdStr = _httpContext.Session.GetString("UserId");
 
-            _planType = _httpContext.Session.GetString("UserPlan");
-            _userID = Convert.ToInt64(userIdStr);
+          //  _planType = _httpContext.Session.GetString("UserPlan");
+           // _userID = Convert.ToInt64(userIdStr);
             _executionServices = executionServices;
             _investServices = investServices;
             _alertnessMappingService = alertnessMappingService;
             _utilService = utilityHelperServices;
             _env = env;
+
+            // ✅ Use _httpContext safely
+            _httpContext.Session.SetString("UserFullName", "ajay");
+            _httpContext.Session.SetString("Useremail", "sss@g.com");
+            _httpContext.Session.SetString("UserStep", "S1");
+            _httpContext.Session.SetString("UserPlan", "Wealth");
+            _httpContext.Session.SetString("UserId", "109");
+
+            var userIdStr = _httpContext.Session.GetString("UserId");
+            _planType = _httpContext.Session.GetString("UserPlan");
+            _userID = Convert.ToInt64(userIdStr);
 
         }
 
@@ -71,6 +85,9 @@ namespace FactFinderWeb.Controllers
 		[HttpGet]
         public async Task<IActionResult> Awareness()
         {
+
+           
+
             string checkEmail = _AwarenessServices.checkEmailExistProfileTbl(_userID);
             if (checkEmail == null)
             { 
@@ -117,6 +134,16 @@ namespace FactFinderWeb.Controllers
                 }
             if (!ModelState.IsValid)
             {
+                foreach (var entry in ModelState)
+                {
+                    var key = entry.Key; // The property name
+                    var errors = entry.Value.Errors;
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($"Property: {key}, Error: {error.ErrorMessage}");
+                    }
+                }
+
                 return View(awarenessViewModel);
             }
 
@@ -146,7 +173,7 @@ namespace FactFinderWeb.Controllers
         {
             var wingsViewModel = new WingsViewModel();
             wingsViewModel = await _WingsServices.WingsList();
-            wingsViewModel.GoalOptions = await _WingsServices.WingsBindSelect();
+            wingsViewModel.GoalOptions = await _WingsServices.WingsBindSelect(_planType);
             wingsViewModel.ChildrenLists = await _WingsServices.WingsChildrenList();
 
             wingsViewModel.ApplicantDataDto = await _WingsServices.GetApplicantDataAsync(_userID);

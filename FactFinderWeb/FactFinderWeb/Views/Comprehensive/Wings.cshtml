@@ -1,8 +1,12 @@
 ﻿@using FactFinderWeb.ModelsView
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using Microsoft.AspNetCore.Http;
+
 @model WingsViewModel
 @{
     ViewData["Title"] = "Wings";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
+    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
 }
 
 <style>
@@ -139,11 +143,11 @@
         </section>
 
         <div class="d-flex justify-content-end mt-3 mx-2 ">
-            <a asp-action="Awareness" class="btn btn-secondary  px-4 py-1 rounded mx-3">Previous</a>
+            <a asp-action="Awareness" asp-controller="@userPlan" class="btn btn-secondary  px-4 py-1 rounded mx-3">Previous</a>
 
-            <button type="button" name="saveGoalsBtn" id="saveGoalsBtn" class="btn btn-primary px-4 py-1 rounded mx-3 ">Next</button>
+            <button type="button" name="saveGoalsBtn" id="saveGoalsBtn" asp-controller="@userPlan" class="btn btn-primary px-4 py-1 rounded mx-3 ">Next</button>
 
-            <button name="btnSubmit" id="btnSubmit" class="d-none btn btn-primary px-5 py-1 rounded mx-3" asp-controller="Comprehensive" asp-action="Wings" type="submit">Next</button>
+            <button name="btnSubmit" id="btnSubmit" class="d-none btn btn-primary px-5 py-1 rounded mx-3" asp-controller="@userPlan" asp-action="Wings" type="submit">Next</button>
             @Html.AntiForgeryToken()
         </div>
         <div class="d-flex justify-content-end mt-3 mx-5">
@@ -595,7 +599,7 @@ document.getElementById("goalStartYearError").textContent = `Start year must be 
             const goals = JSON.parse(localStorage.getItem("goals") || "[]");
             console.log(goals);
             e.preventDefault();
-            fetch('/Comprehensive/SaveGoals', {
+                    fetch('/@userPlan/SaveGoals', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'//,
@@ -609,8 +613,8 @@ document.getElementById("goalStartYearError").textContent = `Start year must be 
                     if (data.success){ 
                         //alert(data.message);                        
                     document.getElementById("spmsg").textContent = "Goals saved successfully.";
-                    setTimeout(() => { window.location.href = '/Comprehensive/Alertness'; }, 2000); 
-                    // if (data.success) alert("Goals saved successfully.");
+                            setTimeout(() => { window.location.href = '/@userPlan/Alertness'; }, 2000);
+                            // if (data.success) alert("Goals saved successfully.");
                     }
                     else{ alert("Failed to save goals.");}
                 })
@@ -623,7 +627,7 @@ document.getElementById("goalStartYearError").textContent = `Start year must be 
                     console.log(goals);
                     document.getElementById("spmsgtop").textContent = "";
                     e.preventDefault();
-                            fetch('/Comprehensive/SaveGoalsOnLink', {
+                                    fetch('/@userPlan/SaveGoalsOnLink', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'//,
