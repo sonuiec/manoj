@@ -4,6 +4,7 @@ using FactFinderWeb.ModelsView.AdminMV;
 using FactFinderWeb.Services;
 using FactFinderWeb.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json;
@@ -78,6 +79,20 @@ namespace FactFinderWeb.Controllers
             ViewData["Error"] = "Invalid username or password.";
             return View();
         }
+        [HttpPost("admin/UpdateAdvisor")]
+        public async Task<IActionResult> UpdateAdvisor(int id, int advisorid)
+        {
+            var user = await _context.TblFfRegisterUsers.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.Advisorid = advisorid;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
 
         [HttpGet("admin/dashboard")]
         public async Task<IActionResult> Dashboard(string? search, int page = 1, int pageSize = 5000)
@@ -112,9 +127,14 @@ namespace FactFinderWeb.Controllers
                 .Take(pageSize)
                 .ToList();
 
+            var adminUsers = await (from a in _context.TblFfAdminUsers where a.AdminRole == "admin" select a).ToListAsync();
+                         
+
+
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = totalPages;
             ViewData["Search"] = search;
+            ViewData["AdminUsersDropdown"] = adminUsers;
 
             return View(userList);
         }

@@ -1,4 +1,6 @@
 ﻿@using FactFinderWeb.ModelsView
+@removeTagHelper "Microsoft.AspNetCore.Mvc.TagHelpers.OptionTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers"
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @{
     ViewData["Title"] = "User List";
@@ -9,6 +11,30 @@
     int totalPages = (int)(ViewData["TotalPages"] ?? 1);
     string search = ViewData["Search"]?.ToString() ?? "";
     int serialNo = ((currentPage - 1) * 20) + 1;
+
+    <script>
+        $(document).on("change", ".manageby-dropdown", function () {
+        
+            var profileId = $(this).data("profileid");
+            var advisorid = $(this).val();
+
+            $.ajax({
+                url: '/admin/UpdateAdvisor',
+                type: 'POST',
+                data: { id: profileId, advisorid: advisorid },
+                success: function (res) {
+                    if (res.success) {
+                        alert("ManageBy updated successfully!");
+                    } else {
+                        alert("Error updating ManageBy.");
+                    }
+                },
+                error: function () {
+                    alert("Server error while updating.");
+                }
+            });
+        });
+    </script>
 }
 
 
@@ -44,10 +70,11 @@
             <th> Advisor / ManageBy </th>
             <th> Profile Status</th>            
             <th class="text-center">Registration Date</th>
-            <th> Active </th>
-                <th>Edit</th>
+                <th> Status  </th>
+            <th> Action  </th>
+           @*      <th>Edit</th>
             <th> View Detail </th>
-            <th  class="text-center">  Download PDF  </th>
+            <th  class="text-center">  Download PDF  </th> *@
         </tr>
     </thead>
     <tbody>
@@ -69,17 +96,27 @@
                 <td> @user.Name</td>
                 <td> @user.email</td>
                 <td> @user.planType</td>
-                <td> Advisor</td>
+          <td>
+    <select class="form-control manageby-dropdown" data-profileid="@user.ProfileId">
+        <option value="0">-- Select --</option>
+        @foreach (var admin in (IEnumerable<dynamic>)ViewData["AdminUsersDropdown"])
+        {
+                                        <option value="@admin.Id"
+                                        @Html.Raw(user.advisorid == admin.Id ? "selected=\"selected\"" : "")>
+            @admin.Name
+</option>
+        }
+                                </select>  
+</td>
                 <td> Submitted to Awaken</td>                   
                 <td  class="text-center"> @user.createddate.ToString("dd/MM/yyyy")</td>
-                <td  class="text-center"> @user.activestatus</td>
-                            <td class="text-center">
+                            <td class="text-center"> @user.activestatus </td>
+                            <td class="text-left">
                                 <a  href="/admin/editUserPlan/@user.ProfileId" target="_blank">
-                                    Edit FactFinder
-                                </a>
-                            </td>
-                <td class="text-center"><a href="/admin/UserDetails/@user.ProfileId" target="_blank">View Detail</a></td>
-                    <td class="text-center"><a target="_blank" href="/admin/UserProfilepdf?id=@user.ProfileId" >Download PDF</a></td>
+                    Edit FactFinder
+                </a> |
+                <a href="/admin/UserDetails/@user.ProfileId" target="_blank">View Detail</a><br />
+                    <a target="_blank" href="/admin/UserProfilepdf?id=@user.ProfileId" >Download PDF</a></td>
             </tr>
                     serialNo++;
             }

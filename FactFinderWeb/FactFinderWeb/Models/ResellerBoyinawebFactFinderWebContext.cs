@@ -995,13 +995,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("planType");
             entity.Property(e => e.PlanYear).HasColumnName("planYear");
-            entity.Property(e => e.Profileid)
-      .HasColumnName("profileid")
-      .ValueGeneratedOnAddOrUpdate() // SQL Server computes it
-      .Metadata.SetAfterSaveBehavior(
-          Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore
-      );
-
+            entity.Property(e => e.Profileid).HasColumnName("profileid");
             entity.Property(e => e.ResAddress)
                 .HasMaxLength(150)
                 .IsUnicode(false);

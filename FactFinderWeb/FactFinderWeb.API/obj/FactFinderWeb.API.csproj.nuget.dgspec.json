@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ajay.chaudhary\\Downloads\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj": {}
+    "C:\\Users\\ajay.chaudhary\\Downloads\\manoj\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ajay.chaudhary\\Downloads\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj": {
+    "C:\\Users\\ajay.chaudhary\\Downloads\\manoj\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ajay.chaudhary\\Downloads\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj",
+        "projectUniqueName": "C:\\Users\\ajay.chaudhary\\Downloads\\manoj\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj",
         "projectName": "FactFinderWeb.API",
-        "projectPath": "C:\\Users\\ajay.chaudhary\\Downloads\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj",
+        "projectPath": "C:\\Users\\ajay.chaudhary\\Downloads\\manoj\\FactFinderWeb\\FactFinderWeb.API\\FactFinderWeb.API.csproj",
         "packagesPath": "C:\\Users\\ajay.chaudhary\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ajay.chaudhary\\Downloads\\FactFinderWeb\\FactFinderWeb.API\\obj\\",
+        "outputPath": "C:\\Users\\ajay.chaudhary\\Downloads\\manoj\\FactFinderWeb\\FactFinderWeb.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

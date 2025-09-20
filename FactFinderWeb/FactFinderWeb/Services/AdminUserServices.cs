@@ -146,7 +146,8 @@ namespace FactFinderWeb.Services
                                           createddate = ruser.Createddate,
                                           userFile = ruser.Ptx, //UserFile
                                           ProfileId = ruser.Id,
-                                          Id = user.Id
+                                          Id = user.Id,
+                                          advisorid = ruser.Advisorid
                                       }).ToListAsync();
             }
             else { 
@@ -166,7 +167,8 @@ namespace FactFinderWeb.Services
                                       createddate = ruser.Createddate,
                                       userFile = ruser.Ptx, //UserFile
                                       ProfileId = ruser.Id,
-                                      Id = user.Id
+                                      Id = user.Id,
+                                      advisorid = ruser.Advisorid
                                   }).ToListAsync();
             }
             return userList;

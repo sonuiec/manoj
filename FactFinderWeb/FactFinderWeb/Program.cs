@@ -39,6 +39,8 @@ builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+        .AddRazorRuntimeCompilation();
 
 builder.Services.AddSession(options =>
 {
@@ -104,18 +106,18 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Use(async (context, next) =>
-{
-    try
-    {
-        await next();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"❌ Global Error: {ex}"); // will show in logs/console
-        throw; // rethrow so you still see 500 in browser
-    }
-});
+//app.Use(async (context, next) =>
+//{
+//    try
+//    {
+//        await next();
+//    }
+//    catch (Exception ex)
+//    {
+//        Console.WriteLine($"❌ Global Error: {ex}"); // will show in logs/console
+//        throw; // rethrow so you still see 500 in browser
+//    }
+//});
 
 
 app.Run();

@@ -121,6 +121,8 @@ namespace FactFinderWeb.ModelsView.AdminMV
         public string? activestatus { get; set; }
         public DateTime? createddate { get; set; }
         public string? userFile { get; set; }
+        public int? advisorid { get; set; }
+        
         //Name planType planYear email mobile activestatus createddate
     }
 }

@@ -15,6 +15,8 @@ using System.Globalization;
 namespace FactFinderWeb.Controllers
 {
     //[Route("plan")]
+    [Route("Comprehensive/[action]")]
+    [Route("Wealth/[action]")]
     public class ComprehensiveController : Controller
     {
         private readonly ResellerBoyinawebFactFinderWebContext _context;
@@ -28,6 +30,7 @@ namespace FactFinderWeb.Controllers
         private readonly AlertnessMappingService _alertnessMappingService;
         private readonly UtilityHelperServices _utilService;
         private readonly IWebHostEnvironment _env;
+        private readonly string _planType;
         int updateRows = 0;
 
         public ComprehensiveController(ResellerBoyinawebFactFinderWebContext context, AwarenessServices awarenessServices, IHttpContextAccessor httpContextAccessor, WingsServices wingsServices, KnowledgeThatMattersServices knowledgeThatMattersServices, ExecutionServices executionServices, InvestServices investServices, AlertnessMappingService alertnessMappingService, JSONDataUtility jSONDataUtility, UtilityHelperServices utilityHelperServices, IWebHostEnvironment env)
@@ -39,6 +42,8 @@ namespace FactFinderWeb.Controllers
 
             _httpContext = httpContextAccessor.HttpContext;
             var userIdStr = _httpContext.Session.GetString("UserId");
+
+            _planType = _httpContext.Session.GetString("UserPlan");
             _userID = Convert.ToInt64(userIdStr);
             _executionServices = executionServices;
             _investServices = investServices;
@@ -131,7 +136,7 @@ namespace FactFinderWeb.Controllers
                 ViewData["msg"] = "Saved successfully.";
                 return View(awarenessViewModel);
             }
-            return RedirectToAction("wings", "Comprehensive");
+            return RedirectToAction("wings", _planType);
         }
 
 		
@@ -1302,7 +1307,7 @@ namespace FactFinderWeb.Controllers
                 return View(mvKnowledgeRisk);
             }
             else {
-                return RedirectToAction("ExecutionWithPrecision", "Comprehensive");
+                return RedirectToAction("ExecutionWithPrecision", _planType);
             }
 
         }
@@ -1358,7 +1363,7 @@ namespace FactFinderWeb.Controllers
                 }
 
                 TempData["SuccessMessage"] = "Execution data updated successfully.";
-                return RedirectToAction("Invest", "Comprehensive");
+                return RedirectToAction("Invest", _planType);
             }
             else
             {
