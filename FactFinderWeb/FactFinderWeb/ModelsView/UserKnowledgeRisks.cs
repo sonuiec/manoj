@@ -19,7 +19,7 @@ namespace FactFinderWeb.ModelsView
         public long Id { get; set; }
 
         //public long UserID { get; set; }
-        public long Profileid { get; set; }
+        public long? Profileid { get; set; }
 
         [Required(ErrorMessage = "Please select risk capacity.")]
         public string RiskCapacity { get; set; } = null!;
@@ -30,9 +30,9 @@ namespace FactFinderWeb.ModelsView
         [Required(ErrorMessage = "Please select risk tolerance.")]
         public string RiskTolerance { get; set; } = null!;
 
-        //public string? TotalRiskProfileScore { get; set; }
+        public string? TotalRiskProfileScore { get; set; }
 
-        //public string? PlannerAssessmentOnRiskProfile { get; set; }
+        public string? PlannerAssessmentOnRiskProfile { get; set; }
 
         public DateTime? CreateDate { get; set; }
 

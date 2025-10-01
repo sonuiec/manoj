@@ -1,22 +1,31 @@
-
+﻿
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+ 
 using FactFinderWeb.API.Services;
+using FactFinderWeb.API.Models;
+using FactFinderWeb.API.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 //call connection string
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
- 
+
 //var connString = builder.Configuration.GetConnectionString("AppDb");
 
 //var r = "DB Connection: " + builder.Configuration.GetConnectionString("AppDb");
 // Add services to the container.{our project}
+// Add services to the container.
+builder.Services.AddControllers();
 
+// Register DbContext
+builder.Services.AddDbContext<FactFinderDbContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("FactFinderDbCon")));
 
+builder.Services.AddScoped<JSONDataUtility>();
 builder.Services.AddSingleton<JwtService>();
 //builder.Services.AddControllers().AddNewtonsoftJson(); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

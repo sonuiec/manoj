@@ -1,6 +1,6 @@
-using FactFinderWeb.Models;
-using FactFinderWeb.Services;
-using FactFinderWeb.Utils;
+using FactFinderWeb.API.Models;
+using FactFinderWeb.API.Utils;
+
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -10,19 +10,19 @@ namespace FactFinderWeb.API.Controllers
     [Route("[controller]")]
     public class ExportController : ControllerBase
     {
-        private readonly ResellerBoyinawebFactFinderWebContext _context;
-        private readonly AwarenessServices _AwarenessServices;
+        private readonly FactFinderDbContext _context;
+        
         private readonly long _userID;
-        private readonly HttpContext _httpContext;
+     
         private readonly JSONDataUtility _jsonData;
         private int updateRows;
 
 
-        public ExportController(ResellerBoyinawebFactFinderWebContext context, JSONDataUtility jsonDataUtility, IHttpContextAccessor httpContextAccessor)
+        public ExportController(FactFinderDbContext context, JSONDataUtility jsonDataUtility)
         {
             _context = context;
             _jsonData = jsonDataUtility;
-            _httpContext = httpContextAccessor.HttpContext;
+           
         }
 
 
@@ -45,7 +45,7 @@ namespace FactFinderWeb.API.Controllers
                 });
             }
 
-            var user = await _context.TblFfRegisterUsers.FindAsync(profileId);
+            var user = await _context.TblffAwarenessProfileDetails.FindAsync(profileId);
             if (user == null)
             {
                 return NotFound(new

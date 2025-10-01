@@ -22,7 +22,14 @@ namespace FactFinderWeb.ModelsView
 		public DateTime? UserRegisterDate { get; set; }
 		public string? AdvisorName { get; set; }
 		public long? Advisorid { get; set; }
-	}
+
+        public DateTime? PlanCreatedDate { get; set; }
+        public DateTime? PlanUpdatedDate { get; set; }
+
+        public long? Profileid { get; set; }
+
+        public string? ProfileStatus { get; set; }
+    }
 
 
     public class UserProfileViewModel

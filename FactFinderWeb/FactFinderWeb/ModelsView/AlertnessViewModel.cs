@@ -8,8 +8,7 @@ namespace FactFinderWeb.ModelsView
     public class AlertnessViewModel
     {
 
-        [Required(ErrorMessage = "Profile ID is required.")]
-        [Display(Name = "Profile ID")]
+       
         public long? ProfileId { get; set; }
 
         [Display(Name = "ID")]
@@ -157,7 +156,7 @@ namespace FactFinderWeb.ModelsView
         [Display(Name = "Overall Monthly Income")]
         public decimal? SpouseOverallMonthlyIncome { get; set; }
 
-        [Display(Name = "Post-IT Income (Old Regime)")]
+        [Display(Name = "Post IT Income Monthly (Disposable Income)")]
         public decimal? SpousePostITIncomeOld { get; set; }
 
         [Display(Name = "Post-IT Income (New Regime)")]
@@ -171,6 +170,10 @@ namespace FactFinderWeb.ModelsView
 
         [Display(Name = "Modified Date")]
         public DateTime? ModifiedDate { get; set; }
+
+        [Display(Name = "Total Expense")]
+        public decimal? TotalExpense { get; set; }
+        
 
 
         ////[Required(ErrorMessage = "IncomeExtras is required.")]
@@ -207,7 +210,7 @@ namespace FactFinderWeb.ModelsView
         public List<TblFfAlertnesNewInvestment>? NewInvestments { get; set; }
         public List<TblFfAlertnesNewOtherAsset>? NewOtherAssets { get; set; }
         public List<TblFfAlertnesNewLiability>? NewLiabilities { get; set; }
-
+        
 
 
         //Step-7 LoanDetailViewModel   //[dbo].[tblff_Alertnes_Debt]
@@ -494,7 +497,7 @@ namespace FactFinderWeb.ModelsView
         [Display(Name = "Current Value")]
         public decimal? CurrentValue { get; set; }
 
-        [Required(ErrorMessage = "Monthly Contribution is required.")]
+        //[Required(ErrorMessage = "Monthly Contribution is required.")]
         [Range(0, double.MaxValue, ErrorMessage = "Monthly Contribution must be a positive number.")]
         [Display(Name = "Monthly Contribution")]
         public decimal? MonthlyContribution { get; set; }
@@ -704,6 +707,9 @@ namespace FactFinderWeb.ModelsView
         [Range(0, 999999999999.99)]
         [RegularExpression(@"^\d+(\.\d{1,2})?$")]
         public decimal? Home2Loan { get; set; }
+        [Display(Name = "Home 1 Loan")]
+        public decimal? Home1Loan { get; set; }
+
 
         [Display(Name = "Land Loan")]
         [Range(0, 999999999999.99)]
@@ -731,6 +737,10 @@ namespace FactFinderWeb.ModelsView
         public decimal? OtherLoan { get; set; }
 
         public DateTime? CreatedAt { get; set; }
+
+
+        [Display(Name = "Car Loan")]
+        public decimal? CarLoan { get; set; }
     }
     public class NewInvestmentViewModel
     {

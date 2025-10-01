@@ -182,7 +182,7 @@ namespace FactFinderWeb.Utils
                     wings = BuildWingsSection(profileId),
                     alertness = BuildAlertnessSection(profileId),
                     knowledge = BuildKnowledgeSection(profileId),
-                    ExecutePlan = BuildExecutePlanSection(profileId),
+                    executePlan = BuildExecutePlanSection(profileId),
                     Invest = BuildInvestSection(profileId)
                 }
             };

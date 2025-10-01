@@ -14,6 +14,8 @@ namespace FactFinderWeb.ModelsView
 
         public List<WingsGoalSelect> WingsGoalSelect { get; set; } = new();
         public List<SelectListItem> GoalOptions { get; set; } = new List<SelectListItem>();
+
+         public int? ApplicantLifeExpectancy { get; set; }
     }
     public class WingsGoalSelect
     {
@@ -96,5 +98,8 @@ namespace FactFinderWeb.ModelsView
         public int? goalEndYear { get; set; }
         public int? timeHorizon { get; set; } 
         public byte? NewGoals { get; set; }
+
+
+        public long? goalId { get; set; }
     }
 }
