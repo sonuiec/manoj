@@ -1,41 +1,18 @@
 ﻿@using FactFinderWeb.ModelsView
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-@using Microsoft.AspNetCore.Http;
-
 @model AwarenessViewModel
 @{
     ViewData["Title"] = "Awareness";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
-    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
-    var _profileId = HttpContextAccessor.HttpContext.Request.RouteValues["pid"]?.ToString();
-
-    var newPlanType = @Model.ProfileDetail.PlanType.ToLower();
-    if (newPlanType == "zero to one" || newPlanType == "zero2one")
-    {
-        newPlanType = "Zero2One";
-    }
-    else if (newPlanType == "basic")
-    {
-        newPlanType = "Basic";
-    }
-     else if ( newPlanType == "comprehensive")
-    {
-        newPlanType = "Comprehensive";
-    }
-     else if (newPlanType == "wealth" )
-    {
-        newPlanType = "Wealth";
-    }
 }
 
 <style>
     .text-truncate-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
     }
-
+   
 </style>
 
 <div class="mt-4 ">
@@ -64,12 +41,7 @@
         </div>
     </div>
     <!-- form -->
-    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded"
-    asp-controller="Comprehensive"
-    asp-action="Awareness"
-    asp-route-planType="@userPlan"
-
-    >
+    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded" asp-controller="Comprehensive" asp-action="Awareness">
         <!--plan details -->
         <fieldset class="d-flex flex-column gap-2">
             <legend style="color: #3B3737" class="fw-bold">Plan Details</legend>
@@ -78,19 +50,14 @@
                     <label class="form-label d-flex align-items-center gap-1" asp-for="ProfileDetail.PlanType">
                         Plan Type<span class="text-danger fw-bold ">*</span>
                     </label>
-
-                    @*  <select asp-for="ProfileDetail.PlanType" required class="form-select d-none">
+                    <select asp-for="ProfileDetail.PlanType" required class="form-select d-none">
                         <option value="">Select</option>
                         <option value="Zero to one">Zero to one</option>
                         <option value="Basic">Basic</option>
                         <option value="Comprehensive">Comprehensive</option>
                         <option value="Wealth Management">Wealth Management</option>
-                    </select> *@
-                    <!-- Hidden field that will actually bind to the model -->
-                    <input type="hidden" asp-for="ProfileDetail.PlanType" value="@userPlan" />
-
-                    <!-- Display only, not bound -->
-                    <input type="text" value="@newPlanType" class="form-control inputnumyr" readonly />
+                    </select>
+                    <input asp-for="ProfileDetail.PlanType" type="text"   class="form-control inputnumyr"   readonly="readonly" >
 
                 </div>
                 <div class="col-12 col-md-4">
@@ -139,7 +106,7 @@
                 </div>
                 <div class="col-12 col-md-4">
                     <label asp-for="ProfileDetail.Dob" for="txtDob" class="form-label gap-1 d-flex">Date of Birth<span class="text-danger fw-bold ">*</span></label>
-                    <input asp-for="ProfileDetail.Dob"  type="text"  class="form-control mydateformat" placeholder="Select Date"  readonly >
+          <input asp-for="ProfileDetail.Dob"  type="text"  class="form-control mydateformat" placeholder="Select Date"  readonly >
                     @Html.ValidationMessageFor(model => model.ProfileDetail.Dob, "", new { @class = "text-danger" })
                 </div>
                 <div class="col-12 col-md-4">
@@ -147,42 +114,42 @@
                         Mobile No.<span class="text-danger fw-bold ">*</span>
                     </label>
                     <input asp-for="ProfileDetail.Phone" required="0-9" placeholder="Enter Mobile Number" type="text"
-                    class="form-control" maxlength="10" minlength="10">
+                           class="form-control" maxlength="10" minlength="10">
                     @Html.ValidationMessageFor(model => model.ProfileDetail.Phone, "", new { @class = "text-danger" })
 
                 </div>
                 <div class="col-12 col-md-4">
                     <label asp-for="ProfileDetail.AltPhone" class="form-label">Alternate Mobile No.</label>
                     <input asp-for="ProfileDetail.AltPhone" placeholder="Enter Mobile Number" type="text"
-                    class="form-control" maxlength="10" minlength="10">
+                           class="form-control" maxlength="10" minlength="10">
                 </div>
                 <div class="col-12   col-md-4">
                     <label asp-for="ProfileDetail.Aadhaar" class="form-label gap-1 d-flex">
                         Aadhaar Number 
                     </label>
                     <input asp-for="ProfileDetail.Aadhaar"   maxlength="12"
-                    placeholder="Enter Aadhar Number" type="text" class="form-control" maxlength="12">
+                           placeholder="Enter Aadhar Number" type="text" class="form-control" maxlength="12">
                 </div>
                 <div class="col-12 col-md-4">
                     <label asp-for="ProfileDetail.Email" class="form-label gap-1 d-flex">
                         Primary Email<span class="text-danger fw-bold ">*</span>
                     </label>
                     <input asp-for="ProfileDetail.Email" required placeholder="Enter Email Address"
-                    type="email" class="form-control" maxlength="60">
+                           type="email" class="form-control" maxlength="60">
                     @Html.ValidationMessageFor(model => model.ProfileDetail.Email, "", new { @class = "text-danger" })
                 </div>
                 <div class="col-12 col-md-4">
                     <label for="SecEmail" class="form-label">Secondary Email</label>
                     <input id="SecEmail" name="SecEmail" type="email" placeholder="Enter Email Address"
-                    class="form-control" maxlength="60">
+                           class="form-control" maxlength="60">
                 </div>
                 <div class="col-12 col-md-4">
                     <label asp-for="ProfileDetail.PAN" class="form-label gap-1 d-flex">
                         PAN Card No.<span class="text-danger fw-bold ">*</span>
                     </label>
                     <input asp-for="ProfileDetail.PAN" required placeholder="Enter PAN Card Number" type="text"
-                    class="form-control" maxlength="10" oninput="this.value = this.value.toUpperCase();"
-                    onkeypress="return /^[a-zA-Z0-9]$/.test(String.fromCharCode(event.which));">
+                           class="form-control" maxlength="10" oninput="this.value = this.value.toUpperCase();"
+       onkeypress="return /^[a-zA-Z0-9]$/.test(String.fromCharCode(event.which));">
                     @Html.ValidationMessageFor(model => model.ProfileDetail.PAN, "", new { @class = "text-danger" })
                 </div>
                 <div class="col-12 col-md-4">
@@ -211,7 +178,7 @@
                     @Html.ValidationMessageFor(model => model.ProfileDetail.Occupation, "", new { @class = "text-danger" })
                 </div>
 
-
+                
                 <div class="col-12 col-md-4">
                     <label asp-for="ProfileDetail.CompanyName" class="form-label">Company Name</label>
                     <input asp-for="ProfileDetail.CompanyName" type="text" class="form-control" maxlength="60" >
@@ -227,27 +194,27 @@
 
                 <div class="row g-3 address-block">
                     <div class="col-md-3">
-                        <label asp-for="ProfileDetail.CompanyCountry" class="form-label">Company Country</label>
+                    <label asp-for="ProfileDetail.CompanyCountry" class="form-label">Company Country</label>
                         <select class="form-select bindAddressCountry" asp-for="ProfileDetail.CompanyCountry" data-selected="@Model.ProfileDetail.CompanyCountry">
-                            <option value="" >Select</option>
-                        </select>
-
-                    </div>
-                    <div class="form-group col-md-3">
-                        <label asp-for="ProfileDetail.CompanyState" class="form-label d-flex gap-1">Company State</label>
-                        <select class="form-select bindAddressState" asp-for="ProfileDetail.CompanyState"  data-selected="@Model.ProfileDetail.CompanyState">
-                            <option value="" >Select</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label asp-for="ProfileDetail.CompanyPINcode" class="form-label d-flex gap-1">Company Pin/Zip Code</label>
-                        <input asp-for="ProfileDetail.CompanyPINcode" type="text" class="form-control" minlength="6" maxlength="6">
+                        <option value="" >Select</option>
+                    </select>
+                    
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="ProfileDetail.CompanyState" class="form-label d-flex gap-1">Company State</label>
+                    <select class="form-select bindAddressState" asp-for="ProfileDetail.CompanyState"  data-selected="@Model.ProfileDetail.CompanyState">
+                        <option value="" >Select</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+            <label asp-for="ProfileDetail.CompanyPINcode" class="form-label d-flex gap-1">Company Pin/Zip Code</label>
+            <input asp-for="ProfileDetail.CompanyPINcode" type="text" class="form-control" minlength="6" maxlength="6">
                     </div>
                 </div>
             </div>
         </fieldset>
         <!-- Third Field address -->
-
+        
         <fieldset class="d-flex flex-column gap-2">
             <h5 style="color: #3B3737">Residential Address</h5>
             <div style="color:	#006400" class="d-flex flex-column gap-3">
@@ -264,7 +231,7 @@
                     <div class="col-md-3">
                         <label asp-for="ProfileDetail.ResCity" class="form-label d-flex gap-1">City</label>
                         <input asp-for="ProfileDetail.ResCity" placeholder="Type Your city" type="text"
-                        class="form-control" maxlength="60">
+                               class="form-control" maxlength="60">
                         @Html.ValidationMessageFor(model => model.ProfileDetail.ResCity, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3">
@@ -282,7 +249,7 @@
                         @Html.ValidationMessageFor(model => model.ProfileDetail.ResState, "", new { @class = "text-danger" })
                     </div>
                     <div class="col-md-3">
-                        <label asp-for="ProfileDetail.ResPincode" class="form-label d-flex gap-1">Pin/Zip Code</label>
+                  <label asp-for="ProfileDetail.ResPincode" class="form-label d-flex gap-1">Pin/Zip Code</label>
                         <input asp-for="ProfileDetail.ResPincode" type="text" class="form-control" minlength="6" maxlength="6">
                         @Html.ValidationMessageFor(model => model.ProfileDetail.ResPincode, "", new { @class = "text-danger" })
                     </div>
@@ -298,14 +265,14 @@
                 <div class="col-md-6">
                     <label asp-for="ProfileDetail.PermAddress" class="form-label">Address</label>
                     <textarea  asp-for="ProfileDetail.PermAddress" type="text" class="form-control"
-                    maxlength="100" ></textarea> 
+                           maxlength="100" ></textarea> 
                 </div>
 
                 <div class="row g-3  address-block">
                     <div class="col-md-3">
                         <label asp-for="ProfileDetail.PermCity" class="form-label">City</label>
                         <input asp-for="ProfileDetail.PermCity" placeholder="Type Your city" maxlength="60"
-                        type="text" class="form-control">
+                               type="text" class="form-control">
                     </div>
 
                     <div class="col-md-3">
@@ -324,12 +291,12 @@
                     <div class="col-md-3">
                         <label asp-for="ProfileDetail.PermPincode" class="form-label">Pin/Zip Code</label>
                         <input asp-for="ProfileDetail.PermPincode" type="text" class="form-control" minlength="6"
-                        maxlength="6">
+                               maxlength="6">
                     </div>
                 </div>
             </div>
         </fieldset>
-
+       
 
         <!------------------------------- maritial status -->
 
@@ -409,7 +376,7 @@
                     <div class="col-12 col-md-4">
                         <label asp-for="SpouseDetails.SpousePan" class="form-label">Pan Card No.</label>
                         <input asp-for="SpouseDetails.SpousePan" maxlength="10" minlength="10" type="text" class="form-control" oninput="this.value = this.value.toUpperCase();"
-                        onkeypress="return /^[a-zA-Z0-9]$/.test(String.fromCharCode(event.which));">
+       onkeypress="return /^[a-zA-Z0-9]$/.test(String.fromCharCode(event.which));">
                     </div>
                     <div class="col-12 col-md-4">
                         <label asp-for="SpouseDetails.SpouseOccupation" class="form-label">
@@ -441,23 +408,23 @@
                         <input asp-for="SpouseDetails.SpouseCompanyCity" type="text" class="form-control" maxlength="60">
                     </div>
 
-                    <div class="col-12  col-md-4">
-                        <label asp-for="SpouseDetails.SpouseCompanyCountry" class="form-label">Company Country</label>
-                        <select class="form-select bindAddressCountry" asp-for="SpouseDetails.SpouseCompanyCountry" data-selected="@Model.SpouseDetails.SpouseCompanyCountry">
-                            <option value="">Select</option>
-                        </select>
+                        <div class="col-12  col-md-4">
+                            <label asp-for="SpouseDetails.SpouseCompanyCountry" class="form-label">Company Country</label>
+                            <select class="form-select bindAddressCountry" asp-for="SpouseDetails.SpouseCompanyCountry" data-selected="@Model.SpouseDetails.SpouseCompanyCountry">
+                                <option value="">Select</option>
+                            </select>
 
-                    </div>
-                    <div class="form-group col-12 col-md-4">
-                        <label asp-for="SpouseDetails.SpouseCompanyState" class="form-label d-flex gap-1">Company State</label>
-                        <select class="form-select bindAddressState" asp-for="SpouseDetails.SpouseCompanyState" data-selected="@Model.SpouseDetails.SpouseCompanyState">
-                            <option value="">Select</option>
-                        </select>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseDetails.SpouseCompanyPINcode" class="form-label d-flex gap-1">Company Pin/Zip Code</label>
-                        <input asp-for="SpouseDetails.SpouseCompanyPINcode" type="text" class="form-control" minlength="6" maxlength="6">
-                    </div>
+                        </div>
+                        <div class="form-group col-12 col-md-4">
+                            <label asp-for="SpouseDetails.SpouseCompanyState" class="form-label d-flex gap-1">Company State</label>
+                            <select class="form-select bindAddressState" asp-for="SpouseDetails.SpouseCompanyState" data-selected="@Model.SpouseDetails.SpouseCompanyState">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label asp-for="SpouseDetails.SpouseCompanyPINcode" class="form-label d-flex gap-1">Company Pin/Zip Code</label>
+                            <input asp-for="SpouseDetails.SpouseCompanyPINcode" type="text" class="form-control" minlength="6" maxlength="6">
+                        </div>
                 </div>
             </section>
         </fieldset>
@@ -468,12 +435,7 @@
 
             <fieldset class="d-flex flex-column gap-2">
                 <div id="dvchildrenSection" class="d-flex flex-md-row flex-wrap gap-2">
-                    @if (userPlan?.ToLower() == "wealth")
-                    {
-                        <h3 style="color:  rgb(214, 143, 11)" class="fw-bold">Do you have dependent children</h3>
-                    } else {
-                        <h3 style="color:  rgb(214, 143, 11)" class="fw-bold">Do you have Children</h3>
-                    }
+                    <h3 style="color:  rgb(214, 143, 11)" class="fw-bold">Do you have Children</h3>
                     <div class="d-flex flex-wrap gap-2">
                         <div class="form-group">
                             <div class="btn-group btn-group-toggle d-flex gap-2" data-toggle="buttons">
@@ -684,7 +646,7 @@
 
             <!-- Assumptions Related with Client's Profile -->
             <h5>Assumptions Related with Client's Profile</h5>
-            
+
             <div style="color:	#006400" class="row">
                 <div class="col-12 col-md-4">
                     <label asp-for="Assumptions.ApplicantRetirement" class="form-label">
@@ -693,9 +655,7 @@
                     <input asp-for="Assumptions.ApplicantRetirement" type="text" class="form-control inputnumage" maxlength="3" placeholder="0">
                     @Html.ValidationMessageFor(model => model.Assumptions.ApplicantRetirement, "", new { @class = "text-danger" })
                 </div>
-                <div class="col-12 col-md-4 clsSpouse "
-                 >
-                
+                <div class="col-12 col-md-4 clsSpouse">
                     <label asp-for="Assumptions.SpouseRetirement" class="form-label">
                         Assumed Retirement Age for Applicant’s Spouse<span class="text-danger fw-bold">*</span>
                     </label>
@@ -710,9 +670,7 @@
                     @Html.ValidationMessageFor(model => model.Assumptions.ApplicantLifeExpectancy, "", new { @class = "text-danger" })
                 </div>
 
-                <div class="col-12 col-md-4 clsSpouse"
-                   >
-             
+                <div class="col-12 col-md-4 clsSpouse">
                     <label asp-for="Assumptions.SpouseLifeExpectancy" class="form-label">Assumed Life Expectancy of Applicant’s Spouse<span class="text-danger fw-bold">*</span>  </label>
                     <input asp-for="Assumptions.SpouseLifeExpectancy" type="text" class="form-control inputnumage" maxlength="3" placeholder="0">
                     @Html.ValidationMessageFor(model => model.Assumptions.SpouseLifeExpectancy, "", new { @class = "text-danger" })
@@ -748,10 +706,6 @@
 @section Scripts {
 
     <script>
-
-       
-  
-
 
     //      document.addEventListener('DOMContentLoaded', function () {
     //     const occupationSelect = document.getElementById('spouseOccupation');
@@ -1287,46 +1241,6 @@
 
                         form.submit();
                     }
-
-
-
-
-       
-        $(function () {
-
-            function toggleSpouseFields() {
-                var occ = $("#SpouseDetails_SpouseOccupation").val();
-
-                if (occ === "Service" || occ === "Self Employed" || occ === "Professional") {
-                    $(".clsSpouse").show();
-
-                    // ✅ Re-enable validation
-                    $(".clsSpouse input")
-                        .attr("data-val", "true")
-                        .attr("data-val-required", "Please enter spouse retirement age")
-                        .attr("required", "required");
-                } else {
-                    $(".clsSpouse").hide();
-
-                    // ✅ Disable validation
-                    $(".clsSpouse input")
-                        .removeAttr("data-val")
-                        .removeAttr("data-val-required")
-                        .removeAttr("required");
-                }
-
-                // ✅ Re-parse unobtrusive validation
-                $.validator.unobtrusive.parse("form");
-            }
-
-            toggleSpouseFields(); // run on page load
-            $("#SpouseDetails_SpouseOccupation").on("change", toggleSpouseFields);
-
-        });
- 
-
-
-
 </script>
 
     <partial name="_ValidationScriptsPartial" />

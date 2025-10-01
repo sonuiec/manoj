@@ -3,6 +3,7 @@ using FactFinderWeb.Models;
 using FactFinderWeb.ModelsView;
 using FactFinderWeb.Utils;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace FactFinderWeb.Services
 {
@@ -13,6 +14,7 @@ namespace FactFinderWeb.Services
         private readonly long _userID;
         private readonly HttpContext _httpContext;
         int updateRows = 0;
+        private readonly long _profileId;
 
         public ExecutionServices(ResellerBoyinawebFactFinderWebContext context, IHttpContextAccessor httpContextAccessor)
         {
@@ -20,30 +22,44 @@ namespace FactFinderWeb.Services
             _httpContext = httpContextAccessor.HttpContext;
             var userIdStr = _httpContext.Session.GetString("UserId");
             _userID = Convert.ToInt64(userIdStr);
+            _profileId = Convert.ToInt64(_httpContext.Session.GetString("profileId"));
         }
 
-        public async Task<int> InvestCheckDataThenUpdate(long profileId)
+        public async Task<int> InvestCheckDataThenUpdate(long profileId, string _planType)
         {
             // Check if any records exist for the given profileId
             bool dataExists = await _context.TblffWingsGoalStep5ExecutionData.AnyAsync(x => x.Profileid == profileId);
 
             if (!dataExists)
             {
-                await ExecutionAddToTable();
+                await ExecutionAddToTable(_planType);
             }
             else
             {
-                await ExecutionUpdateToTable();
+                await ExecutionUpdateToTable(_planType);
             }
             return 0;
         }
-        public async Task<int> ExecutionAddToTable()
+        public async Task<int> ExecutionAddToTable(string _planType)
         {
-            var userGoals = await _context.TblffWings.Where(w => w.Profileid == _userID).ToListAsync();
+            var userGoals = await _context.TblffWings.Where(w => w.Profileid == _profileId).ToListAsync();
             foreach (var goal in userGoals)
             {
-                var masterExecutions = await _context.TblffWingsGoalStep5ExecutionMasters
-                                        .Where(m => m.GoalType == goal.GoalType).ToListAsync();
+
+                var query = _context.TblffWingsGoalStep5ExecutionMasters.Where(m => m.Goalid == goal.GoalId );
+                if (goal.GoalId != 15)
+                {
+                    if (_planType.ToLower() == "zero2one")
+                    {
+                        query = query.Where(u => u.DealType == _planType.ToLower());
+                    }
+                    else
+                    {
+                        query = query.Where(u => u.DealType == null);
+                    }
+                }
+
+                var masterExecutions = await query.Distinct() .ToListAsync();
 
                 foreach (var masterItem in masterExecutions)
                 {
@@ -51,25 +67,96 @@ namespace FactFinderWeb.Services
                     {
                         Profileid = goal.Profileid,
                         Step5ExecutionMasterid = masterItem.Id,
-                        Goalid = (int)goal.Id,
+                        Goalid = (int)goal.GoalId,
                         GoalName = goal.GoalName,
                         ExecutionDescription = masterItem.ExecutionDescription,
                         ExecutionValueType = masterItem.ExecutionValueType,
                         CreateDate = DateTime.Now,
-                        UpdateDate = DateTime.Now
+                        UpdateDate = DateTime.Now,
+                        WingId = goal.Id,
+                        ExecutionValue = masterItem.ExecutionDescription == "Year of World Travel" ? goal.GoalStartYear?.ToString() : null,
                     };
                     _context.TblffWingsGoalStep5ExecutionData.Add(newExecutionData);
                 }
             }
             return await _context.SaveChangesAsync();             
         }
-
-        public async Task<int> ExecutionUpdateToTable()
+        public async Task<int> ExecutionUpdateToTable(string _planType)
         {
             var existingExecutionData = await _context.TblffWingsGoalStep5ExecutionData
-                                        .Where(w => w.Profileid == _userID).ToListAsync();
+                .Where(w => w.Profileid == _profileId)
+                .ToListAsync();
 
-            var userGoals = await _context.TblffWings.Where(w => w.Profileid == _userID).ToListAsync();
+            var userGoals = await _context.TblffWings
+                .Where(w => w.Profileid == _profileId)
+                .ToListAsync();
+
+            // Goals missing in ExecutionData → add
+            var goalsToAdd = userGoals
+                .Where(incoming => !existingExecutionData.Any(existing => existing.Goalid == incoming.GoalId && existing.GoalName == incoming.GoalName))
+                .ToList();
+
+            // Goals no longer in Wings but present in ExecutionData → delete
+            var goalsToDelete = existingExecutionData
+                .Where(existing => !userGoals.Any(incoming => incoming.GoalId == existing.Goalid && existing.GoalName == incoming.GoalName))
+                .ToList();
+
+            // Add new goals
+            foreach (var goal in goalsToAdd)
+            {
+                var query = _context.TblffWingsGoalStep5ExecutionMasters
+                    .Where(m => m.Goalid == goal.GoalId);
+
+                // ✅ Apply filter only if planType is "zero2one"
+                if (goal.GoalId != 15)
+                {
+                    if (_planType.ToLower() == "zero2one")
+                    {
+                        query = query.Where(u => u.DealType == _planType.ToLower());
+                    }
+                    else
+                    {
+                        query = query.Where(u => u.DealType == null);
+                    }
+                }
+
+                var masterExecutions = await query.ToListAsync();
+
+                foreach (var masterItem in masterExecutions)
+                {
+                    var newExecutionData = new TblffWingsGoalStep5ExecutionDatum
+                    {
+                        Profileid = goal.Profileid,
+                        Step5ExecutionMasterid = masterItem.Id,
+                        Goalid = (int)goal.GoalId,
+                        GoalName = goal.GoalName,
+                        ExecutionDescription = masterItem.ExecutionDescription,
+                        ExecutionValueType = masterItem.ExecutionValueType,
+                        CreateDate = DateTime.UtcNow,
+                        UpdateDate = DateTime.UtcNow,
+                        WingId = goal.Id,
+                        ExecutionValue = masterItem.ExecutionDescription == "Year of World Travel" ? goal.GoalStartYear?.ToString() : null,
+                    };
+
+                    await _context.TblffWingsGoalStep5ExecutionData.AddAsync(newExecutionData);
+                }
+            }
+
+            // Remove deleted goals
+            if (goalsToDelete.Any())
+            {
+                _context.TblffWingsGoalStep5ExecutionData.RemoveRange(goalsToDelete);
+            }
+
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> ExecutionUpdateToTable1()
+        {
+            var existingExecutionData = await _context.TblffWingsGoalStep5ExecutionData
+                                        .Where(w => w.Profileid == _profileId).ToListAsync();
+
+            var userGoals = await _context.TblffWings.Where(w => w.Profileid == _profileId).ToListAsync();
 
             // Identify goals to add
             var goalsToAdd = userGoals.Where(incoming => !existingExecutionData
@@ -100,6 +187,7 @@ namespace FactFinderWeb.Services
                             GoalName = goal.GoalName,
                             ExecutionDescription = masterItem.ExecutionDescription,
                             ExecutionValueType = masterItem.ExecutionValueType,
+                            ExecutionValue = masterItem.ExecutionDescription == "Year of World Travel" ? goal.GoalStartYear?.ToString() :null,
                             CreateDate = DateTime.Now,
                             UpdateDate = DateTime.Now,
                         };
@@ -111,17 +199,7 @@ namespace FactFinderWeb.Services
             if (goalsToDelete.Any()) { _context.TblffWingsGoalStep5ExecutionData.RemoveRange(goalsToDelete); }
 
                 return await _context.SaveChangesAsync();
-                /*
-                            // Identify goals to update
-                            var goalsToUpdate = existingExecutionData.Where(existing => incomingGoals.Any(incoming => incoming.Id == existing.Goalid)).ToList();
-                            foreach (var goal in goalsToUpdate)
-                            {
-                                var incomingGoal = incomingGoals.First(x => x.Id == goal.Goalid);
-                                goal.GoalName = incomingGoal.GoalName;
-                                //goal.GoalType = incomingGoal.GoalType;
-                                goal.UpdateDate = DateTime.Now;
-                                // Update other fields as needed
-                            }*/
+              
         }
 
         public async Task<int> ExecutionUpdateToTableSubmit(ExecutionWithPrecisionModelView executionWithPrecisionModelView)
@@ -129,7 +207,7 @@ namespace FactFinderWeb.Services
             foreach (var executionData in executionWithPrecisionModelView.wingsGoalStep5ExecutionDataList)
             {
                 var dataToUpdate = await _context.TblffWingsGoalStep5ExecutionData
-                                .FirstOrDefaultAsync(x =>  x.Id == executionData.Id && x.Profileid == _userID);
+                                .FirstOrDefaultAsync(x =>  x.Id == executionData.Id && x.Profileid == _profileId);
                 if (dataToUpdate != null)
                 {
                     dataToUpdate.ExecutionValue = executionData.ExecutionValue;
@@ -148,7 +226,7 @@ namespace FactFinderWeb.Services
             ExecutionWithPrecisionModelView executionMV = new ExecutionWithPrecisionModelView();
             executionMV.wingsGoalStep5ExecutionDataList = await (
                         from exec in _context.TblffWingsGoalStep5ExecutionData
-                        join wings in _context.TblffWings  on exec.Goalid equals (int)wings.Id
+                        join wings in _context.TblffWings  on exec.WingId equals (int)wings.Id
                         where exec.Profileid == profileId && wings.Profileid == profileId
                         orderby wings.GoalPriority
                         select new WingsGoalStep5ExecutionDataMV

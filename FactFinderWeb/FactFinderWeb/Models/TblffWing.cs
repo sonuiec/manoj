@@ -28,4 +28,5 @@ public partial class TblffWing
     public DateTime? UpdateDate { get; set; }
 
     public byte? NewGoals { get; set; }
+    public long? GoalId { get; set; }
 }

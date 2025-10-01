@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FactFinderWeb.Services
 {
@@ -129,46 +130,47 @@ namespace FactFinderWeb.Services
             //.LeftJoin(_context.TblffAwarenessProfileDetails, p => p.UserId, u => u.Id, (p, u) => new { p, u })
             // MVADUserDetails userList = new MVADUserDetails();
             var userList = new List<MVADUserDetails>();
-            if(adminRole == "advisor")
+            if(adminRole == "admin")
             {
                  userList = await (from ruser in _context.TblFfRegisterUsers
-                                      join user in _context.TblffAwarenessProfileDetails on ruser.Id equals user.Profileid
-                                      where user.Advisorid == advisorID
-                                      orderby ruser.Createddate descending
+                                      join profile in _context.TblffAwarenessProfileDetails on ruser.Id equals profile.UserId
+                                   where profile.Advisorid == advisorID && profile.ProfileStatus!="Draft"
+                                   orderby ruser.Createddate descending
                                       select new MVADUserDetails
                                       {
                                           Name = ruser.Name,
-                                          planType = ruser.Plantype,
-                                          planYear = user.PlanYear.ToString(),
-                                          email = ruser.Email,
+                                          planType = profile.PlanType,
+                                          planYear = profile.PlanYear.ToString(),
+                                          email = profile.Email,
                                           mobile = ruser.Mobile,
                                           activestatus = ruser.Activestatus == "1" ? "Active" : "Deactive",
-                                          createddate = ruser.Createddate,
+                                          createddate = profile.CreateDate,
                                           userFile = ruser.Ptx, //UserFile
-                                          ProfileId = ruser.Id,
-                                          Id = user.Id,
-                                          advisorid = ruser.Advisorid
+                                          ProfileId = profile.Profileid,
+                                          Id = profile.Profileid,
+                                          advisorid = profile.Advisorid
                                       }).ToListAsync();
             }
             else { 
 
 
              userList = await (from ruser in _context.TblFfRegisterUsers
-                                  join user in _context.TblffAwarenessProfileDetails on ruser.Id equals user.Profileid
-                                  orderby ruser.Createddate descending
+                                  join profile in _context.TblffAwarenessProfileDetails on ruser.Id equals profile.UserId 
+                                  where profile.ProfileStatus != "Draft"
+                               orderby ruser.Createddate descending
                                   select new MVADUserDetails
                                   {
                                       Name = ruser.Name,
-                                      planType = ruser.Plantype,
-                                      planYear = user.PlanYear.ToString(),
-                                      email = ruser.Email,
+                                      planType = profile.PlanType,
+                                      planYear = profile.PlanYear.ToString(),
+                                      email = profile.Email,
                                       mobile = ruser.Mobile,
                                       activestatus = ruser.Activestatus == "1" ? "Active" : "Deactive",
-                                      createddate = ruser.Createddate,
+                                      createddate = profile.CreateDate,
                                       userFile = ruser.Ptx, //UserFile
-                                      ProfileId = ruser.Id,
-                                      Id = user.Id,
-                                      advisorid = ruser.Advisorid
+                                      ProfileId = profile.Profileid,
+                                      Id = profile.Profileid,
+                                      advisorid = profile.Advisorid
                                   }).ToListAsync();
             }
             return userList;
@@ -177,14 +179,14 @@ namespace FactFinderWeb.Services
 
 
 
-        public async Task<UserProfileViewModel> GetUserDetail(long Userid)
+        public async Task<UserProfileViewModel> GetUserDetail(long profileid)
         {
             //var userList = await _context.TblFfRegisterUsers
             //.LeftJoin(_context.TblffAwarenessProfileDetails, p => p.UserId, u => u.Id, (p, u) => new { p, u })
             // MVADUserDetails userList = new MVADUserDetails();
             var userList = await (from ruser in _context.TblFfRegisterUsers
                                   join user in _context.TblffAwarenessProfileDetails 
-                                  on ruser.Id equals user.Profileid where ruser.Id == Userid
+                                  on ruser.Id equals user.UserId where user.Profileid == profileid
                                   orderby ruser.Createddate descending
                                   select new UserProfileViewModel
                                   {

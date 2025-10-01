@@ -1,7 +1,9 @@
-﻿using FactFinderWeb.Models;
+﻿using FactFinderWeb.BLL;
+using FactFinderWeb.Models;
 using FactFinderWeb.ModelsView;
 using FactFinderWeb.Services;
 using FactFinderWeb.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,23 +12,25 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 //Comprehensive
 namespace FactFinderWeb.Controllers
 {
-    //[Route("plan")]
-    [Route("Comprehensive/[action]")]
-    [Route("Wealth/[action]")]
-    [Route("Basic/[action]")]
-    [Route("Zero2one/[action]")]
-   
+    ////[Route("plan")]
+    //[Route("Comprehensive/[action]/{id?}")]
+    //[Route("Wealth/[action]/{id?}")]
+    //[Route("Basic/[action]/{id?}")]
+    //[Route("Zero2one/[action]/{id?}")]
+    [Route("{planType}/[action]/{pid?}")]
     public class ComprehensiveController : Controller
     {
         private readonly ResellerBoyinawebFactFinderWebContext _context;
         private readonly AwarenessServices _AwarenessServices;
         private readonly WingsServices _WingsServices;
         private readonly KnowledgeThatMattersServices _KnowledgeThatMattersServices;
-        private readonly long _userID;
+         private readonly long _userID;
+        private readonly long _profileId;
         private readonly HttpContext _httpContext;
         private readonly ExecutionServices _executionServices;
         private readonly InvestServices _investServices;
@@ -55,16 +59,50 @@ namespace FactFinderWeb.Controllers
             _env = env;
 
             // ✅ Use _httpContext safely
-            _httpContext.Session.SetString("UserFullName", "ajay");
-            _httpContext.Session.SetString("Useremail", "sss@g.com");
-            _httpContext.Session.SetString("UserStep", "S1");
-            _httpContext.Session.SetString("UserPlan", "Wealth");
-            _httpContext.Session.SetString("UserId", "109");
+            //_httpContext.Session.SetString("UserFullName", "ajay");
+            //_httpContext.Session.SetString("Useremail", "sss@g.com");
+            //_httpContext.Session.SetString("UserStep", "S1");
+            //_httpContext.Session.SetString("UserPlan", "Wealth");
+            //_httpContext.Session.SetString("UserId", "110");
 
             var userIdStr = _httpContext.Session.GetString("UserId");
             _planType = _httpContext.Session.GetString("UserPlan");
-            _userID = Convert.ToInt64(userIdStr);
+            
+             _userID = Convert.ToInt64(userIdStr);
+            var planFromRoute = _httpContext.Request.RouteValues["planType"]?.ToString();
 
+            if (!string.IsNullOrEmpty(planFromRoute))
+            {
+                _planType = planFromRoute;  // ex: "wealth" from /wealth/awareness/...
+                _httpContext.Session.SetString("UserPlan", _planType); // keep session in sync
+            }
+            else
+            {
+                // fallback to session if route has nothing
+                _planType = _httpContext.Session.GetString("UserPlan") ?? "Comprehensive";
+            }
+            var _profileId1 = _httpContext.Request.RouteValues["pid"]?.ToString() ?? _httpContext.Request.Query["pid"].ToString();
+
+            var idFromQuery = _httpContext.Request.RouteValues["pid"]?.ToString();
+
+          
+
+            if (!string.IsNullOrEmpty(idFromQuery))
+            {
+                try
+                {
+                    var decrypted = CryptoHelper.Decrypt(idFromQuery);
+                    _profileId = Convert.ToInt64(decrypted);
+
+                    // store in session for later use
+                     _httpContext.Session.SetString("profileId", _profileId.ToString());
+                    _profileId = Convert.ToInt64(_httpContext.Session.GetString("profileId"));
+                }
+                catch
+                {
+                    // invalid id - ignore or log
+                }
+            }
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -83,18 +121,24 @@ namespace FactFinderWeb.Controllers
 
         //[Route("Awareness")]
 		[HttpGet]
-        public async Task<IActionResult> Awareness()
+        public async Task<IActionResult> Awareness(string id)
         {
+            //string checkEmail = _AwarenessServices.checkEmailExistProfileTbl(id);
+            //if (checkEmail == null)
+            //{ 
+            //return Redirect("/login");
+            //}
+            //string decryptedId;
+            //try
+            //{
+            //    decryptedId = CryptoHelper.Decrypt(id);
+            //}
+            //catch (FormatException)
+            //{
+            //    return BadRequest("Invalid ID format (not Base64)");
+            //}
 
-           
-
-            string checkEmail = _AwarenessServices.checkEmailExistProfileTbl(_userID);
-            if (checkEmail == null)
-            { 
-            return Redirect("/login");
-            }
-
-            var awareb = await _AwarenessServices.AwarenessProfileDetail(_userID);
+            var awareb = await _AwarenessServices.AwarenessProfileDetail(_profileId);
                 ViewData["errorcheck"] = ""; 
             //var jsondata= await _jsonData.GetAwarenessJSON(_userID);
             return View(awareb);
@@ -105,8 +149,8 @@ namespace FactFinderWeb.Controllers
         {
             ModelState.Remove("btnSubmit");
 
-            var awareb = await _AwarenessServices.AwarenessProfileDetail(_userID);
-            bool checkPAN =  _AwarenessServices.checkPANExist(awarenessViewModel.ProfileDetail.PAN, _userID);
+            var awareb = await _AwarenessServices.AwarenessProfileDetail(_profileId);
+            bool checkPAN =  _AwarenessServices.checkPANExist(awarenessViewModel.ProfileDetail.PAN, _profileId);
                 ViewData["errorcheck"] = "";// "PAN number exists.";
             if (checkPAN)
             {
@@ -114,7 +158,7 @@ namespace FactFinderWeb.Controllers
                 return View(awarenessViewModel);
             }
 
-            if (awarenessViewModel.ProfileDetail.MaritalStatus.ToLower() != "married")
+            if (awarenessViewModel.ProfileDetail.MaritalStatus?.ToLower() != "married")
             {
                 // Skip validation for these fields if not married
                 ModelState.Remove("ProfileDetail.SpouseDetails");
@@ -132,6 +176,11 @@ namespace FactFinderWeb.Controllers
                 {
                     ModelState.Remove(key);
                 }
+            if (awarenessViewModel.SpouseDetails.SpouseOccupation == "Service" && awarenessViewModel.SpouseDetails.SpouseOccupation == "Self Employed" && awarenessViewModel.SpouseDetails.SpouseOccupation == "Professional")
+            {
+                ModelState.Remove("Assumptions.SpouseRetirement");
+                ModelState.Remove("Assumptions.SpouseLifeExpectancy");
+            }
             if (!ModelState.IsValid)
             {
                 foreach (var entry in ModelState)
@@ -149,12 +198,12 @@ namespace FactFinderWeb.Controllers
 
             // Process the form data here
 
-            long result = await _AwarenessServices.AwarenessAddProfileDatail(awarenessViewModel.ProfileDetail, _userID);
-            long resultb = await _AwarenessServices.AwarenessAddProfileAssumptions(awarenessViewModel.Assumptions, _userID);
+            long result = await _AwarenessServices.AwarenessAddProfileDatail(awarenessViewModel.ProfileDetail, _profileId);
+            long resultb = await _AwarenessServices.AwarenessAddProfileAssumptions(awarenessViewModel.Assumptions, _profileId);
 
             if (awarenessViewModel.ProfileDetail.MaritalStatus.ToLower() == "married")
             {
-                long resulta = await _AwarenessServices.AwarenessAddProfileSpouseDatail(awarenessViewModel.SpouseDetails, _userID);
+                long resulta = await _AwarenessServices.AwarenessAddProfileSpouseDatail(awarenessViewModel.SpouseDetails, _profileId);
             }
 
 
@@ -163,7 +212,19 @@ namespace FactFinderWeb.Controllers
                 ViewData["msg"] = "Saved successfully.";
                 return View(awarenessViewModel);
             }
-            return RedirectToAction("wings", _planType);
+
+
+            //return RedirectToAction("wings", _planType, new { id = CryptoHelper.Encrypt(_profileId.ToString()) });
+
+            return RedirectToRoute(new
+            {
+                planType = _planType,   // taken from session
+                controller = "Comprehensive",
+                action = "Wings",
+                pid = CryptoHelper.Encrypt(_profileId)
+            });
+
+
         }
 
 		
@@ -176,7 +237,12 @@ namespace FactFinderWeb.Controllers
             wingsViewModel.GoalOptions = await _WingsServices.WingsBindSelect(_planType);
             wingsViewModel.ChildrenLists = await _WingsServices.WingsChildrenList();
 
-            wingsViewModel.ApplicantDataDto = await _WingsServices.GetApplicantDataAsync(_userID);
+            var ApplicantLifeExpectancy = (from a in _context.TblffAwarenessAssumptions where a.Profileid ==_profileId select a.ApplicantLifeExpectancy).FirstOrDefault();
+            if (ApplicantLifeExpectancy != null)
+            {
+                wingsViewModel.ApplicantLifeExpectancy = ApplicantLifeExpectancy;
+            }
+            wingsViewModel.ApplicantDataDto = await _WingsServices.GetApplicantDataAsync(_profileId);
             //wingsViewModel = await _WingsServices.WingsBindSelect();
             //wingsViewModel.goalList = wingsGetData.goalList;
             //wingsViewModel.GoalOptions = wingsChildrenData.GoalOptions;
@@ -242,11 +308,11 @@ namespace FactFinderWeb.Controllers
         }
 
 
-        #region ***********************************For Alertness By Manoj**************************************************
+        #region ***********************************For x By Manoj**************************************************
         public async Task<IActionResult> Alertness()
         {
 
-            long? profileId = _userID;
+            long? profileId = _profileId;
             if (profileId == null)
             {
                 return RedirectToAction("Login");
@@ -416,6 +482,7 @@ namespace FactFinderWeb.Controllers
                     ProfileId = incomeDetail.ProfileId,
                     Id = incomeDetail.Id,
                     Basic = incomeDetail.Basic,
+                    TotalExpense = incomeDetail.TotalExpense,
                     Hra = incomeDetail.Hra,
                     EducationAllowance = incomeDetail.EducationAllowance,
                     MedicalAllowance = incomeDetail.MedicalAllowance,
@@ -646,11 +713,14 @@ namespace FactFinderWeb.Controllers
 
                         // Liabilities
                         Home2Loan = alertnesNetWorths.Home2Loan ?? 0,
+                        Home1Loan =alertnesNetWorths.Home1Loan ?? 0,
                         LandLoan = alertnesNetWorths.LandLoan ?? 0,
                         CommercialPropertyLoan = alertnesNetWorths.CommercialPropertyLoan ?? 0,
                         JewelleryLoan = alertnesNetWorths.JewelleryLoan ?? 0,
                         BusinessLoan = alertnesNetWorths.BusinessLoan ?? 0,
                         OtherLoan = alertnesNetWorths.OtherLoan ?? 0,
+                        CarLoan = alertnesNetWorths.CarLoan ?? 0,
+                        
 
                         CreatedAt = alertnesNetWorths.CreatedAt ?? DateTime.Now
                     };
@@ -742,9 +812,15 @@ namespace FactFinderWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Alertness(AlertnessViewModel model)
         {
+       
+            if (_planType?.ToLower() == "zero2one" || _planType?.ToLower() == "basic")
+            {
+                ModelState.Remove("Basic");
+            }
+            //model.ProfileId = _profileId;
 
             if (!ModelState.IsValid)
-            {
+                {
                 var errors = ModelState
                     .Where(x => x.Value.Errors.Count > 0)
                     .Select(x => new
@@ -752,7 +828,19 @@ namespace FactFinderWeb.Controllers
                         field = x.Key,
                         errors = x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
                     });
+                string ds1 = string.Join(" | ",
+    ModelState.Values
+              .SelectMany(v => v.Errors)
+              .Select(e => e.ErrorMessage));
 
+                string ds = "";
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        ds += error.ErrorMessage + " ";  // or add a comma/pipe separator
+                    }
+                }
                 return Json(new { success = false, message = "Validation failed.", validationErrors = errors });
             }
 
@@ -774,20 +862,21 @@ namespace FactFinderWeb.Controllers
                 TblffAlertnesDebt tblflertnesDebt = null;
                 int savingId = 0;
 
-
-                if (model.Id > 0)
+                incomeDetail = _context.TblffAlertnesIncomeDetails.FirstOrDefault(x => x.ProfileId == model.ProfileId);
+                if (incomeDetail !=null)
                 {
                     // UPDATE
-                    incomeDetail = _context.TblffAlertnesIncomeDetails.FirstOrDefault(x => x.Id == model.Id);
+                    //incomeDetail = _context.TblffAlertnesIncomeDetails.FirstOrDefault(x => x.Id == model.Id);
                     if (incomeDetail == null)
                     {
                         return Json(new { success = false, message = "Record not found for update." });
                     }
 
                     // Update income details
-
-                    incomeDetail.Id = model.Id;
+                  
+                    //incomeDetail.Id = model.Id;
                     incomeDetail.ProfileId = model.ProfileId;
+                    incomeDetail.TotalExpense = model.TotalExpense;
                     incomeDetail.Basic = model.Basic;
                     incomeDetail.Hra = model.Hra;
                     incomeDetail.EducationAllowance = model.EducationAllowance;
@@ -970,6 +1059,7 @@ namespace FactFinderWeb.Controllers
                         // Main Income
                         Basic = model.Basic,
                         Hra = model.Hra,
+                        TotalExpense = model.TotalExpense,
                         EducationAllowance = model.EducationAllowance,
                         MedicalAllowance = model.MedicalAllowance,
                         Lta = model.LTA,
@@ -1320,9 +1410,44 @@ namespace FactFinderWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> KnowledgeThatMatters(MVKnowledgeRisk mvKnowledgeRisk, string btnSubmit)
         {
+
+
             ModelState.Remove("btnSubmit");
+            if (_planType?.ToLower() == "zero2one")
+            {
+                if(btnSubmit == "Save")
+                {
+                    return View(mvKnowledgeRisk);
+                }
+                return RedirectToRoute(new
+                {
+                    planType = _planType,   // taken from session
+                    controller = "Comprehensive",
+                    action = "ExecutionWithPrecision",
+                    pid = CryptoHelper.Encrypt(_profileId)
+                });
+            }
             if (!ModelState.IsValid)
             {
+                // Collect all error messages
+                var errors = ModelState
+                    .Where(ms => ms.Value.Errors.Count > 0)
+                    .Select(ms => new
+                    {
+                        Field = ms.Key,
+                        Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                    }).ToList();
+
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Field: {error.Field}");
+                    foreach (var msg in error.Errors)
+                    {
+                        Console.WriteLine($"  Error: {msg}");
+                        }
+                }
+
+
                 return View(mvKnowledgeRisk);
             }
 
@@ -1334,7 +1459,15 @@ namespace FactFinderWeb.Controllers
                 return View(mvKnowledgeRisk);
             }
             else {
-                return RedirectToAction("ExecutionWithPrecision", _planType);
+               
+                //return RedirectToAction("ExecutionWithPrecision", _planType, new { id = CryptoHelper.Encrypt(_profileId.ToString()) });
+                return RedirectToRoute(new
+                {
+                    planType = _planType,   // taken from session
+                    controller = "Comprehensive",
+                    action = "ExecutionWithPrecision",
+                    pid = CryptoHelper.Encrypt(_profileId)
+                });
             }
 
         }
@@ -1344,10 +1477,10 @@ namespace FactFinderWeb.Controllers
         {
             ///select child details, Any other Investments/Assets meant for this goal --for ddl,TblFF_Alertnes_NewOtherAssets
             var executionViewModel = new ExecutionWithPrecisionModelView();
-            int i = await _executionServices.InvestCheckDataThenUpdate(_userID);
-            executionViewModel = await _executionServices.GetExecutionData(_userID);
+            int i = await _executionServices.InvestCheckDataThenUpdate(_profileId, _planType);
+            executionViewModel = await _executionServices.GetExecutionData(_profileId);
             var dynamicAssets = await _context.TblFfAlertnesNewOtherAssets
-                               .Where(x => x.ProfileId == _userID).Select(x => x.AssetName).ToListAsync();
+                               .Where(x => x.ProfileId == _profileId).Select(x => x.AssetName).ToListAsync();
 
             var staticOptions = new List<string>  {
                                 "Home1", "Home2", "Land", "Car", "Commercial Property", "Jewellery", "Value Of Business"
@@ -1367,7 +1500,7 @@ namespace FactFinderWeb.Controllers
 
 
             var dynamicAssets = await _context.TblFfAlertnesNewOtherAssets
-                               .Where(x => x.ProfileId == _userID).Select(x => x.AssetName).ToListAsync();
+                               .Where(x => x.ProfileId == _profileId).Select(x => x.AssetName).ToListAsync();
 
             var staticOptions = new List<string>  {
                                 "Home1", "Home2", "Land", "Car", "Commercial Property", "Jewellery", "Value Of Business"
@@ -1384,13 +1517,21 @@ namespace FactFinderWeb.Controllers
                 if (btnSubmit == "Save")
                 {
                     ViewData["msg"] = "Saved successfully.";
-                    executionViewModel = await _executionServices.GetExecutionData(_userID);
+                    executionViewModel = await _executionServices.GetExecutionData(_profileId);
 
                     return View(executionViewModel);
                 }
 
                 TempData["SuccessMessage"] = "Execution data updated successfully.";
-                return RedirectToAction("Invest", _planType);
+          
+                //return RedirectToAction("Invest", _planType, new { id = CryptoHelper.Encrypt(_profileId.ToString()) });
+                return RedirectToRoute(new
+                {
+                    planType = _planType,   // taken from session
+                    controller = "Comprehensive",
+                    action = "Invest",
+                    pid = CryptoHelper.Encrypt(_profileId)
+                });
             }
             else
             {
@@ -1403,9 +1544,9 @@ namespace FactFinderWeb.Controllers
         public async Task<IActionResult> Invest()
         {
             var investViewModel = new InvestViewModel();
-             await _investServices.InvestCheckDataThenUpdate(_userID);
+             await _investServices.InvestCheckDataThenUpdate(_profileId);
             //investViewModel.InvestMVList = _investServices.GetInvestData(_userID).Result.InvestMVList;
-            investViewModel =await _investServices.GetInvestData(_userID);
+            investViewModel =await _investServices.GetInvestData(_profileId);
             return View(investViewModel);
         }
 

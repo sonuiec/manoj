@@ -1,14 +1,8 @@
 ﻿@using FactFinderWeb.ModelsView
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-@using Microsoft.AspNetCore.Http;
-
  @model ExecutionWithPrecisionModelView
 @{
     ViewData["Title"] = "Execution With Precision";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
-    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
-    var _profileId = HttpContextAccessor.HttpContext.Request.RouteValues["pid"]?.ToString();
-
 }
 
 <style>
@@ -34,7 +28,7 @@
     <div style="background-color: 	#E6E6FA" class="px-4  py-2 g-4 rounded d-flex flex-column gap-3">
         <div style="color:#006400" class="d-flex justify-content-between align-items-center ">
             <h2 class="mb-0" style="width: 80%;">5. Execution With Precision</h2>
-            <a href="javascript:void(0);" onclick="submitFormAsSave()"  class="btn btn-primary px-3 py-1 rounded ">Save</a>
+            <a href="javascript:void(0);" onclick="submitFormAsSave()" class="btn btn-primary px-3 py-1 rounded ">Save</a>
         </div>
     </div>
 
@@ -48,9 +42,7 @@
     </div>
 
     <!-- form -->
-    <form id="mainForm" style="background-color: #F5F5F5" class="mt-3 p-3 d-flex flex-column gap-4  rounded" 
-          asp-controller="Comprehensive"
-          asp-route-planType="@userPlan" asp-action="ExecutionWithPrecision">
+    <form id="mainForm"  style="background-color: #F5F5F5" class="mt-3 p-3 d-flex flex-column gap-4  rounded" asp-controller="Comprehensive" asp-action="ExecutionWithPrecision">
         <!--plan details -->
         <fieldset class="d-flex flex-column gap-2"> 
         <legend style="color: #3B3737" class="fw-bold"> Action plan for Financial Goals </legend>
@@ -99,8 +91,8 @@
                              <input asp-for="@Model.wingsGoalStep5ExecutionDataList[i].ExecutionValue"
                             class="form-control outline-none rounded peer focus:outline-secondary my-2 @executionValue" />
                                         </div>
-                      }
-                                    else if (description.Contains("Children Name") || description.Contains("Child's Name") || description.Contains("Child’s Name"))
+                    }
+                    else if (description.Contains("Children Name") || description.Contains("Child's Name"))
                     {
                         //string name = description?.Split('-').Skip(1).FirstOrDefault()?.Trim() ?? "";
                         string name = ChildName ?? "";
@@ -110,7 +102,7 @@
                             </div>
                             <div class="col-12  col-md-3">
                                <input asp-for="@Model.wingsGoalStep5ExecutionDataList[i].ExecutionValue"
-                                                   class="form-control outline-none rounded peer focus:outline-secondary my-2 @executionValue" readonly />
+                               class="form-control outline-none rounded peer focus:outline-secondary my-2 @executionValue" />
                             </div>
                     }
 
@@ -149,7 +141,7 @@
                             </select>
                             </div>
                         }
-                                    else if (description.Contains("Expected annual Top-up") || description.Contains("Annual Top-Up Rate (%)") || description.Contains("Annual Top up rate on SIP"))
+                        else if (description.Contains("Expected annual Top-up"))
                         {
                             <div class="col-12  col-md-6">
                               <input asp-for="@Model.wingsGoalStep5ExecutionDataList[i].ExecutionDescription" tabindex="-1" class="form-control outline-none rounded-lg float-end peer focus:outline-secondary my-2" readonly />
@@ -193,9 +185,9 @@
         </fieldset>
                 
         <div class="d-flex justify-content-end mt-3 mx-5 ">
-          
-            <a asp-action="KnowledgeThatMatters" asp-controller="Comprehensive" asp-route-planType="Comprehensive" asp-route-pid="@_profileId" class="btn btn-secondary px-2 py-1 rounded mx-1">Previous</a>
-            <button name="btnSubmit" id="btnSubmit" asp-controller="@userPlan" asp-route-id="@_profileId" class="btn btn-primary px-5 py-1 rounded ">Next</button>
+            <a asp-action="KnowledgeThatMatters" class="btn btn-secondary  px-5 py-1 rounded mx-5">Previous</a>
+
+            <button name="btnSubmit" id="btnSubmit" class="btn btn-primary px-5 py-1 rounded ">Next</button>
             @Html.AntiForgeryToken()
         </div>
         <div class="d-flex justify-content-end mt-3 mx-5 ">

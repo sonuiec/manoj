@@ -1,7 +1,5 @@
-﻿@using FactFinderWeb.BLL
-@using FactFinderWeb.ModelsView
-@model List<FactFinderWeb.ModelsView.DashboardViewModel>
-
+﻿@using FactFinderWeb.ModelsView
+@model DashboardViewModel
 @{
 	ViewData["Title"] = "Dashboard";
 	Layout = "~/Views/Shared/_LayoutUser.cshtml";
@@ -150,7 +148,7 @@
 <div class="container py-5">
 
 	<!-- Profile Section -->
-	<h2 class="mb-4">Welcome, @Model[0]?.UserFullName!</h2>
+	<h2 class="mb-4">Welcome, @Model.UserFullName!</h2>
 
 	<div class="card shadow-sm">
 		<div class="card-header bg-primary text-white">
@@ -159,27 +157,37 @@
 		<div class="card-body">
 			<div class="row mb-3">
 				<div class="col-md-6">
-					<strong>Email:</strong> @Model[0]?.UserEmail
+					<strong>Email:</strong> @Model.UserEmail
 				</div>
 				<div class="col-md-6">
-					<strong>Mobile:</strong> @Model[0]?.UserMobile
+					<strong>Mobile:</strong> @Model.UserMobile
 				</div>
 			</div>
-		 
 			<div class="row mb-3">
 				<div class="col-md-6">
-					<strong>Email Verified:</strong> @Model[0]?.UserEmailVerification
+					<strong>Plan Type:</strong> @Model.UserPlan
+				</div>
+				<div class="col-md-6">
+					<strong>Plan Year:</strong> @Model.UserPlanYear
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<strong>Email Verified:</strong> @Model.UserEmailVerification
 				</div>
 				<div class="col-md-6">
 					<strong>Active Status:</strong>
-					@(string.IsNullOrEmpty(@Model[0].UserActiveStatus) || @Model[0].UserActiveStatus == "0" ? "Inactive" : "Active")
+					@(string.IsNullOrEmpty(Model.UserActiveStatus) || Model.UserActiveStatus == "0" ? "Inactive" : "Active")
 				</div>
 			</div>
 			<div class="row mb-3">
 				<div class="col-md-6">
-					<strong>Registered Date:</strong> @Model[0].UserRegisterDate?.ToString("dd-MM-yyyy")
+					<strong>Registered Date:</strong> @Model.UserRegisterDate?.ToString("dd-MM-yyyy")
 				</div>
-				
+				<div class="col-md-6">
+					<strong>Advisor Name:</strong> 
+					@(string.IsNullOrEmpty(Model.AdvisorName) ? "Mainstream" : Model.AdvisorName)
+				</div>
 			</div> 
 		</div>
 	</div>
@@ -189,91 +197,38 @@
 	<div class="card">
 		<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 			<h5 class="mb-0">Your Plans</h5>
-			<a class="text-white" onclick="loadPopup()">Add New Plan</a>
+			<a  class="text-white" href="/@Model.UserPlan.Trim().ToLower()/awareness" >Add New Plan</a>
 		</div>
 		<div class="card-body">
 			<table class="table table-bordered">
 				<thead class="table-light">
 					<tr>
 						<th>Plan Name</th>
+						<th>Plan Type</th>
 						<th>Plan Year</th>
 						<th>Advisor Name</th>
 						<th> Created Date</th>
 						<th> Updated Date</th>
-						<th> Status</th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					@foreach (var item in Model)
-{
-  
 					<tr>
-							<td>@item.UserPlan</td>
-							<td>@item.UserPlanYear</td>
-							<td>@item.AdvisorName</td>
-							<td>@item.PlanCreatedDate</td>
-							<td>@item.PlanUpdatedDate</td>
-							<td>@item.ProfileStatus</td>
+						<td>@Model.UserPlan</td>
+						<td>@Model.UserPlanYear</td>
+						<td>@Model.UserPlanYear</td>
+							<td>@Model.UserPlanYear</td>
+						<td>@Model.UserPlanYear</td>
 						<td>
-							<a href="/@item.UserPlan.Trim().ToLower()/awareness/@CryptoHelper.Encrypt(item.Profileid??0)" class="text-primary mx-2">
+							<a href="/@Model.UserPlan.Trim().ToLower()/awareness" class="text-primary mx-2">
 								Edit your fact finder
 							</a>
-								<a href="/userprofile/@item.Profileid" class="text-primary mx-2 " target="_blank">Download PDF</a>
+							<a href="/userprofile" class="text-primary mx-2 " target="_blank">Download PDF</a>
 						</td>
 					</tr> 
-}
 				</tbody>
 			</table>
 		</div>
 	</div>
 
 </div>
-
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-
-			<div class="modal-header">
-				<h5 class="modal-title" id="myModalLabel">Add Family Member </h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<form asp-controller="User" asp-action="SetPlan" method="post">
-			<div class="modal-body">
-				<div class="mb-3">
-						<label for="planDropdown" class="form-label">Choose Plan Type</label>
-					<select class="form-control" id="PlanType" name="PlanType">
-					
-					
-							<option value="Zero2one">Zero To One</option>
-					
-							<option value="Basic">Basic</option>
-						
-							<option value="Comprehensive">Comprehensive</option>
-						
-							<option value="Wealth">Wealth</option>
-						
-					</select>
-
-				</div>
-			</div>
-
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button type="submit" class="btn btn-primary">Continue</button>
-			</div>
-			</form>
-		</div>
-	</div>
-</div>
-<script>
-	function loadPopup() {
-	   $("#popupContent").load("/YourController/YourPartialAction");
-	   var myModal = new bootstrap.Modal(document.getElementById('myModal'));
-	   myModal.show();
-	}
-		
-
-</script>

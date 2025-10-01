@@ -41,7 +41,7 @@
                                  <a class="nav-link text-dark hdrlink" asp-area="" asp-controller="Admin" asp-action="Logout">Logout</a>
                                 </li>
                             @{
-                                if (AdminUserRole.ToLower() == "superadmin" || AdminUserRole.ToLower() == "admin")
+                                if (AdminUserRole.ToLower() == "superadmin" )
                                 {
                                 <li class="nav-item"><a class="nav-link text-dark hdrlink" asp-controller="Admin" asp-action="adminTeamlist">Admin User List</a></li>
                                     <li class="nav-item"><a class="nav-link text-dark hdrlink" asp-controller="Admin" asp-action="AddRegisterAdmin">Add AdminUser</a></li>

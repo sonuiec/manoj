@@ -11,8 +11,9 @@ namespace FactFinderWeb.Services
     public class KnowledgeThatMattersServices
     {
         private ResellerBoyinawebFactFinderWebContext _context;
-        private readonly long _userID;
+         private readonly long _userID;
         private readonly HttpContext _httpContext;
+        private readonly long _profileId;
 
         public KnowledgeThatMattersServices(ResellerBoyinawebFactFinderWebContext context, IHttpContextAccessor httpContextAccessor)
         {
@@ -20,12 +21,13 @@ namespace FactFinderWeb.Services
             _httpContext = httpContextAccessor.HttpContext;
             var userIdStr = _httpContext.Session.GetString("UserId");
             _userID = Convert.ToInt64(userIdStr);
+            _profileId = Convert.ToInt64(_httpContext.Session.GetString("profileId"));
         }
 
         public async Task<MVKnowledgeRisk> KnowledgeThatMattersView()
         {
             var mvKnowledgeRisk = await _context.TblffKnowledgeRisks
-                .Where(x => x.Profileid == _userID)
+                .Where(x => x.Profileid == _profileId)
                 .Select(x => new MVKnowledgeRisk
                 {
                     Id = x.Id,
@@ -33,6 +35,8 @@ namespace FactFinderWeb.Services
                     RiskCapacity = x.RiskCapacity,
                     RiskRequirement = x.RiskRequirement,
                     RiskTolerance = x.RiskTolerance,
+                    TotalRiskProfileScore=x.TotalRiskProfileScore,
+                    PlannerAssessmentOnRiskProfile=x.PlannerAssessmentOnRiskProfile,
                     CreateDate = x.CreateDate,
                     UpdateDate = x.UpdateDate
                 })
@@ -44,7 +48,7 @@ namespace FactFinderWeb.Services
         public async Task<Int64> KnowledgeThatMattersAddUpdate(MVKnowledgeRisk mvKnowledge)
         {
             int AddorUpdate = 0;
-            TblffKnowledgeRisk KnowledgeRisk = await _context.TblffKnowledgeRisks.FirstOrDefaultAsync(x => x.Profileid == _userID);
+            TblffKnowledgeRisk KnowledgeRisk = await _context.TblffKnowledgeRisks.FirstOrDefaultAsync(x => x.Profileid == _profileId);
             if (KnowledgeRisk == null)
             {
                 AddorUpdate = 1;
@@ -55,7 +59,10 @@ namespace FactFinderWeb.Services
             KnowledgeRisk.RiskCapacity = mvKnowledge.RiskCapacity;
             KnowledgeRisk.RiskRequirement = mvKnowledge.RiskRequirement;
             KnowledgeRisk.RiskTolerance = mvKnowledge.RiskTolerance;
-            KnowledgeRisk.Profileid = _userID;
+            KnowledgeRisk.TotalRiskProfileScore = mvKnowledge.TotalRiskProfileScore;
+            KnowledgeRisk.PlannerAssessmentOnRiskProfile = mvKnowledge.PlannerAssessmentOnRiskProfile;
+
+            KnowledgeRisk.Profileid = _profileId;
  
             if (AddorUpdate == 1)
             {
@@ -77,7 +84,7 @@ namespace FactFinderWeb.Services
 
             var tblknowledge = new TblffKnowledgeRisk
             {
-                Profileid = _userID,
+                Profileid = _profileId,
                 RiskCapacity = mvKnowledge.RiskCapacity,
                 RiskRequirement = mvKnowledge.RiskRequirement,
                 RiskTolerance = mvKnowledge.RiskTolerance,

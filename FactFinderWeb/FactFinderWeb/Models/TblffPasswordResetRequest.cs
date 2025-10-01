@@ -5,9 +5,10 @@ namespace FactFinderWeb.Models;
 
 public partial class TblffPasswordResetRequest
 {
+
     public int Id { get; set; }
 
-    public long? Profileid { get; set; }
+    public long? UserId { get; set; }
 
     public string Token { get; set; } = null!;
 
@@ -16,6 +17,4 @@ public partial class TblffPasswordResetRequest
     public bool? IsUsed { get; set; }
 
     public DateTime? CreatedAt { get; set; }
-
-    public virtual TblFfRegisterUser? Profile { get; set; }
 }

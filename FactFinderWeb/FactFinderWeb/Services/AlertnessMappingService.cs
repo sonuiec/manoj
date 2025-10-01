@@ -350,6 +350,8 @@ namespace FactFinderWeb.Services
                 // Liabilities
                 existingDetail.Home2Loan = netWorthViewModel.Home2Loan;
                 existingDetail.LandLoan = netWorthViewModel.LandLoan;
+                existingDetail.Home1Loan = netWorthViewModel.Home1Loan;
+                existingDetail.CarLoan = netWorthViewModel.CarLoan;
                 existingDetail.CommercialPropertyLoan = netWorthViewModel.CommercialPropertyLoan;
                 existingDetail.JewelleryLoan = netWorthViewModel.JewelleryLoan;
                 existingDetail.BusinessLoan = netWorthViewModel.BusinessLoan;

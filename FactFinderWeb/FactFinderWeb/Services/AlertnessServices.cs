@@ -28,7 +28,7 @@ namespace FactFinderWeb.Services
 
             await _context.SaveChangesAsync();
 
-            return alertness.Id;
+            return alertness.Profileid;
         }
 
     }

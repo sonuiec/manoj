@@ -1,4 +1,5 @@
-﻿using FactFinderWeb.IServices;
+﻿using FactFinderWeb.BLL;
+using FactFinderWeb.IServices;
 using FactFinderWeb.Models;
 using FactFinderWeb.ModelsView;
 using FactFinderWeb.Services;
@@ -67,10 +68,10 @@ namespace FactFinderWeb.Controllers
 					Updatedate = DateTime.Now
 				};
 
-				Int64 UserID = await _UserServices.UserAdd(newRegister);
-				if (UserID > 0)
+                TblffAwarenessProfileDetail userProfile = await _UserServices.UserAdd(newRegister);
+				if (userProfile.UserId > 0)
 				{
-                    string token = _context.TblFfRegisterUsers.Where(u => u.Id == UserID)
+                    string token = _context.TblFfRegisterUsers.Where(u => u.Id == userProfile.UserId)
                                     .Select(u => u.Emailverified).FirstOrDefault();
                     if (string.IsNullOrEmpty(token))
                     {
@@ -126,43 +127,55 @@ namespace FactFinderWeb.Controllers
 			return View(model);
 		}
 
-		[HttpPost]
-		[Route("login")]
-		public async Task<IActionResult>  Login(MVLogin mVLogin)
-		{
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login(MVLogin mVLogin)
+        {
             var plantype = "";
 
             if (!ModelState.IsValid)
-			{
-				return View(mVLogin);
-			}
-            try {  
-			MVUserProfile user = await  _UserServices.UserLogin(mVLogin);
-
-            if (user != null)
             {
-                if (user.Emailverified == "yesverified")
-                {
-                    // Store user in session
-                    HttpContext.Session.SetString("UserFullName", user.UserFullName);
-                    HttpContext.Session.SetString("Useremail", user.UserEmail);
-                    HttpContext.Session.SetString("UserStep", "S1");
-                    HttpContext.Session.SetString("UserPlan", user.UserPlan);
-                    HttpContext.Session.SetString("UserId", user.UserId.ToString());
-                    //long userId = Convert.ToInt64(HttpContext.Session.TryGetValue["Username"]);
-                    var userIdStr = HttpContext.Session.GetString("UserId");
-                    long userId = userIdStr == null ? 1 : Convert.ToInt64(userIdStr);
-                     plantype = user.UserPlan;
-                    return RedirectToAction("Awareness", plantype);//"Comprehensive"
-                }
-                else
-                {
-                    ViewData["Error"] = "Please verify your email before login. Link has already been sent to your email.";
-                    return View(mVLogin);
-                }
+                return View(mVLogin);
             }
-			ViewData["Error"] = "Invalid username or password.";
-			return View(mVLogin);
+            try
+            {
+                MVUserProfile user = await _UserServices.UserLogin(mVLogin);
+
+                if (user != null)
+                {
+                    if (user.Emailverified == "yesverified")
+                    {
+                        var existingProfile = _context.TblffAwarenessProfileDetails
+                                           .FirstOrDefault(a => a.UserId == user.UserId && a.Registerid == user.UserId && a.ProfileStatus == "Draft");
+                        // Store user in session
+                        HttpContext.Session.SetString("UserFullName", user.UserFullName);
+                        HttpContext.Session.SetString("Useremail", user.UserEmail);
+                        HttpContext.Session.SetString("UserStep", "S1");
+                        HttpContext.Session.SetString("UserPlan", user.UserPlan);
+                        HttpContext.Session.SetString("UserId", user.UserId.ToString());
+                       
+                        
+                        //long userId = Convert.ToInt64(HttpContext.Session.TryGetValue["Username"]);
+                        var userIdStr = HttpContext.Session.GetString("UserId");
+                        long userId = userIdStr == null ? 1 : Convert.ToInt64(userIdStr);
+                        plantype = user.UserPlan;
+
+                        if (existingProfile == null)
+                            return RedirectToAction("dashboard", "User");//"Comprehensive"
+                        else
+                        {
+                            HttpContext.Session.SetString("profileId", existingProfile.Profileid.ToString());
+                            return RedirectToAction("Awareness", plantype, new { id = CryptoHelper.Encrypt(existingProfile.Profileid) });
+                        }
+                    }
+                    else
+                    {
+                        ViewData["Error"] = "Please verify your email before login. Link has already been sent to your email.";
+                        return View(mVLogin);
+                    }
+                }
+                ViewData["Error"] = "Invalid username or password.";
+                return View(mVLogin);
             }
             catch (Exception ex)
             {
@@ -185,16 +198,17 @@ namespace FactFinderWeb.Controllers
                 return RedirectToAction("Login");
             }
 
-			DashboardViewModel dashboardViewModel = new DashboardViewModel();
-			dashboardViewModel = await  _UserServices.UserDashboard();
+            List<DashboardViewModel> dashboardViewModel = new List<DashboardViewModel>();
+
+            dashboardViewModel = await  _UserServices.UserDashboard();
 
 			// ViewData["Username"] = username;
 			return View(dashboardViewModel);
         }
 
         [HttpGet]
-        [Route("userprofile/data")]
-        public async Task<IActionResult> GetUserProfileData()
+        [Route("userprofile/data/{profileId}")]
+        public async Task<IActionResult> GetUserProfileData(int profileId)
         {
             long? UserId = Convert.ToInt64(HttpContext.Session.GetString("UserId"));
             if (string.IsNullOrEmpty(Convert.ToString(UserId)))
@@ -202,14 +216,14 @@ namespace FactFinderWeb.Controllers
                 return Unauthorized(new { message = "User not logged in." });
             }
 
-            var user = _context.TblffAwarenessProfileDetails.Where(u => u.Profileid == UserId  ).FirstOrDefault();
+            var user = _context.TblffAwarenessProfileDetails.Where(u =>  u.Profileid== profileId).FirstOrDefault();
             if(user == null)
             {
                 return Unauthorized(new { message = "User not logged in." });
 
             }
 
-            var jsonContent = await _jsonData.UserGetAwarenessJSON(Convert.ToInt64(UserId));
+            var jsonContent = await _jsonData.UserGetAwarenessJSON(Convert.ToInt64(profileId));
 
             try
             {
@@ -225,15 +239,16 @@ namespace FactFinderWeb.Controllers
         }
 
         [HttpGet]
-        [Route("userprofile")]
-        public IActionResult UserProfile()
+        [Route("/User/userprofile/{profileId}")]
+        [Route("userprofile/{profileId}")]
+        public IActionResult UserProfile(int profileId)
         {
             string? UserId = HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(UserId))
             {
                 return RedirectToAction("Login");
             }
-
+            ViewBag.profileId = profileId;
             ViewData["UserId"] = UserId;
             return View(); // loads Razor view
         }
@@ -468,6 +483,48 @@ namespace FactFinderWeb.Controllers
             ViewData["msg"] = "An email has been sent. Please check your inbox to verify your email.";
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> SetPlan(string planType)
+        {
+            if (!string.IsNullOrEmpty(planType))
+            {
+                HttpContext.Session.SetString("UserPlan", planType);
+                long userId = Convert.ToInt64(HttpContext.Session.GetString("UserId"));
+
+                // mark existing draft as deleted
+             
+
+                // create new draft
+                var newProfile = new TblffAwarenessProfileDetail
+                {
+                    UserId = userId,
+                    PlanType = planType,
+                    CreateDate = DateTime.Now,
+                    //UpdateDate = DateTime.Now,
+                    Name = "",
+                    Phone="",
+                    PlanYear =DateTime.Now.Year,
+                    ProfileStatus = "Draft"
+                };
+
+                _context.TblffAwarenessProfileDetails.Add(newProfile);
+                await _context.SaveChangesAsync(); // ✅ MUST await
+
+                return RedirectToRoute(new
+                {
+                    planType = planType,   // taken from session
+                    controller = "Comprehensive",
+                    action = "Awareness",
+                    pid = CryptoHelper.Encrypt(newProfile.Profileid)
+                });
+
+                // redirect to awareness with new profile id
+               // return RedirectToAction("Awareness", planType,new { pid = CryptoHelper.Encrypt(newProfile.Profileid) });
+            }
+
+            return RedirectToAction("Dashboard");
+        }
 
     }
+
 }

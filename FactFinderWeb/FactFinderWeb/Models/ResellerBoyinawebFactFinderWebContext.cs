@@ -218,6 +218,9 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.Property(e => e.Home1).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Home2).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Home2Loan).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Home1Loan).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CarLoan).HasColumnType("decimal(18, 2)");
+
             entity.Property(e => e.Jewellery).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.JewelleryLoan).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Land).HasColumnType("decimal(18, 2)");
@@ -584,6 +587,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.Property(e => e.Basic).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.BusinessIncome).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Conveyance).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalExpense).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -869,11 +873,11 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
 
         modelBuilder.Entity<TblffAwarenessProfileDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_tblff_awareness");
+            entity.HasKey(e => e.Profileid).HasName("PK_tblff_awareness_profileDetails");
 
             entity.ToTable("tblff_awareness_profileDetails", "dbo");
-
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("UserId");
+            entity.Property(e => e.Profileid).HasColumnName("Profileid");
             entity.Property(e => e.Aadhaar)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -1214,12 +1218,10 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Expiration).HasColumnType("datetime");
             entity.Property(e => e.IsUsed).HasDefaultValue(false);
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.UserId).HasColumnName("UserId");
             entity.Property(e => e.Token).HasMaxLength(100);
 
-            entity.HasOne(d => d.Profile).WithMany(p => p.TblffPasswordResetRequests)
-                .HasForeignKey(d => d.Profileid)
-                .HasConstraintName("FK__tblff_Pas__profi__3493CFA7");
+            
         });
 
         modelBuilder.Entity<TblffWing>(entity =>
@@ -1227,6 +1229,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.ToTable("tblff_wings", "dbo");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.GoalId).HasColumnName("goalid");
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createDate");
@@ -1257,6 +1260,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.ToTable("tblff_wingsGoalMaster", "dbo");
 
             entity.Property(e => e.Id).HasColumnName("id");
+          
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createDate");
@@ -1301,6 +1305,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("goalName");
+            entity.Property(e => e.WingId).HasColumnName("wingid");
             entity.Property(e => e.Goalid).HasColumnName("goalid");
             entity.Property(e => e.Profileid).HasColumnName("profileid");
             entity.Property(e => e.UpdateDate)
@@ -1339,6 +1344,10 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("goalType");
+            entity.Property(e => e.DealType)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("dealtype");
             entity.Property(e => e.Goalid).HasColumnName("goalid");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")

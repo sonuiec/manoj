@@ -98,4 +98,6 @@ public partial class TblffAlertnesIncomeDetail
     public DateTime? CreatedDate { get; set; }
 
     public DateTime? ModifiedDate { get; set; }
+
+    public decimal? TotalExpense { get; set; }
 }

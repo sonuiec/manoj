@@ -14,9 +14,10 @@ namespace FactFinderWeb.Services
 {
     public class WingsServices
     {
+        private readonly long _profileId;
 
         private ResellerBoyinawebFactFinderWebContext _context;
-        private readonly long _userID;
+         private readonly long _userID;
         private readonly HttpContext _httpContext;
         private readonly ExecutionServices _executionServices;
         private readonly InvestServices _investServices;
@@ -41,13 +42,14 @@ namespace FactFinderWeb.Services
             _investServices = investServices;
             var userIdStr = _httpContext.Session.GetString("UserId");
             _userID = Convert.ToInt64(userIdStr);
+            _profileId = Convert.ToInt64(_httpContext.Session.GetString("profileId"));
         }
 
         public async Task<WingsViewModel> WingsList()
         {
             var wingsViewModel = new WingsViewModel();
             var tblwings = await _context.TblffWings
-                .Where(x => x.Profileid == _userID)
+                .Where(x => x.Profileid == _profileId)
                 .Select(x => new UserWings
                 {
                     Id = x.Id,
@@ -86,7 +88,7 @@ namespace FactFinderWeb.Services
         {
             var tblChildren = new List<ChildrenList>();
              tblChildren = await _context.TblffAwarenessChildren
-                .Where(x => x.Profileid == _userID)
+                .Where(x => x.Profileid == _profileId)
                 .Select(x => new ChildrenList
                 {
                     ChildName = x.ChildName,
@@ -96,10 +98,100 @@ namespace FactFinderWeb.Services
             //wingsViewModel.ChildrenList = tblChildren;            
             return tblChildren;
         }
+        public async Task<List<SelectListItem>> WingsBindSelect1(string planType)
+        {
+            // Fetch children linked to profile
+            var children = await _context.TblffAwarenessChildren
+                .Where(x => x.Profileid == _profileId)
+                .ToListAsync();
+
+            // Default option
+            var goalOptions = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "Select" }
+    };
+
+            // Fetch all goals from DB
+            var goalsFromDb = await _context.TblffWingsGoalMasters
+                .OrderBy(g => g.GoalSequence)
+                .ToListAsync();
+
+            IEnumerable<TblffWingsGoalMaster> filteredGoals = Enumerable.Empty<TblffWingsGoalMaster>();
+
+            switch (planType?.ToLower())
+            {
+                case "comprehensive":
+                case "basic":
+                    filteredGoals = goalsFromDb.Where(g =>
+                        g.GoalName == "Emergency Fund" ||
+                        g.GoalName == "Retirment - Accumulation" ||  // note: spelling as in DB
+                        g.GoalName == "Child Education" ||
+                        g.GoalName == "Child Marriage" ||
+                        g.GoalName == "Purchase of Dream Car" ||
+                        g.GoalName == "World Tour" ||
+                        g.GoalName == "Purchase of Dream Home" ||
+                        g.GoalName == "Seed Capital for Business" ||
+                        g.GoalName == "Charity"
+                    );
+                    break;
+
+                case "wealth":
+                    filteredGoals = goalsFromDb.Where(g =>
+                        g.GoalName == "Emergency & Medical Fund" ||
+                        g.GoalName == "Regular Income" ||
+                        g.GoalName == "Wealth Optimisation" ||
+                        g.GoalName == "Child Education" ||
+                        g.GoalName == "Child Marriage" ||
+                        g.GoalName == "Purchase of Dream Car" ||
+                        g.GoalName == "World Tour" ||
+                        g.GoalName == "Purchase of Dream Home" ||
+                        g.GoalName == "Seed Capital for Business" ||
+                        g.GoalName == "Charity"
+                    );
+                    break;
+
+                case "zero2one":
+                    filteredGoals = goalsFromDb.Where(g =>
+                        g.GoalName == "Emergency Fund" ||
+                        g.GoalName == "Retirment - Accumulation" ||
+                        g.GoalName == "Child Education" ||
+                        g.GoalName == "Wealth Creation"
+                    );
+                    break;
+            }
+
+            // Build SelectList with ID and GoalName
+            foreach (var goal in filteredGoals)
+            {
+                if (goal.GoalName == "Child Education" || goal.GoalName == "Child Marriage")
+                {
+                    foreach (var child in children)
+                    {
+                        goalOptions.Add(new SelectListItem
+                        {
+                            Value = $"{goal.Id}-{child.ChildName}",   // ID + Child for uniqueness
+                            Text = $"{goal.GoalName} - {child.ChildName}"
+                        });
+                    }
+                }
+                else
+                {
+                    goalOptions.Add(new SelectListItem
+                    {
+                        Value = goal.Id.ToString(),  // Use database ID
+                        Text = goal.GoalName
+                    });
+                }
+            }
+
+            return goalOptions;
+        }
+
+
         public async Task<List<SelectListItem>> WingsBindSelect(string planType)
         {
             var tblChildren = await _context.TblffAwarenessChildren
-                .Where(x => x.Profileid == _userID)
+                .Where(x => x.Profileid == _profileId)
                 .Select(x => new ChildrenList
                 {
                     ChildName = x.ChildName,
@@ -112,10 +204,10 @@ namespace FactFinderWeb.Services
         new SelectListItem { Value = "", Text = "Select" }
     };
 
-            switch (planType)
+            switch (planType?.ToLower())
             {
-                case "Comprehensive":
-                case "Basic":
+                case "comprehensive":
+                case "basic":
                     goalOptions.Add(new SelectListItem { Value = "Emergency Fund", Text = "Emergency Fund" });
                     goalOptions.Add(new SelectListItem { Value = "Retirement - Accumulation", Text = "Retirement - Accumulation" });
 
@@ -151,7 +243,7 @@ namespace FactFinderWeb.Services
             });
                     break;
 
-                case "Wealth":
+                case "wealth":
                     goalOptions.AddRange(new List<SelectListItem>
             {
                 new SelectListItem { Value = "Emergency & Medical Fund", Text = "Emergency & Medical Fund" },
@@ -191,7 +283,7 @@ namespace FactFinderWeb.Services
             });
                     break;
 
-                case "ZeroToOne":
+                case "zero2one":
                     goalOptions.Add(new SelectListItem { Value = "Emergency Fund", Text = "Emergency Fund" });
                     goalOptions.Add(new SelectListItem { Value = "Retirement - Accumulation", Text = "Retirement - Accumulation" });
 
@@ -211,11 +303,11 @@ namespace FactFinderWeb.Services
             return goalOptions;
         }
 
-        public async Task<List<SelectListItem>> WingsBindSelectOLD()
+        public async Task<List<SelectListItem>> WingsBindSelect()
         {
                // var wingsViewModel = new WingsViewModel();
                 var tblChildren = await _context.TblffAwarenessChildren
-               .Where(x => x.Profileid == _userID)
+               .Where(x => x.Profileid == _profileId)
                .Select(x => new ChildrenList
                {
                    ChildName = x.ChildName,
@@ -269,7 +361,7 @@ namespace FactFinderWeb.Services
         public async Task<int> WingsAddDeleteGoal(List<UserWingsUI> submittedGoals)
         {
             // Get all existing goals for this user UserWingsLocalStorageGoalDto
-            var existingGoals = _context.TblffWings.Where(g => g.Profileid == _userID).ToList();
+            var existingGoals = _context.TblffWings.Where(g => g.Profileid == _profileId).ToList();
 
             // Track changes
             var goalsToAdd = new List<TblffWing>();
@@ -278,9 +370,26 @@ namespace FactFinderWeb.Services
             
             foreach (var submitted in submittedGoals)// Identify added or updated goals
             {
+                long goalId = 0;
                 var existing = existingGoals.FirstOrDefault(g => g.GoalName == submitted.goal);
+                var goles = _context.TblffWingsGoalMasters.Where(x => x.GoalName == submitted.goal).FirstOrDefault();
+                if (goles != null)
+                {
+                    goalId = goles.Id;
+                }else
+                {
+                    var goals1 = _context.TblffWingsGoalMasters.Where(x => submitted.goal.ToLower().Contains(x.GoalType)).FirstOrDefault();
 
-                if (existing != null)
+                    if (goals1 != null)
+                    {
+                        goalId = goals1.Id;
+                    }
+                    else
+                    {
+                        goalId = 15;
+                    }
+                }
+                    if (existing != null)
                 {                    
                     if (existing.GoalPriority != submitted.priority)// Goal exists: update priority if changed
                     {
@@ -290,10 +399,11 @@ namespace FactFinderWeb.Services
                     } 
                 }
                 else // New goal: add it
-                {                    
+                {
                     var newGoal = new TblffWing
                     {
-                        Profileid = _userID,
+
+                        Profileid = _profileId,
                         GoalPriority = submitted.priority,
                         GoalName = submitted.goal,
                         GoalPlanYear = submitted.planYear,
@@ -303,7 +413,8 @@ namespace FactFinderWeb.Services
                         NewGoals = submitted.NewGoals,
                         CreateDate = DateTime.Now,
                         UpdateDate = DateTime.Now,
-                        GoalType = submitted.NewGoals == 1 ? "custom" : WingsSetGoalType(submitted.goal)
+                        GoalId = goalId,
+                        GoalType = submitted.NewGoals == 1 ? "custom" : WingsSetGoalType(submitted.goal),
                     };
                     goalsToAdd.Add(newGoal);
                 }
@@ -338,7 +449,7 @@ namespace FactFinderWeb.Services
             }
             else if (goalType == "Retirement - Accumulation")
             {
-                goalsdata_GoalType = "Retirement-Accumulation";
+                goalsdata_GoalType = "Retirement - Accumulation";
             }
             else if (goalType == "Purchase of Dream Car")
             {
@@ -368,6 +479,28 @@ namespace FactFinderWeb.Services
             {
                 goalsdata_GoalType = "Marriage";
             }
+            else if (goalType.Contains("Marriage"))
+            {
+                goalsdata_GoalType = "Marriage";
+            }
+            else if (goalType.Contains("Emergency & Medical Fund"))
+            {
+                goalsdata_GoalType = "EmergencyAndMedicalFund";
+            }
+            else if (goalType.Contains("Wealth Optimisation"))
+            {
+                goalsdata_GoalType = "Wealth-Optimisation";
+            }
+            else if (goalType.Contains("Regular Income"))
+            {
+                goalsdata_GoalType = "Regular-Income";
+            }
+            else if (goalType.Contains("Wealth Creation"))
+            {
+                goalsdata_GoalType = "Wealth-Creation";
+            }
+
+
             else
             {
                 goalsdata_GoalType = "custom";
@@ -381,7 +514,7 @@ namespace FactFinderWeb.Services
             var tblwings = new TblffWing();
 
             tblwings.Id = wings.Id;
-            tblwings.Profileid = _userID;
+            tblwings.Profileid = _profileId;
             tblwings.GoalType = wings.GoalType;
             tblwings.GoalPriority = wings.GoalPriority;
             tblwings.GoalName = wings.GoalName;

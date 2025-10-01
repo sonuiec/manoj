@@ -1,21 +1,11 @@
-﻿@using FactFinderWeb.BLL
-@using FactFinderWeb.ModelsView
+﻿@using FactFinderWeb.ModelsView
 @using FactFinderWeb.Services
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-@using Microsoft.AspNetCore.Http;
-
 @model AlertnessViewModel
 
 @{
     ViewData["Title"] = "Awareness";
+
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
-    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
-    var _profileId = HttpContextAccessor.HttpContext.Request.RouteValues["pid"]?.ToString();
-    var isBasicOrZero = ("basic|zero2one").Contains(userPlan?.ToLower() ?? "");
-    var iszero2one = ("zero2one").Contains(userPlan?.ToLower() ?? "");
-    var pId = CryptoHelper.Decrypt(_profileId);
-
-
 }
 @{
     var profileData = ViewBag.ProfileData as FactFinderWeb.ModelsView.ProfileDataDto;
@@ -23,6 +13,8 @@
     bool showSpouseSection = string.IsNullOrEmpty(maritalStatus) || maritalStatus == "Married";
     var name = profileData?.Name ?? "NA";
     var spouseName = profileData?.SpouseName ?? "NA";
+      var _profileId = HttpContextAccessor.HttpContext.Request.RouteValues["id"]?.ToString();
+}
 }
 
 @functions {
@@ -171,236 +163,494 @@
                 Goals drive us, goals motivate us and goals make us enthusiastic...
             </p>
             <div id="errorSummarySave" class="mt-3 text-danger fw-bold"></div>
-            <button id="saveAndContinueBtn" class="btn saveButton" type="submit" >💾 Save & Continue</button>
+            <button id="saveAndContinueBtn" class="btn saveButton">💾 Save & Continue</button>
         </div>
     </div>
 </div>
-<form id="alertnessForm" asp-antiforgery="true"  method="post" style="background-color: #F5F5F5" class="mt-3 p-3 d-flex flex-column gap-4 rounded"
-      asp-controller="Comprehensive"
-      asp-route-planType="@userPlan" asp-action="Alertness" asp-route-id="@_profileId">
-    <input type="hidden" name="ProfileId" value="@pId" />
+<form id="alertnessForm" asp-antiforgery="true" method="post" style="background-color: #F5F5F5" class="mt-3 p-3 d-flex flex-column gap-4 rounded">
 
     <!--Manage  Income -->
 
     <fieldset class="d-flex flex-column gap-2 fieldset-green">
         <legend style="color: #3B3737" class="fw-bold">3.1 Budgeting </legend>
         <legend style="color: #3B3737" class="fw-bold ms-3">3.1.1 Income (Monthly)</legend>
-@if (!isBasicOrZero)
-        {
+        <div class="row g-3" style="color: #006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="Basic" class="form-label"></label><span class="text-danger fw-bold ">*</span>
+                <input asp-for="Basic" type="text" name="Basic" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="Basic" class="text-danger"></span>
+                <input asp-for="ProfileId" name="ProfileId" type="hidden" class="form-control">
+                <input asp-for="Id" name="Id" type="hidden" class="form-control">
+            </div>
 
-            <div class="row g-3 " style="color:#006400; ">
-                <div class="col-12 col-md-4">
-                    <label asp-for="Basic" class="form-label"></label><span class="text-danger fw-bold ">*</span>
-                    <input asp-for="Basic" type="text" name="Basic" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="Basic" class="text-danger"></span>
-                    <input asp-for="ProfileId" name="ProfileId" type="hidden" class="form-control">
-                    <input asp-for="Id" name="Id" type="hidden" class="form-control">
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="Hra" class="form-label gap-1 d-flex"></label>
+                <input asp-for="Hra" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="Hra" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="Hra" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="Hra" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="Hra" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="EducationAllowance" class="form-label gap-1 d-flex"></label>
+                <input asp-for="EducationAllowance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="EducationAllowance" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="EducationAllowance" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="EducationAllowance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="EducationAllowance" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="MedicalAllowance" class="form-label gap-1 d-flex"></label>
+                <input asp-for="MedicalAllowance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="MedicalAllowance" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="MedicalAllowance" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="MedicalAllowance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="MedicalAllowance" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="LTA" class="form-label gap-1 d-flex"></label>
+                <input asp-for="LTA" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="LTA" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="LTA" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="LTA" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="LTA" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="Conveyance" class="form-label gap-1 d-flex"></label>
+                <input asp-for="Conveyance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="Conveyance" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="Conveyance" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="Conveyance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="Conveyance" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="OtherAllowance" class="form-label gap-1 d-flex"></label>
+                <input asp-for="OtherAllowance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="OtherAllowance" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="OtherAllowance" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="OtherAllowance" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="OtherAllowance" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="PF" class="form-label gap-1 d-flex"></label>
+                <input asp-for="PF" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="PF" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="PF" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="PF" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="PF" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="Gratuity" class="form-label gap-1 d-flex"></label>
+                <input asp-for="Gratuity" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="Gratuity" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="Gratuity" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="Gratuity" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="Gratuity" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="Reimbursement" class="form-label gap-1 d-flex"></label>
+                <input asp-for="Reimbursement" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="Reimbursement" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="Reimbursement" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="Reimbursement" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="Reimbursement" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="BusinessIncome" class="form-label gap-1 d-flex"></label>
+                <input asp-for="BusinessIncome" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="BusinessIncome" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="BusinessIncome" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="BusinessIncome" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="BusinessIncome" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="FoodCoupon" class="form-label gap-1 d-flex"></label>
+                <input asp-for="FoodCoupon" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="FoodCoupon" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="FoodCoupon" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="FoodCoupon" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="FoodCoupon" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="MonthlyPension" class="form-label gap-1 d-flex"></label>
+                <input asp-for="MonthlyPension" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="MonthlyPension" class="text-danger"></span>
+            </div>
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="MonthlyPension" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="MonthlyPension" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="MonthlyPension" class="text-danger"></span>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="InterestIncome" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="InterestIncome" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="InterestIncome" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="InterestIncome" class="form-label gap-1 d-flex"></label>
+                <input asp-for="InterestIncome" class="form-control amount-input income-extra-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="InterestIncome" class="text-danger"></span>
+            </div>
 
 
 
 
 
-                @if (Model.IncomeExtras != null && Model.IncomeExtras.Any())
+            @if (Model.IncomeExtras != null && Model.IncomeExtras.Any())
+            {
+                for (int i = 0; i < Model.IncomeExtras.Count; i++)
                 {
-                    for (int i = 0; i < Model.IncomeExtras.Count; i++)
+                    if (Model.IncomeExtras[i].Type == "Monthly")
                     {
-                        if (Model.IncomeExtras[i].Type == "Monthly")
+                        <div class="col-12 col-md-4">
+                            <span class="form-label gap-1 d-flex">@Model.IncomeExtras[i].FieldName (@Model.IncomeExtras[i].Type) </span>
+                            <div class="textbox-style">
+                                @Model.IncomeExtras[i].FieldValue.FormatDecimal()
+
+
+                            </div>
+                        </div>
+                    }
+                }
+            }
+            <div class="col-12 mt-3">
+                <h5>Total Monthly Income: ₹<span id="incomeExtrasTotal">0</span></h5>
+            </div>
+        </div>
+        <hr />
+        <legend style="color: #3B3737" class="fw-bold ms-3">  Income (Annually)</legend>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="AnnualBonus" class="form-label gap-1 d-flex"></label>
+                <input asp-for="AnnualBonus" class="form-control amount-input income-extra-annual-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="AnnualBonus" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label asp-for="PerformanceLinked" class="form-label gap-1 d-flex"></label>
+                <input asp-for="PerformanceLinked" class="form-control amount-input income-extra-annual-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="PerformanceLinked" class="text-danger"></span>
+            </div>
+
+            @if (Model.IncomeExtras != null && Model.IncomeExtras.Any())
+            {
+                for (int i = 0; i < Model.IncomeExtras.Count; i++)
+                {
+                    if (Model.IncomeExtras[i].Type == "Annual")
+                    {
+                        <div class="col-12 col-md-4">
+                            <span class="form-label gap-1 d-flex">@Model.IncomeExtras[i].FieldName (@Model.IncomeExtras[i].Type) </span>
+                            <div class="textbox-style">
+                                @Model.IncomeExtras[i].FieldValue.FormatDecimal()
+
+
+                            </div>
+                        </div>
+                    }
+                }
+            }
+
+        </div>
+        <hr />
+        <div class="row g-3" style="color: #006400">
+
+            <div class="col-12 col-md-6 mt-3 d-none">
+                <h5>
+                    Total Annual Income (Fixed Annual Entries): ₹
+                    <span id="incomeExtrasAnnualTotal" class="fw-semibold text-primary"></span>
+                </h5>
+            </div>
+
+            <div class="col-12 col-md-6 mt-3 d-none text-nowrap">
+                <h5>
+                    Total Monthly Income for the Year (Monthly Amount × 12): ₹
+                    <span id="monthlyAnnualTotal" class="text-info fw-semibold"></span>
+                </h5>
+            </div>
+
+            <div class="col-12 col-md-6 mt-3 text-nowrap">
+
+                Annual Income (Monthly × 12 + Annual): ₹
+                <span id="incomeExtrasGrandTotal" class="text-warning fw-bold"></span>
+
+            </div>
+
+            <div class="col-12 col-md-6 mt-3 text-nowrap">
+
+                Avg.Monthly Income (Annual Total ÷ 12): ₹
+                <span id="grandTotalPerMonth" class="fw-bold text-success"></span>
+
+            </div>
+
+        </div>
+        <hr />
+
+        <legend style="color: #3B3737" class="fw-bold"></legend>
+        <div class="row g-3 d-none" style="color:	#006400">
+
+            <div class="col-12 col-md-4">
+                <label asp-for="PostITIncomeOld" class="form-label gap-1 d-flex"></label>
+                <input asp-for="PostITIncomeOld" type="text" name="PostITIncomeOld" class="form-control amount-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="PostITIncomeOld" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="PostITIncomeNew" class="form-label gap-1 d-flex"></label>
+                <input asp-for="PostITIncomeNew" type="text" name="PostITIncomeNew" class="form-control amount-input" placeholder="0.00" maxlength="15">
+                <span asp-validation-for="PostITIncomeNew" class="text-danger"></span>
+
+            </div>
+        </div>
+
+        <hr />
+        <div class="card shadow-sm border-success">
+            <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 d-flex align-items-center">
+                    <i class="fas fa-hand-holding-usd me-2"></i> Edited data will be saved after click on SUBMIT button
+                </h5>
+                <button type="button" id="addIncomeExtra" class="btn btn-outline-light btn-sm btn-white-background">+ Add Income</button>
+            </div>
+
+            <div id="incomeExtrasSection" class="card-body">
+                <div id="incomeExtrasContainer">
+                    <!-- Desktop Header Row: hidden on mobile -->
+                    <div class="row fw-bold text-dark align-items-center p-2 mb-1 d-none d-md-flex">
+                        <div class="col-sm text-left">Other Income</div>
+                        <div class="col-sm text-left">Amount</div>
+                        <div class="col-sm text-left">Type (Monthly/Annual)</div>
+                        <div class="col-md-auto text-end">Action</div>
+                    </div>
+                    @if (Model.IncomeExtras != null && Model.IncomeExtras.Any())
+                    {
+                        for (int i = 0; i < Model.IncomeExtras.Count; i++)
+                        {
+
+                            <div class="row g-2 align-items-center p-2 mb-1 income-extra justify-content-between">
+                                <!-- Other Income -->
+                                <div class="col-sm">
+                                    <span class="d-block d-md-none fw-bold text-dark mb-1">Other Income</span>
+                                    <input type="text"
+                                           name="IncomeExtras[@i].FieldName"
+                                           value="@Model.IncomeExtras[i].FieldName"
+                                           placeholder="Name"
+                                           required
+                                           class="form-control w-100" />
+                                </div>
+
+                                <!-- Amount -->
+                                <div class="col-sm">
+                                    <span class="d-block d-md-none fw-bold text-dark mb-1">Amount</span>
+                                    <input type="text"
+                                           name="IncomeExtras[@i].FieldValue"
+                                           value="@Model.IncomeExtras[i].FieldValue"
+                                           placeholder="0.00" maxlength="15"
+                                           required
+                                           class="form-control w-100 amount-input @(Model.IncomeExtras[i].Type == "Monthly" ? "income-extra-input" : "income-extra-annual-input")" />
+                                </div>
+
+                                <!-- Type -->
+                                <div class="col-sm">
+                                    <span class="d-block d-md-none fw-bold text-dark mb-1">Type (Monthly/Annual)</span>
+                                    @Html.DropDownListFor(m => m.IncomeExtras[i].Type,
+                                    new SelectList(new[] { "Monthly", "Annual" }),
+                                                        "Select",
+                                                        new { @class = "form-select w-100", required = "required" })
+                            @Html.ValidationMessageFor(m => m.IncomeExtras[i].Type, "", new { @class = "text-danger" })
+                        </div>
+
+                        <!-- Action -->
+                        <div class="col-md-auto col-sm-12 text-center">
+                            <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
+                            <button type="button" class="btn btn-danger btn-sm delete-income-extra" title="Remove">&times;</button>
+                        </div>
+                    </div>
+
+                                        }
+                                        }
+                </div>
+            </div>
+        </div>
+
+        <div id="spouse" class="@(showSpouseSection ? "" : "d-none")">
+            <legend style="color: #3B3737" class="fw-bold"> 3.1.2 Spouse Income (Monthly)</legend>
+            <div class="row g-3" style="color:	#006400">
+                <!-- Begin Spouse Income Fields -->
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseBasic" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseBasic" type="text" name="SpouseBasic" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseBasic" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseHRA" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseHRA" type="text" name="SpouseHRA" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseHRA" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseEducationAllowance" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseEducationAllowance" type="text" name="SpouseEducationAllowance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseEducationAllowance" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseMedicalAllowance" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseMedicalAllowance" type="text" name="SpouseMedicalAllowance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseMedicalAllowance" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseLTA" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseLTA" type="text" name="SpouseLTA" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseLTA" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseConveyance" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseConveyance" type="text" name="SpouseConveyance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseConveyance" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseOtherAllowance" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseOtherAllowance" type="text" name="SpouseOtherAllowance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseOtherAllowance" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpousePF" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpousePF" type="text" name="SpousePF" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpousePF" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseGratuity" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseGratuity" type="text" name="SpouseGratuity" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseGratuity" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseReimbursement" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseReimbursement" type="text" name="SpouseReimbursement" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseReimbursement" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseBusinessIncome" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseBusinessIncome" type="text" name="SpouseBusinessIncome" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseBusinessIncome" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseFoodCoupon" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseFoodCoupon" type="text" name="SpouseFoodCoupon" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseFoodCoupon" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseMonthlyPension" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseMonthlyPension" type="text" name="SpouseMonthlyPension" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseMonthlyPension" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpouseInterestIncome" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseInterestIncome" type="text" name="SpouseInterestIncome" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseInterestIncome" class="text-danger"></span>
+                </div>
+
+                <!-- End Spouse Income Fields -->
+                @if (Model.SpouseExtras != null && Model.SpouseExtras.Any())
+                {
+                    for (int i = 0; i < Model.SpouseExtras.Count; i++)
+                    {
+                        if (Model.SpouseExtras[i].Type == "Monthly")
                         {
                             <div class="col-12 col-md-4">
-                                <span class="form-label gap-1 d-flex">@Model.IncomeExtras[i].FieldName (@Model.IncomeExtras[i].Type) </span>
+                                <span class="form-label gap-1 d-flex">
+                                    @Model.SpouseExtras[i].FieldName (@Model.SpouseExtras[i].Type)
+                                </span>
                                 <div class="textbox-style">
-                                    @Model.IncomeExtras[i].FieldValue.FormatDecimal()
-
-
+                                    @Model.SpouseExtras[i].FieldValue.FormatDecimal()
                                 </div>
                             </div>
                         }
                     }
                 }
+
+
+
+
                 <div class="col-12 mt-3">
-                    <h5>Total Monthly Income: ₹<span id="incomeExtrasTotal">0</span></h5>
+                    <input asp-for="SpouseMonthlyTotalIncome" type="hidden" name="SpouseMonthlyTotalIncome" class="form-control amount-input">
+                    <h5>Total Monthly Income: ₹<span id="incomeExtrasTotalSpouse"></span></h5>
                 </div>
             </div>
-            <hr class="" />
-            <legend class="fw-bold ms-3 " style="color:#3B3737; ">  Income (Annually)</legend>
-            <div class="row g-3 "   style="color:#006400;">
-                <div class="col-12 col-md-4">
-                    <label asp-for="AnnualBonus" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="AnnualBonus" class="form-control amount-input income-extra-annual-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="AnnualBonus" class="text-danger"></span>
-                </div>
+            <hr />
+
+            <legend style="color: #3B3737" class="fw-bold ms-3">  Spouse Income (Annual)</legend>
+            <div class="row g-3" style="color:	#006400">
 
                 <div class="col-12 col-md-4">
-                    <label asp-for="PerformanceLinked" class="form-label gap-1 d-flex"></label>
-                    <input asp-for="PerformanceLinked" class="form-control amount-input income-extra-annual-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="PerformanceLinked" class="text-danger"></span>
+                    <label asp-for="SpouseAnnualBonus" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpouseAnnualBonus" type="text" name="SpouseAnnualBonus" class="form-control amount-input income-extra-annual-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpouseAnnualBonus" class="text-danger"></span>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpousePerformanceLinked" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpousePerformanceLinked" type="text" name="SpousePerformanceLinked" class="form-control amount-input income-extra-annual-input-spouse" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpousePerformanceLinked" class="text-danger"></span>
                 </div>
 
-                @if (Model.IncomeExtras != null && Model.IncomeExtras.Any())
+                <!-- End Spouse Income Fields -->
+                @if (Model.SpouseExtras != null && Model.SpouseExtras.Any())
                 {
-                    for (int i = 0; i < Model.IncomeExtras.Count; i++)
+                    for (int i = 0; i < Model.SpouseExtras.Count; i++)
                     {
-                        if (Model.IncomeExtras[i].Type == "Annual")
+                        if (Model.SpouseExtras[i].Type == "Annual")
                         {
                             <div class="col-12 col-md-4">
-                                <span class="form-label gap-1 d-flex">@Model.IncomeExtras[i].FieldName (@Model.IncomeExtras[i].Type) </span>
+                                <span class="form-label gap-1 d-flex">
+                                    @Model.SpouseExtras[i].FieldName (@Model.SpouseExtras[i].Type)
+                                </span>
                                 <div class="textbox-style">
-                                    @Model.IncomeExtras[i].FieldValue.FormatDecimal()
-
-
+                                    @Model.SpouseExtras[i].FieldValue.FormatDecimal()
                                 </div>
                             </div>
                         }
                     }
                 }
-
             </div>
-            <hr class="" />
-            <div class="row g-3 "  style="color:#006400; ">
+            <hr />
 
-                <div class="col-12 col-md-6 mt-3 d-none">
+
+            <hr />
+            <div class="row g-3" style="color: #006400">
+
+                <div class="col-12 col-md-6 mt-3 d-none text-nowrap">
                     <h5>
                         Total Annual Income (Fixed Annual Entries): ₹
-                        <span id="incomeExtrasAnnualTotal" class="fw-semibold text-primary"></span>
+                        <span id="incomeExtrasAnnualTotalSpouse"></span>
                     </h5>
                 </div>
 
                 <div class="col-12 col-md-6 mt-3 d-none text-nowrap">
                     <h5>
                         Total Monthly Income for the Year (Monthly Amount × 12): ₹
-                        <span id="monthlyAnnualTotal" class="text-info fw-semibold"></span>
+                        <span id="monthlyAnnualTotalSpouse" class="text-info fw-semibold"></span>
+                    </h5>
                     </h5>
                 </div>
 
                 <div class="col-12 col-md-6 mt-3 text-nowrap">
-
                     Annual Income (Monthly × 12 + Annual): ₹
-                    <span id="incomeExtrasGrandTotal" class="text-warning fw-bold"></span>
+                    <span id="incomeExtrasGrandTotalSpouse" class="text-warning fw-bold"></span>
 
                 </div>
 
-                <div class="col-12 col-md-6 mt-3 text-nowrap">
-
+                <div class="col-12 col-md-6 mt-3">
                     Avg.Monthly Income (Annual Total ÷ 12): ₹
-                    <span id="grandTotalPerMonth" class="fw-bold text-success"></span>
+                    <span id="grandTotalPerMonthSpouse" class="fw-bold text-success"></span>
 
                 </div>
 
             </div>
-            <hr class="" />
 
-            <legend  class="fw-bold !" style="color:#3B3737;" ></legend>
-        }
-        else
-        {
-            <div class="row g-3 !"  style="color:#006400; " >
+            <hr />
+
+            <legend style="color: #3B3737" class="fw-bold"></legend>
+            <div class="row g-3 d-none" style="color:	#006400">
 
                 <div class="col-12 col-md-4">
-                    <label asp-for="PostITIncomeOld" class="form-label gap-1 d-flex">Post IT Income Monthly (Disposable Income)		
-                    </label>
-                    <input asp-for="PostITIncomeOld" type="text" name="PostITIncomeOld" class="form-control amount-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="PostITIncomeOld" class="text-danger"></span>
+                    <label asp-for="SpousePostITIncomeOld" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpousePostITIncomeOld" type="text" name="SpousePostITIncomeOld" class="form-control amount-input" placeholder="0.00" maxlength="15">
+                    <span asp-validation-for="SpousePostITIncomeOld" class="text-danger"></span>
                 </div>
-                <div class="col-12 col-md-4 d-none ">
-                    <label asp-for="PostITIncomeNew" class="form-label gap-1 d-flex">Total Post IT Income Monthly (Disposable Income)</label>
-                    <input asp-for="PostITIncomeNew" type="text" name="PostITIncomeNew" class="form-control amount-input" placeholder="0.00" maxlength="15">
-                    <span asp-validation-for="PostITIncomeNew" class="text-danger"></span>
-
+                <div class="col-12 col-md-4">
+                    <label asp-for="SpousePostITIncomeNew" class="form-label gap-1 d-flex"></label>
+                    <input asp-for="SpousePostITIncomeNew" type="text" name="SpousePostITIncomeNew" class="form-control amount-input">
+                    <span asp-validation-for="SpousePostITIncomeNew" class="text-danger"></span>
+                    <input asp-for="SpouseConsolidatedIncome" type="hidden" name="SpouseConsolidatedIncome" class="form-control amount-input" placeholder="0.00" maxlength="15">
+                    <input asp-for="SpouseAnnualTotalIncome" type="hidden" name="SpouseAnnualTotalIncome" class="form-control amount-input">
                 </div>
             </div>
-        }
-        <hr />
-        @if (!isBasicOrZero)
-        {
-            <div class="card shadow-sm border-success">
+            <hr />
+            <div class="card border-success mb-4" style="background-color: #e8f5e9;">
                 <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0 d-flex align-items-center">
-                        <i class="fas fa-hand-holding-usd me-2"></i> Edited data will be saved after click on SUBMIT button
-                    </h5>
-                    <button type="button" id="addIncomeExtra" class="btn btn-outline-light btn-sm btn-white-background">+ Add Income</button>
+                    <h5 class="mb-0 d-flex align-items-center"><i class="fas fa-hand-holding-usd me-2"></i>Edited data will be saved after click on SUBMIT button</h5>
+                    <button type="button" id="addSpouseExtra" class="btn btn-outline-light btn-sm btn-white-background">+ Add Spouse Income</button>
                 </div>
 
-                <div id="incomeExtrasSection" class="card-body">
-                    <div id="incomeExtrasContainer">
+                <div id="spouseExtrasSection" class="card-body">
+                    <div id="spouseExtrasContainer">
                         <!-- Desktop Header Row: hidden on mobile -->
                         <div class="row fw-bold text-dark align-items-center p-2 mb-1 d-none d-md-flex">
                             <div class="col-sm text-left">Other Income</div>
@@ -408,338 +658,58 @@
                             <div class="col-sm text-left">Type (Monthly/Annual)</div>
                             <div class="col-md-auto text-end">Action</div>
                         </div>
-                        @if (Model.IncomeExtras != null && Model.IncomeExtras.Any())
+                        <!-- Initially empty; no inputs here -->
+                        @if (Model.SpouseExtras != null && Model.SpouseExtras.Any())
                         {
-                            for (int i = 0; i < Model.IncomeExtras.Count; i++)
-                            {
 
-                                <div class="row g-2 align-items-center p-2 mb-1 income-extra justify-content-between">
-                                    <!-- Other Income -->
+                            for (int i = 0; i < Model.SpouseExtras.Count; i++)
+                            {
+                                <div class="row g-2 align-items-center p-2 mb-1 spouse-extra justify-content-between">
                                     <div class="col-sm">
                                         <span class="d-block d-md-none fw-bold text-dark mb-1">Other Income</span>
                                         <input type="text"
-                                        name="IncomeExtras[@i].FieldName"
-                                        value="@Model.IncomeExtras[i].FieldName"
-                                        placeholder="Name"
-                                        required
-                                        class="form-control w-100" />
+                                               name="SpouseExtras[@i].FieldName"
+                                               value="@Model.SpouseExtras[i].FieldName"
+                                               placeholder="Name"
+                                               required
+                                               class="form-control w-100" />
                                     </div>
-
                                     <!-- Amount -->
                                     <div class="col-sm">
                                         <span class="d-block d-md-none fw-bold text-dark mb-1">Amount</span>
                                         <input type="text"
-                                        name="IncomeExtras[@i].FieldValue"
-                                        value="@Model.IncomeExtras[i].FieldValue"
-                                        placeholder="0.00" maxlength="15"
-                                        required
-                                        class="form-control w-100 amount-input @(Model.IncomeExtras[i].Type == "Monthly" ? "income-extra-input" : "income-extra-annual-input")" />
+                                               name="SpouseExtras[@i].FieldValue"
+                                               value="@Model.SpouseExtras[i].FieldValue"
+                                               placeholder="0.00" maxlength="15"
+                                               required
+                                               class="form-control amount-input @(Model.SpouseExtras[i].Type == "Monthly" ? "income-extra-input-spouse" : "income-extra-annual-input-spouse") " />
                                     </div>
-
                                     <!-- Type -->
                                     <div class="col-sm">
                                         <span class="d-block d-md-none fw-bold text-dark mb-1">Type (Monthly/Annual)</span>
-                                        @Html.DropDownListFor(m => m.IncomeExtras[i].Type,
-                                                 new SelectList(new[] { "Monthly", "Annual" }),
-                                                                     "Select",
-                                                                     new { @class = "form-select w-100", required = "required" })
-                                        @Html.ValidationMessageFor(m => m.IncomeExtras[i].Type, "", new { @class = "text-danger" })
-                                    </div>
 
-                                    <!-- Action -->
-                                    <div class="col-md-auto col-sm-12 text-center">
-                                        <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
-                                        <button type="button" class="btn btn-danger btn-sm delete-income-extra" title="Remove">&times;</button>
-                                    </div>
-                                </div>
+                                        @Html.DropDownListFor(m => m.SpouseExtras[i].Type,
+                                        new SelectList(new[] {
+                                                                "Monthly", "Annual",
+                                                                }),
+                                                                "Select ",
+                                                                new { @class = "form-select", required = "required" })
+                                @Html.ValidationMessageFor(m => m.SpouseExtras[i].Type, "", new { @class = "text-danger" })
+                            </div>
+                            <!-- Action -->
+                            <div class="col-md-auto col-sm-12 text-center">
+                                <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
+                                <button type="button" class="btn btn-danger btn-sm delete-spouse-extra" title="Remove">&times;</button>
+                            </div>
+                        </div>
 
-                            }
-                        }
+                                                }
+                                                }
+
                     </div>
                 </div>
             </div>
-        }
 
-        <div id="spouse" class="@(showSpouseSection ? "" : "d-none")">
-            <legend style="color: #3B3737" class="fw-bold"> 3.1.2 Spouse Income (Monthly)</legend>
-            @if (!isBasicOrZero)
-            {
-
-                <div class="row g-3" style="color:	#006400">
-                    <!-- Begin Spouse Income Fields -->
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseBasic" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseBasic" type="text" name="SpouseBasic" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseBasic" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseHRA" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseHRA" type="text" name="SpouseHRA" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseHRA" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseEducationAllowance" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseEducationAllowance" type="text" name="SpouseEducationAllowance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseEducationAllowance" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseMedicalAllowance" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseMedicalAllowance" type="text" name="SpouseMedicalAllowance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseMedicalAllowance" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseLTA" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseLTA" type="text" name="SpouseLTA" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseLTA" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseConveyance" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseConveyance" type="text" name="SpouseConveyance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseConveyance" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseOtherAllowance" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseOtherAllowance" type="text" name="SpouseOtherAllowance" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseOtherAllowance" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpousePF" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpousePF" type="text" name="SpousePF" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpousePF" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseGratuity" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseGratuity" type="text" name="SpouseGratuity" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseGratuity" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseReimbursement" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseReimbursement" type="text" name="SpouseReimbursement" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseReimbursement" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseBusinessIncome" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseBusinessIncome" type="text" name="SpouseBusinessIncome" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseBusinessIncome" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseFoodCoupon" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseFoodCoupon" type="text" name="SpouseFoodCoupon" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseFoodCoupon" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseMonthlyPension" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseMonthlyPension" type="text" name="SpouseMonthlyPension" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseMonthlyPension" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseInterestIncome" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseInterestIncome" type="text" name="SpouseInterestIncome" class="form-control amount-input income-extra-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseInterestIncome" class="text-danger"></span>
-                    </div>
-
-                    <!-- End Spouse Income Fields -->
-                    @if (Model.SpouseExtras != null && Model.SpouseExtras.Any())
-                    {
-                        for (int i = 0; i < Model.SpouseExtras.Count; i++)
-                        {
-                            if (Model.SpouseExtras[i].Type == "Monthly")
-                            {
-                                <div class="col-12 col-md-4">
-                                    <span class="form-label gap-1 d-flex">
-                                        @Model.SpouseExtras[i].FieldName (@Model.SpouseExtras[i].Type)
-                                    </span>
-                                    <div class="textbox-style">
-                                        @Model.SpouseExtras[i].FieldValue.FormatDecimal()
-                                    </div>
-                                </div>
-                            }
-                        }
-                    }
-
-
-
-
-                    <div class="col-12 mt-3">
-                        <input asp-for="SpouseMonthlyTotalIncome" type="hidden" name="SpouseMonthlyTotalIncome" class="form-control amount-input">
-                        <h5>Total Monthly Income: ₹<span id="incomeExtrasTotalSpouse"></span></h5>
-                    </div>
-                </div>
-                <hr />
-
-                <legend style="color: #3B3737" class="fw-bold ms-3">  Spouse Income (Annual)</legend>
-                <div class="row g-3" style="color:	#006400">
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpouseAnnualBonus" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpouseAnnualBonus" type="text" name="SpouseAnnualBonus" class="form-control amount-input income-extra-annual-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpouseAnnualBonus" class="text-danger"></span>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpousePerformanceLinked" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpousePerformanceLinked" type="text" name="SpousePerformanceLinked" class="form-control amount-input income-extra-annual-input-spouse" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpousePerformanceLinked" class="text-danger"></span>
-                    </div>
-
-
-                    @if (Model.SpouseExtras != null && Model.SpouseExtras.Any())
-                    {
-                        for (int i = 0; i < Model.SpouseExtras.Count; i++)
-                        {
-                            if (Model.SpouseExtras[i].Type == "Annual")
-                            {
-                                <div class="col-12 col-md-4">
-                                    <span class="form-label gap-1 d-flex">
-                                        @Model.SpouseExtras[i].FieldName (@Model.SpouseExtras[i].Type)
-                                    </span>
-                                    <div class="textbox-style">
-                                        @Model.SpouseExtras[i].FieldValue.FormatDecimal()
-                                    </div>
-                                </div>
-                            }
-                        }
-                    }
-                </div>   
-                <hr />
-
-
-                <hr />
-                <div class="row g-3" style="color: #006400">
-
-                    <div class="col-12 col-md-6 mt-3 d-none text-nowrap">
-                        <h5>
-                            Total Annual Income (Fixed Annual Entries): ₹
-                            <span id="incomeExtrasAnnualTotalSpouse"></span>
-                        </h5>
-                    </div>
-
-                    <div class="col-12 col-md-6 mt-3 d-none text-nowrap">
-                        <h5>
-                            Total Monthly Income for the Year (Monthly Amount × 12): ₹
-                            <span id="monthlyAnnualTotalSpouse" class="text-info fw-semibold"></span>
-                        </h5>
-
-                    </div>
-
-                    <div class="col-12 col-md-6 mt-3 text-nowrap">
-                        Annual Income (Monthly × 12 + Annual): ₹
-                        <span id="incomeExtrasGrandTotalSpouse" class="text-warning fw-bold"></span>
-
-                    </div>
-
-                    <div class="col-12 col-md-6 mt-3">
-                        Avg.Monthly Income (Annual Total ÷ 12): ₹
-                        <span id="grandTotalPerMonthSpouse" class="fw-bold text-success"></span>
-
-                    </div>
-
-
-                </div> 
-
-                <hr />
-            }
-            else
-            {
-                <legend style="color: #3B3737" class="fw-bold"></legend>
-                <div class="row g-3  " style="color:	#006400">
-
-                    <div class="col-12 col-md-4">
-                        <label asp-for="SpousePostITIncomeOld" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpousePostITIncomeOld" type="text" name="SpousePostITIncomeOld" class="form-control amount-input" placeholder="0.00" maxlength="15">
-                        <span asp-validation-for="SpousePostITIncomeOld" class="text-danger"></span>
-                    </div>
-                    <div class="col-12 col-md-4 d-none">
-                        <label asp-for="SpousePostITIncomeNew" class="form-label gap-1 d-flex"></label>
-                        <input asp-for="SpousePostITIncomeNew" type="text" name="SpousePostITIncomeNew" class="form-control amount-input">
-                        <span asp-validation-for="SpousePostITIncomeNew" class="text-danger"></span>
-                        <input asp-for="SpouseConsolidatedIncome" type="hidden" name="SpouseConsolidatedIncome" class="form-control amount-input" placeholder="0.00" maxlength="15">
-                        <input asp-for="SpouseAnnualTotalIncome" type="hidden" name="SpouseAnnualTotalIncome" class="form-control amount-input">
-                    </div>
-                </div>
-            }
-            @if (!isBasicOrZero)
-            {
-                <hr />
-                <div class="card border-success mb-4" style="background-color: #e8f5e9;">
-                    <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
-                        <h5 class="mb-0 d-flex align-items-center"><i class="fas fa-hand-holding-usd me-2"></i>Edited data will be saved after click on SUBMIT button</h5>
-                        <button type="button" id="addSpouseExtra" class="btn btn-outline-light btn-sm btn-white-background">+ Add Spouse Income</button>
-                    </div>
-
-                    <div id="spouseExtrasSection" class="card-body">
-                        <div id="spouseExtrasContainer">
-                            <!-- Desktop Header Row: hidden on mobile -->
-                            <div class="row fw-bold text-dark align-items-center p-2 mb-1 d-none d-md-flex">
-                                <div class="col-sm text-left">Other Income</div>
-                                <div class="col-sm text-left">Amount</div>
-                                <div class="col-sm text-left">Type (Monthly/Annual)</div>
-                                <div class="col-md-auto text-end">Action</div>
-                            </div>
-                            <!-- Initially empty; no inputs here -->
-                            @if (Model.SpouseExtras != null && Model.SpouseExtras.Any())
-                            {
-
-                                for (int i = 0; i < Model.SpouseExtras.Count; i++)
-                                {
-                                    <div class="row g-2 align-items-center p-2 mb-1 spouse-extra justify-content-between">
-                                        <div class="col-sm">
-                                            <span class="d-block d-md-none fw-bold text-dark mb-1">Other Income</span>
-                                            <input type="text"
-                                            name="SpouseExtras[@i].FieldName"
-                                            value="@Model.SpouseExtras[i].FieldName"
-                                            placeholder="Name"
-                                            required
-                                            class="form-control w-100" />
-                                        </div>
-                                        <!-- Amount -->
-                                        <div class="col-sm">
-                                            <span class="d-block d-md-none fw-bold text-dark mb-1">Amount</span>
-                                            <input type="text"
-                                            name="SpouseExtras[@i].FieldValue"
-                                            value="@Model.SpouseExtras[i].FieldValue"
-                                            placeholder="0.00" maxlength="15"
-                                            required
-                                            class="form-control amount-input @(Model.SpouseExtras[i].Type == "Monthly" ? "income-extra-input-spouse" : "income-extra-annual-input-spouse") " />
-                                        </div>
-                                        <!-- Type -->
-                                        <div class="col-sm">
-                                            <span class="d-block d-md-none fw-bold text-dark mb-1">Type (Monthly/Annual)</span>
-
-                                            @Html.DropDownListFor(m => m.SpouseExtras[i].Type,
-                                                     new SelectList(new[] {
-                                                                "Monthly", "Annual",
-                                                                }),
-                                                                             "Select ",
-                                                                             new { @class = "form-select", required = "required" })
-                                            @Html.ValidationMessageFor(m => m.SpouseExtras[i].Type, "", new { @class = "text-danger" })
-                                        </div>
-                                        <!-- Action -->
-                                        <div class="col-md-auto col-sm-12 text-center">
-                                            <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
-                                            <button type="button" class="btn btn-danger btn-sm delete-spouse-extra" title="Remove">&times;</button>
-                                        </div>
-                                    </div>
-
-                                }
-                            }
-
-                        </div>
-                    </div>
-                </div>
-            }
         </div>
 
     </fieldset>
@@ -760,649 +730,634 @@
 
     }
     <fieldset class="d-flex flex-column gap-2 fieldset-blue">
+
         <legend style="color: #3B3737" class="fw-bold">3.1.2 Expense (Monthly)</legend>
-        @if (!isBasicOrZero)
-        {
-          
 
-            <legend style="color: #3B3737" class="fw-bold">🏠 Home Expenses </legend>
-            <div class="row g-3" style="color:	#006400">
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.GroceryProvisionMilk"></label><span class="text-danger fw-bold ">*</span>
-                    <input asp-for="ExpenseDetail.GroceryProvisionMilk" value="@Model.Basic" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.GroceryProvisionMilk" class="text-danger"></span>
-                    <input asp-for="ExpenseDetail.Id" name="ExpenseDetail.Id" type="hidden" class="form-control">
-                </div>
+        <legend style="color: #3B3737" class="fw-bold">🏠 Home Expenses </legend>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.GroceryProvisionMilk"></label><span class="text-danger fw-bold ">*</span>
+                <input asp-for="ExpenseDetail.GroceryProvisionMilk" value="@Model.Basic" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.GroceryProvisionMilk" class="text-danger"></span>
+                <input asp-for="ExpenseDetail.Id" name="ExpenseDetail.Id" type="hidden" class="form-control">
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.DomesticHelp"></label>
-                    <input asp-for="ExpenseDetail.DomesticHelp" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.DomesticHelp" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.DomesticHelp"></label>
+                <input asp-for="ExpenseDetail.DomesticHelp" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.DomesticHelp" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.IronLaundry"></label>
-                    <input asp-for="ExpenseDetail.IronLaundry" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.IronLaundry" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.IronLaundry"></label>
+                <input asp-for="ExpenseDetail.IronLaundry" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.IronLaundry" class="text-danger"></span>
+            </div>
 
 
 
 
-                <!-- other Home Expenses -->
-                @if (homeExpenses.Any())
+            <!-- other Home Expenses -->
+            @if (homeExpenses.Any())
+            {
+
+                @for (int i = 0; i < homeExpenses.Count; i++)
                 {
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">
+                            @homeExpenses[i].FieldName (@homeExpenses[i].Section / @homeExpenses[i].Type)
+                        </span>
 
-                    @for (int i = 0; i < homeExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">
-                                @homeExpenses[i].FieldName (@homeExpenses[i].Section / @homeExpenses[i].Type)
-                            </span>
+                        <div class="textbox-style">
 
-                            <div class="textbox-style">
-
-                                @FormatINR(decimal.TryParse(homeExpenses[i].FieldValue, out var v) ? v : 0)
-                            </div>
+                            @FormatINR(decimal.TryParse(homeExpenses[i].FieldValue, out var v) ? v : 0)
                         </div>
-                    }
+                    </div>
                 }
+            }
 
+        </div>
+
+        <hr />
+
+
+        <legend style="color: #3B3737" class="fw-bold">🚗 Conveyance Expenses</legend>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Driver"></label>
+                <input asp-for="ExpenseDetail.Driver" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Driver" class="text-danger"></span>
             </div>
 
-            <hr />
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Fuel"></label>
+                <input asp-for="ExpenseDetail.Fuel" class="form-control amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Fuel" class="text-danger"></span>
+            </div>
 
 
-            <legend style="color: #3B3737" class="fw-bold">🚗 Conveyance Expenses</legend>
-            <div class="row g-3" style="color:	#006400">
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Driver"></label>
-                    <input asp-for="ExpenseDetail.Driver" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Driver" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.CarCleaning"></label>
+                <input asp-for="ExpenseDetail.CarCleaning" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.CarCleaning" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Fuel"></label>
-                    <input asp-for="ExpenseDetail.Fuel" class="form-control amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Fuel" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Maintenance"></label>
+                <input asp-for="ExpenseDetail.Maintenance" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Maintenance" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.CarCleaning"></label>
-                    <input asp-for="ExpenseDetail.CarCleaning" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.CarCleaning" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.TaxiPublicTransport"></label>
+                <input asp-for="ExpenseDetail.TaxiPublicTransport" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.TaxiPublicTransport" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Maintenance"></label>
-                    <input asp-for="ExpenseDetail.Maintenance" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Maintenance" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.TaxiPublicTransport"></label>
-                    <input asp-for="ExpenseDetail.TaxiPublicTransport" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.TaxiPublicTransport" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.AirTrainTravel"></label>
-                    <input asp-for="ExpenseDetail.AirTrainTravel" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.AirTrainTravel" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.AirTrainTravel"></label>
+                <input asp-for="ExpenseDetail.AirTrainTravel" class="form-control amount-input income-expense-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.AirTrainTravel" class="text-danger"></span>
+            </div>
 
 
 
-                <!-- Other Conveyance Expenses -->
-                @if (conveyanceExpenses.Any())
+            <!-- Other Conveyance Expenses -->
+            @if (conveyanceExpenses.Any())
+            {
+
+                @for (int i = 0; i < conveyanceExpenses.Count; i++)
                 {
-
-                    @for (int i = 0; i < conveyanceExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">@conveyanceExpenses[i].FieldName (@conveyanceExpenses[i].Section / @conveyanceExpenses[i].Type) </span>
-                            <div class="textbox-style amount-input">
-                                @FormatINR(decimal.TryParse(conveyanceExpenses[i].FieldValue, out var v) ? v : 0)
-                            </div>
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">@conveyanceExpenses[i].FieldName (@conveyanceExpenses[i].Section / @conveyanceExpenses[i].Type) </span>
+                        <div class="textbox-style amount-input">
+                            @FormatINR(decimal.TryParse(conveyanceExpenses[i].FieldValue, out var v) ? v : 0)
                         </div>
-                    }
+                    </div>
                 }
+            }
 
+        </div>
+
+        <hr />
+
+        <legend style="color: #3B3737" class="fw-bold">📞 Communication</legend>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Mobile"></label>
+                <input asp-for="ExpenseDetail.Mobile" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Mobile" class="text-danger"></span>
             </div>
 
-            <hr />
 
-            <legend style="color: #3B3737" class="fw-bold">📞 Communication</legend>
-            <div class="row g-3" style="color:	#006400">
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Mobile"></label>
-                    <input asp-for="ExpenseDetail.Mobile" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Mobile" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.LandlineBroadband"></label>
+                <input asp-for="ExpenseDetail.LandlineBroadband" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.LandlineBroadband" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.LandlineBroadband"></label>
-                    <input asp-for="ExpenseDetail.LandlineBroadband" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.LandlineBroadband" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.DataCard"></label>
+                <input asp-for="ExpenseDetail.DataCard" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.DataCard" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.DataCard"></label>
-                    <input asp-for="ExpenseDetail.DataCard" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.DataCard" class="text-danger"></span>
-                </div>
+            <!-- Communication Expenses -->
+            @if (communicationExpenses.Any())
+            {
 
-
-                <!-- Communication Expenses -->
-                @if (communicationExpenses.Any())
+                @for (int i = 0; i < communicationExpenses.Count; i++)
                 {
-
-                    @for (int i = 0; i < communicationExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">@communicationExpenses[i].FieldName (@communicationExpenses[i].Section / @communicationExpenses[i].Type) </span>
-                            <div class="textbox-style">
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">@communicationExpenses[i].FieldName (@communicationExpenses[i].Section / @communicationExpenses[i].Type) </span>
+                        <div class="textbox-style">
 
 
 
-                                @FormatINR(decimal.TryParse(communicationExpenses[i].FieldValue, out var v) ? v : 0)
-                            </div>
+                            @FormatINR(decimal.TryParse(communicationExpenses[i].FieldValue, out var v) ? v : 0)
                         </div>
-                    }
+                    </div>
                 }
+            }
+        </div>
+
+
+
+        <hr />
+
+        <legend style="color: #3B3737" class="fw-bold">💡 Utilities</legend>
+        <div class="row g-3" style="color:	#006400">
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Electricity"></label>
+                <input asp-for="ExpenseDetail.Electricity" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Electricity" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.HouseTax"></label>
+                <input asp-for="ExpenseDetail.HouseTax" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.HouseTax" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.SocietyCharge"></label>
+                <input asp-for="ExpenseDetail.SocietyCharge" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.SocietyCharge" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Rents"></label>
+                <input asp-for="ExpenseDetail.Rents" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Rents" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Cable"></label>
+                <input asp-for="ExpenseDetail.Cable" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Cable" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Lpg"></label>
+                <input asp-for="ExpenseDetail.Lpg" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Lpg" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.WaterBill"></label>
+                <input asp-for="ExpenseDetail.WaterBill" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.WaterBill" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.NewsPaper"></label>
+                <input asp-for="ExpenseDetail.NewsPaper" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.NewsPaper" class="text-danger"></span>
             </div>
 
 
 
-            <hr />
 
-            <legend style="color: #3B3737" class="fw-bold">💡 Utilities</legend>
-            <div class="row g-3" style="color:	#006400">
+            <!-- other Utilities -->
+            @if (utilitiesExpenses.Any())
+            {
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Electricity"></label>
-                    <input asp-for="ExpenseDetail.Electricity" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Electricity" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.HouseTax"></label>
-                    <input asp-for="ExpenseDetail.HouseTax" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.HouseTax" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.SocietyCharge"></label>
-                    <input asp-for="ExpenseDetail.SocietyCharge" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.SocietyCharge" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Rents"></label>
-                    <input asp-for="ExpenseDetail.Rents" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Rents" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Cable"></label>
-                    <input asp-for="ExpenseDetail.Cable" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Cable" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Lpg"></label>
-                    <input asp-for="ExpenseDetail.Lpg" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Lpg" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.WaterBill"></label>
-                    <input asp-for="ExpenseDetail.WaterBill" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.WaterBill" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.NewsPaper"></label>
-                    <input asp-for="ExpenseDetail.NewsPaper" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.NewsPaper" class="text-danger"></span>
-                </div>
-
-
-
-
-                <!-- other Utilities -->
-                @if (utilitiesExpenses.Any())
+                @for (int i = 0; i < utilitiesExpenses.Count; i++)
                 {
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">@utilitiesExpenses[i].FieldName (@utilitiesExpenses[i].Section / @utilitiesExpenses[i].Type) </span>
+                        <div class="textbox-style">
 
-                    @for (int i = 0; i < utilitiesExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">@utilitiesExpenses[i].FieldName (@utilitiesExpenses[i].Section / @utilitiesExpenses[i].Type) </span>
-                            <div class="textbox-style">
+                            @FormatINR(decimal.TryParse(utilitiesExpenses[i].FieldValue, out var v) ? v : 0)
 
-                                @FormatINR(decimal.TryParse(utilitiesExpenses[i].FieldValue, out var v) ? v : 0)
-
-                            </div>
                         </div>
-                    }
+                    </div>
                 }
+            }
+        </div>
+
+
+
+
+        <hr />
+        <legend style="color: #3B3737" class="fw-bold">🎓 Education Expenses</legend>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.SchoolFees"></label>
+                <input asp-for="ExpenseDetail.SchoolFees" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.SchoolFees" class="text-danger"></span>
+            </div>
+
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Tuitions"></label>
+                <input asp-for="ExpenseDetail.Tuitions" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Tuitions" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.UniformsAccessories"></label>
+                <input asp-for="ExpenseDetail.UniformsAccessories" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.UniformsAccessories" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.BooksStationery"></label>
+                <input asp-for="ExpenseDetail.BooksStationery" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.BooksStationery" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.PicnicsActivities"></label>
+                <input asp-for="ExpenseDetail.PicnicsActivities" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.PicnicsActivities" class="text-danger"></span>
             </div>
 
 
 
 
-            <hr />
-            <legend style="color: #3B3737" class="fw-bold">🎓 Education Expenses</legend>
-            <div class="row g-3" style="color:	#006400">
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.SchoolFees"></label>
-                    <input asp-for="ExpenseDetail.SchoolFees" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.SchoolFees" class="text-danger"></span>
-                </div>
+            <!-- other Education Expenses -->
+            @if (educationExpenses.Any())
+            {
 
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Tuitions"></label>
-                    <input asp-for="ExpenseDetail.Tuitions" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Tuitions" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.UniformsAccessories"></label>
-                    <input asp-for="ExpenseDetail.UniformsAccessories" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.UniformsAccessories" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.BooksStationery"></label>
-                    <input asp-for="ExpenseDetail.BooksStationery" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.BooksStationery" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.PicnicsActivities"></label>
-                    <input asp-for="ExpenseDetail.PicnicsActivities" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.PicnicsActivities" class="text-danger"></span>
-                </div>
-
-
-
-
-                <!-- other Education Expenses -->
-                @if (educationExpenses.Any())
+                @for (int i = 0; i < educationExpenses.Count; i++)
                 {
-
-                    @for (int i = 0; i < educationExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">@educationExpenses[i].FieldName (@educationExpenses[i].Section / @educationExpenses[i].Type) </span>
-                            <div class="textbox-style">
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">@educationExpenses[i].FieldName (@educationExpenses[i].Section / @educationExpenses[i].Type) </span>
+                        <div class="textbox-style">
 
 
-                                @FormatINR(decimal.TryParse(educationExpenses[i].FieldValue, out var v) ? v : 0)
-                            </div>
+                            @FormatINR(decimal.TryParse(educationExpenses[i].FieldValue, out var v) ? v : 0)
                         </div>
-                    }
+                    </div>
                 }
+            }
 
 
+        </div>
+
+
+
+        <hr />
+
+        <legend style="color: #3B3737" class="fw-bold">🎭  Entertainment/Recreation Expenses</legend>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.MoviesTheatre"></label>
+                <input asp-for="ExpenseDetail.MoviesTheatre" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.MoviesTheatre" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.DiningOut"></label>
+                <input asp-for="ExpenseDetail.DiningOut" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.DiningOut" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.ClubhouseExpenses"></label>
+                <input asp-for="ExpenseDetail.ClubhouseExpenses" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.ClubhouseExpenses" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.PartiesAtHome"></label>
+                <input asp-for="ExpenseDetail.PartiesAtHome" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.PartiesAtHome" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.ClothingGrooming"></label>
+                <input asp-for="ExpenseDetail.ClothingGrooming" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.ClothingGrooming" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.VacationTravel"></label>
+                <input asp-for="ExpenseDetail.VacationTravel" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.VacationTravel" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Festivals"></label>
+                <input asp-for="ExpenseDetail.Festivals" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Festivals" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.KidsBirthdays"></label>
+                <input asp-for="ExpenseDetail.KidsBirthdays" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.KidsBirthdays" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.FamilyFunctions"></label>
+                <input asp-for="ExpenseDetail.FamilyFunctions" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.FamilyFunctions" class="text-danger"></span>
             </div>
 
 
 
-            <hr />
-
-            <legend style="color: #3B3737" class="fw-bold">🎭  Entertainment/Recreation Expenses</legend>
-            <div class="row g-3" style="color:	#006400">
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.MoviesTheatre"></label>
-                    <input asp-for="ExpenseDetail.MoviesTheatre" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.MoviesTheatre" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.DiningOut"></label>
-                    <input asp-for="ExpenseDetail.DiningOut" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.DiningOut" class="text-danger"></span>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.ClubhouseExpenses"></label>
-                    <input asp-for="ExpenseDetail.ClubhouseExpenses" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.ClubhouseExpenses" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.PartiesAtHome"></label>
-                    <input asp-for="ExpenseDetail.PartiesAtHome" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.PartiesAtHome" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.ClothingGrooming"></label>
-                    <input asp-for="ExpenseDetail.ClothingGrooming" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.ClothingGrooming" class="text-danger"></span>
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.VacationTravel"></label>
-                    <input asp-for="ExpenseDetail.VacationTravel" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.VacationTravel" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Festivals"></label>
-                    <input asp-for="ExpenseDetail.Festivals" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Festivals" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.KidsBirthdays"></label>
-                    <input asp-for="ExpenseDetail.KidsBirthdays" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.KidsBirthdays" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.FamilyFunctions"></label>
-                    <input asp-for="ExpenseDetail.FamilyFunctions" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.FamilyFunctions" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Medical"></label>
+                <input asp-for="ExpenseDetail.Medical" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Medical" class="text-danger"></span>
+            </div>
 
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Medical"></label>
-                    <input asp-for="ExpenseDetail.Medical" class="form-control income-expense-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Medical" class="text-danger"></span>
-                </div>
+            <!-- other Entertainment Expenses -->
+            @if (entertainmentExpenses.Any())
+            {
 
-
-
-                <!-- other Entertainment Expenses -->
-                @if (entertainmentExpenses.Any())
+                @for (int i = 0; i < entertainmentExpenses.Count; i++)
                 {
-
-                    @for (int i = 0; i < entertainmentExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">@entertainmentExpenses[i].FieldName (@entertainmentExpenses[i].Section / @entertainmentExpenses[i].Type) </span>
-                            <div class="textbox-style">
-                                @FormatINR(decimal.TryParse(entertainmentExpenses[i].FieldValue, out var v) ? v : 0)
-                            </div>
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">@entertainmentExpenses[i].FieldName (@entertainmentExpenses[i].Section / @entertainmentExpenses[i].Type) </span>
+                        <div class="textbox-style">
+                            @FormatINR(decimal.TryParse(entertainmentExpenses[i].FieldValue, out var v) ? v : 0)
                         </div>
-                    }
+                    </div>
                 }
+            }
+        </div>
+
+
+
+        <hr />
+
+
+        <legend style="color: #3B3737" class="fw-bold">🔄 New / Replacement Item Expenses(Annual)</legend>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.VehicleServicing"></label>
+                <input asp-for="ExpenseDetail.VehicleServicing" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.VehicleServicing" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.HomeRepair"></label>
+                <input asp-for="ExpenseDetail.HomeRepair" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.HomeRepair" class="text-danger"></span>
+            </div>
+
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.NewHomeAppliances"></label>
+                <input asp-for="ExpenseDetail.NewHomeAppliances" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.NewHomeAppliances" class="text-danger"></span>
             </div>
 
 
 
-            <hr />
 
+            <!-- other Replacement Expenses -->
+            @if (newReplacementExpenses.Any())
+            {
 
-            <legend style="color: #3B3737" class="fw-bold">🔄 New / Replacement Item Expenses(Annual)</legend>
-            <div class="row g-3" style="color:	#006400">
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.VehicleServicing"></label>
-                    <input asp-for="ExpenseDetail.VehicleServicing" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.VehicleServicing" class="text-danger"></span>
-                </div>
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.HomeRepair"></label>
-                    <input asp-for="ExpenseDetail.HomeRepair" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.HomeRepair" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.NewHomeAppliances"></label>
-                    <input asp-for="ExpenseDetail.NewHomeAppliances" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.NewHomeAppliances" class="text-danger"></span>
-                </div>
-
-
-
-
-                <!-- other Replacement Expenses -->
-                @if (newReplacementExpenses.Any())
+                @for (int i = 0; i < newReplacementExpenses.Count; i++)
                 {
-
-                    @for (int i = 0; i < newReplacementExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">@newReplacementExpenses[i].FieldName (@newReplacementExpenses[i].Section / @newReplacementExpenses[i].Type) </span>
-                            <div class="textbox-style">
-                                @FormatINR(decimal.TryParse(newReplacementExpenses[i].FieldValue, out var v) ? v : 0)
-                            </div>
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">@newReplacementExpenses[i].FieldName (@newReplacementExpenses[i].Section / @newReplacementExpenses[i].Type) </span>
+                        <div class="textbox-style">
+                            @FormatINR(decimal.TryParse(newReplacementExpenses[i].FieldValue, out var v) ? v : 0)
                         </div>
-                    }
+                    </div>
                 }
+            }
 
 
 
+        </div>
+        <hr />
+
+
+        <legend style="color: #3B3737" class="fw-bold">🛡️ Insurance Expenses(Annual)</legend>
+        <div class="row g-3" style="color:	#006400">
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.LifeInsurance"></label>
+                <input asp-for="ExpenseDetail.LifeInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.LifeInsurance" class="text-danger"></span>
             </div>
-            <hr />
 
 
-            <legend style="color: #3B3737" class="fw-bold">🛡️ Insurance Expenses(Annual)</legend>
-            <div class="row g-3" style="color:	#006400">
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.LifeInsurance"></label>
-                    <input asp-for="ExpenseDetail.LifeInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.LifeInsurance" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.HomeInsurance"></label>
+                <input asp-for="ExpenseDetail.HomeInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.HomeInsurance" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.HomeInsurance"></label>
-                    <input asp-for="ExpenseDetail.HomeInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.HomeInsurance" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.MedicalInsurance"></label>
+                <input asp-for="ExpenseDetail.MedicalInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.MedicalInsurance" class="text-danger"></span>
+            </div>
 
 
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.MedicalInsurance"></label>
-                    <input asp-for="ExpenseDetail.MedicalInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.MedicalInsurance" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.CarInsurance"></label>
-                    <input asp-for="ExpenseDetail.CarInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.CarInsurance" class="text-danger"></span>
-                </div>
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.CarInsurance"></label>
+                <input asp-for="ExpenseDetail.CarInsurance" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.CarInsurance" class="text-danger"></span>
+            </div>
 
 
 
-                <!-- other Replacement Expenses -->
-                @if (insuranceExpenses.Any())
+            <!-- other Replacement Expenses -->
+            @if (insuranceExpenses.Any())
+            {
+
+                @for (int i = 0; i < insuranceExpenses.Count; i++)
                 {
-
-                    @for (int i = 0; i < insuranceExpenses.Count; i++)
-                    {
-                        <div class="col-12 col-md-4">
-                            <span class="form-label gap-1 d-flex">@insuranceExpenses[i].FieldName (@insuranceExpenses[i].Section / @insuranceExpenses[i].Type) </span>
-                            <div class="textbox-style">
-                                @FormatINR(decimal.TryParse(insuranceExpenses[i].FieldValue, out var v) ? v : 0)
-                            </div>
+                    <div class="col-12 col-md-4">
+                        <span class="form-label gap-1 d-flex">@insuranceExpenses[i].FieldName (@insuranceExpenses[i].Section / @insuranceExpenses[i].Type) </span>
+                        <div class="textbox-style">
+                            @FormatINR(decimal.TryParse(insuranceExpenses[i].FieldValue, out var v) ? v : 0)
                         </div>
-                    }
+                    </div>
                 }
+            }
+        </div>
+
+        <hr />
+
+        <legend class="d-flex justify-content-between align-items-center fw-bold" style="color: #3B3737">
+            📝 Other Expense(Annual)
+        </legend>
+        <div class="row g-3" style="color:	#006400">
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.FeeToCa"></label>
+                <input asp-for="ExpenseDetail.FeeToCa" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.FeeToCa" class="text-danger"></span>
             </div>
 
-            <hr />
-
-            <legend class="d-flex justify-content-between align-items-center fw-bold" style="color: #3B3737">
-                📝 Other Expense(Annual)
-            </legend>
-            <div class="row g-3" style="color:	#006400">
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.FeeToCa"></label>
-                    <input asp-for="ExpenseDetail.FeeToCa" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.FeeToCa" class="text-danger"></span>
-                </div>
 
 
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.OtherConsultant"></label>
-                    <input asp-for="ExpenseDetail.OtherConsultant" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.OtherConsultant" class="text-danger"></span>
-                </div>
-
-
-                <div class="col-12 col-md-4">
-                    <label asp-for="ExpenseDetail.Donations"></label>
-                    <input asp-for="ExpenseDetail.Donations" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="ExpenseDetail.Donations" class="text-danger"></span>
-                </div>
-
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.OtherConsultant"></label>
+                <input asp-for="ExpenseDetail.OtherConsultant" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.OtherConsultant" class="text-danger"></span>
             </div>
 
-        }
+
+            <div class="col-12 col-md-4">
+                <label asp-for="ExpenseDetail.Donations"></label>
+                <input asp-for="ExpenseDetail.Donations" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
+                <span asp-validation-for="ExpenseDetail.Donations" class="text-danger"></span>
+            </div>
+
+        </div>
         <legend class="mt-5 d-flex justify-content-between align-items-center fw-bold" style="color: #3B3737">
             <h5> Total Expense</h5>
         </legend>
         <div class="row g-3" style="color:	#006400">
-              @if (isBasicOrZero)
-            {
             <div class="col-12 col-md-4">
-                    <input asp-for="TotalExpense" class="form-control income-expense-annual-input amount-input" placeholder="0.00" maxlength="15" />
-          
-                </div>
-            }
-            @if (!isBasicOrZero)
-            {
-             <div class="col-12 col-md-4">
                 <span id="incomeExpenseMonthlyTotal" class="fw-bold text-success me-3"></span>
             </div>
-                <div class="col-12 col-md-4">
+            <div class="col-12 col-md-4">
 
-                    <span id="incomeExpenseMonthlyTotalAnnual" class="fw-bold text-primary me-3"></span>
-                </div>
-                <div class="col-12 col-md-4">
-
-                    <span id="incomeExpenseAnnualTotalOnly" class="fw-bold text-danger"></span>
-                </div>
-
-            }
-        </div>
-        @if (!isBasicOrZero)
-        {
-            <div class="row g-3" style="color:	#006400">
-                <div class="col-12 col-md-6">
-
-                    <span id="incomeExpenseGrandTotal" class="fw-bold text-dark"></span>
-                </div>
-                <div class="col-12 col-md-6 text-end">
-
-                    <span id="incomeExpenseAvgMonthlyTotal" class="fw-bold text-primary"></span>
-                </div>
+                <span id="incomeExpenseMonthlyTotalAnnual" class="fw-bold text-primary me-3"></span>
             </div>
-            <hr />
-            <div class="card shadow-sm rounded-3">
-                <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0 d-flex align-items-center">
-                        <i class="fas fa-hand-holding-usd me-2"></i>Edited data will be saved after click on SUBMIT button
-                    </h5>
-                    <button type="button" id="addExpenseNewContainer" class="btn btn-outline-light btn-sm btn-white-background">+ Add New</button>
-                </div>
-                <div id="expenseNewSection" class="card-body">
-                    <div id="expenseNewContainer">
+            <div class="col-12 col-md-4">
 
-                        <!-- Column Headers -->
-                        <div class="row fw-bold text-dark align-items-center p-2 mb-1 d-none d-md-flex">
-                            <div class="col-sm text-left">Other Expense Name</div>
-                            <div class="col-sm text-left">Amount</div>
-                            <div class="col-sm text-left">Expense Category</div>
-                            <div class="col-sm text-left">(Monthly/Annual)</div>
-                            <div class="col-md-auto text-end">Action</div>
-                        </div>
+                <span id="incomeExpenseAnnualTotalOnly" class="fw-bold text-danger"></span>
+            </div>
 
-                        @if (Model.ExpenseNew != null && Model.ExpenseNew.Any())
+
+        </div>
+        <div class="row g-3" style="color:	#006400">
+            <div class="col-12 col-md-6">
+
+                <span id="incomeExpenseGrandTotal" class="fw-bold text-dark"></span>
+            </div>
+            <div class="col-12 col-md-6 text-end">
+
+                <span id="incomeExpenseAvgMonthlyTotal" class="fw-bold text-primary"></span>
+            </div>
+        </div>
+        <hr />
+        <div class="card shadow-sm rounded-3">
+            <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 d-flex align-items-center">
+                    <i class="fas fa-hand-holding-usd me-2"></i>Edited data will be saved after click on SUBMIT button
+                </h5>
+                <button type="button" id="addExpenseNewContainer" class="btn btn-outline-light btn-sm btn-white-background">+ Add New</button>
+            </div>
+            <div id="expenseNewSection" class="card-body">
+                <div id="expenseNewContainer">
+
+                    <!-- Column Headers -->
+                    <div class="row fw-bold text-dark align-items-center p-2 mb-1 d-none d-md-flex">
+                        <div class="col-sm text-left">Other Expense Name</div>
+                        <div class="col-sm text-left">Amount</div>
+                        <div class="col-sm text-left">Expense Category</div>
+                        <div class="col-sm text-left">(Monthly/Annual)</div>
+                        <div class="col-md-auto text-end">Action</div>
+                    </div>
+
+                    @if (Model.ExpenseNew != null && Model.ExpenseNew.Any())
+                    {
+                        for (int i = 0; i < Model.ExpenseNew.Count; i++)
                         {
-                            for (int i = 0; i < Model.ExpenseNew.Count; i++)
-                            {
-                                <div class="row g-2 align-items-center p-2 mb-1 expense-new justify-content-between">
-                                    <div class="col-sm">
-                                        <span class="d-block d-md-none fw-bold text-dark mb-1">Other Expense Name</span>
-                                        @Html.TextBoxFor(m => m.ExpenseNew[i].FieldName, new { @class = "form-control", placeholder = "Name" })
-                                        @Html.ValidationMessageFor(m => m.ExpenseNew[i].FieldName, "", new { @class = "text-danger" })
-                                    </div>
+                            <div class="row g-2 align-items-center p-2 mb-1 expense-new justify-content-between">
+                                <div class="col-sm">
+                                    <span class="d-block d-md-none fw-bold text-dark mb-1">Other Expense Name</span>
+                                    @Html.TextBoxFor(m => m.ExpenseNew[i].FieldName, new { @class = "form-control", placeholder = "Name" })
+                                    @Html.ValidationMessageFor(m => m.ExpenseNew[i].FieldName, "", new { @class = "text-danger" })
+                                </div>
 
-                                    <div class="col-sm">
-                                        <span class="d-block d-md-none fw-bold text-dark mb-1">Amount </span>
-                                        @{
-                                            var inputClass = "form-control amount-input " +
-                                            (Model.ExpenseNew[i].Type == "Monthly" ? "income-expense-input" : "income-expense-annual-input");
-                                        }
-                                        @Html.TextBoxFor(m => m.ExpenseNew[i].FieldValue, new { @class = inputClass, type = "text", placeholder = "0.00" })
-                                        @Html.ValidationMessageFor(m => m.ExpenseNew[i].FieldValue, "", new { @class = "text-danger" })
+                                <div class="col-sm">
+                                    <span class="d-block d-md-none fw-bold text-dark mb-1">Amount </span>
+                                    @{
+                                        var inputClass = "form-control amount-input " +
+                                        (Model.ExpenseNew[i].Type == "Monthly" ? "income-expense-input" : "income-expense-annual-input");
+                                    }
+                                    @Html.TextBoxFor(m => m.ExpenseNew[i].FieldValue, new { @class = inputClass, type = "text", placeholder = "0.00" })
+                                    @Html.ValidationMessageFor(m => m.ExpenseNew[i].FieldValue, "", new { @class = "text-danger" })
 
-                                    </div>
+                                </div>
 
-                                    <div class="col-sm">
-                                        <span class="d-block d-md-none fw-bold text-dark mb-1">Expense Category</span>
-                                        @Html.DropDownListFor(m => m.ExpenseNew[i].Section,
-                                                 new SelectList(new[] {
+                                <div class="col-sm">
+                                    <span class="d-block d-md-none fw-bold text-dark mb-1">Expense Category</span>
+                                    @Html.DropDownListFor(m => m.ExpenseNew[i].Section,
+                                    new SelectList(new[] {
                                                         "Home", "Conveyance", "Communication", "Utilities", "Education",
                                                         "Entertainment", "Recreation", "Replacement Item", "Insurance"
                                                         }),
-                                                                     "Select",
-                                                                     new { @class = "form-select", required = "required" })
-                                        @Html.ValidationMessageFor(m => m.ExpenseNew[i].Section, "", new { @class = "text-danger" })
-                                    </div>
+                                                        "Select",
+                                                        new { @class = "form-select", required = "required" })
+                            @Html.ValidationMessageFor(m => m.ExpenseNew[i].Section, "", new { @class = "text-danger" })
+                        </div>
 
-                                    <div class="col-sm">
-                                        <span class="d-block d-md-none fw-bold text-dark mb-1">(Monthly/Annual)</span>
-                                        @Html.DropDownListFor(m => m.ExpenseNew[i].Type,
-                                                                             new SelectList(new[] { "Monthly", "Annual" }),
-                                                                             "Select",
-                                                                             new { @class = "form-select", required = "required" })
-                                        @Html.ValidationMessageFor(m => m.ExpenseNew[i].Type, "", new { @class = "text-danger" })
-                                    </div>
+                        <div class="col-sm">
+                            <span class="d-block d-md-none fw-bold text-dark mb-1">(Monthly/Annual)</span>
+                            @Html.DropDownListFor(m => m.ExpenseNew[i].Type,
+                                                        new SelectList(new[] { "Monthly", "Annual" }),
+                                                        "Select",
+                                                        new { @class = "form-select", required = "required" })
+                            @Html.ValidationMessageFor(m => m.ExpenseNew[i].Type, "", new { @class = "text-danger" })
+                        </div>
 
-                                    <div class="col-md-auto col-sm-12 text-center">
-                                        <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
-                                        <button type="button" class="btn btn-danger btn-sm delete-expense-new" title="Remove">&times;</button>
-                                    </div>
-
-                                </div>
-                            }
-                        }
+                        <div class="col-md-auto col-sm-12 text-center">
+                            <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
+                            <button type="button" class="btn btn-danger btn-sm delete-expense-new" title="Remove">&times;</button>
+                        </div>
 
                     </div>
+                                        }
+                                        }
+
                 </div>
             </div>
-        }
+        </div>
+
     </fieldset>
     <!--3. Saving -->
     @*    <fieldset style="background-color: #e8f5e9; border: 2px solid #006400; padding: 1.5rem; border-radius: 0.5rem;"> *@
@@ -1443,7 +1398,7 @@
             <div class="col-12 col-md-2">
                 <span class="d-block  fw-bold text-dark mb-1 text-nowrap"> Monthly Contribution </span>
                 <input asp-for="CommittedSaving.MonthlyContribution" class="form-control amount-input" placeholder="0.00" maxlength="15" />
-             @*    <span asp-validation-for="CommittedSaving.MonthlyContribution" class="text-danger"></span> *@
+                <span asp-validation-for="CommittedSaving.MonthlyContribution" class="text-danger"></span>
             </div>
             <div class="col-12 col-md-2">
                 <span class="d-block  fw-bold text-dark mb-1 text-nowrap"> Till When 📅 </span>
@@ -1488,40 +1443,40 @@
                             <div class="col-md-2">
                                 <span class="d-block d-md-none fw-bold text-dark mb-1"> Monthly Contribution</span>
                                 @Html.TextBoxFor(m => m.NewSavings[i].MonthlyContribution, new { @class = "form-control", type = "number", placeholder = "Monthly Contribution" })
-                           @*      @Html.ValidationMessageFor(m => m.NewSavings[i].MonthlyContribution, "", new { @class = "text-danger" }) *@
+                                @Html.ValidationMessageFor(m => m.NewSavings[i].MonthlyContribution, "", new { @class = "text-danger" })
 
                             </div>
 
                             <div class="col-md-2">
                                 <span class="d-block d-md-none fw-bold text-dark mb-1"> Till When 📅</span>
                                 @Html.TextBox($"NewSavings[{i}].TillWhen",
-                                         Model.NewSavings[i].TillWhen?.ToString("dd/MM/yyyy"),
-                                                         new { @class = "form-control datepicker", placeholder = "dd/MM/yyyy", required = "required" })
+                                Model.NewSavings[i].TillWhen?.ToString("dd/MM/yyyy"),
+                                                new { @class = "form-control datepicker", placeholder = "dd/MM/yyyy", required = "required" })
 
-                                @Html.ValidationMessageFor(m => m.NewSavings[i].TillWhen, "", new { @class = "text-danger" })
+                        @Html.ValidationMessageFor(m => m.NewSavings[i].TillWhen, "", new { @class = "text-danger" })
 
 
-                            </div>
-                            <div class="col-md-2">
-                                <span class="d-block d-md-none fw-bold text-dark mb-1"> Follow Up </span>
-                                @Html.DropDownListFor(m => m.NewSavings[i].FollowUp,
-                                                                 new List<SelectListItem>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="d-block d-md-none fw-bold text-dark mb-1"> Follow Up </span>
+                        @Html.DropDownListFor(m => m.NewSavings[i].FollowUp,
+                                                new List<SelectListItem>
                                                 {
                                                 new SelectListItem { Text = "Yes", Value = "true" },
                                                 new SelectListItem { Text = "No", Value = "false" }
                                                 },
-                                                                 "Select",
-                                                                 new { @class = "form-select", required = "required" })
-                                @Html.ValidationMessageFor(m => m.NewSavings[i].FollowUp, "", new { @class = "text-danger" })
+                                                "Select",
+                                                new { @class = "form-select", required = "required" })
+                        @Html.ValidationMessageFor(m => m.NewSavings[i].FollowUp, "", new { @class = "text-danger" })
 
-                            </div>
-                            <div class="col-12 col-md-2">
-                                <span class="d-block d-md-none fw-bold text-dark mb-1"> Action</span>
-                                <button type="button" class="btn btn-danger btn-sm delete-saving-entry" title="Remove">&times;</button>
-                            </div>
-                        </div>
-                    }
-                }
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <span class="d-block d-md-none fw-bold text-dark mb-1"> Action</span>
+                        <button type="button" class="btn btn-danger btn-sm delete-saving-entry" title="Remove">&times;</button>
+                    </div>
+                </div>
+                                }
+                                }
 
             </div>
         </div>
@@ -1609,47 +1564,47 @@
                                 <div class="col-sm">
                                     <span class="d-block d-md-none fw-bold text-dark mb-1"> Till  When</span>
                                     @Html.TextBox($"EmiDetail[{i}].Till",
-                                             Model.EmiDetail[i].Till?.ToString("dd/MM/yyyy"),
-                                                                 new { @class = "form-control  datepicker", placeholder = "dd/MM/yyyy", required = "required" })
-                                    @Html.ValidationMessageFor(m => m.EmiDetail[i].Till, "", new { @class = "text-danger small" })
-                                </div>
+                                    Model.EmiDetail[i].Till?.ToString("dd/MM/yyyy"),
+                                                        new { @class = "form-control  datepicker", placeholder = "dd/MM/yyyy", required = "required" })
+                            @Html.ValidationMessageFor(m => m.EmiDetail[i].Till, "", new { @class = "text-danger small" })
+                        </div>
 
-                                <div class="col-sm">
-                                    <div class="d-flex flex-column align-items-start align-items-md-end w-100">
-                                        <span class="fw-bold text-dark mb-1 d-block d-md-none">FollowUp</span>
+                        <div class="col-sm">
+                            <div class="d-flex flex-column align-items-start align-items-md-end w-100">
+                                <span class="fw-bold text-dark mb-1 d-block d-md-none">FollowUp</span>
 
-                                        @Html.DropDownListFor(m => m.EmiDetail[i].FollowUp,
-                                                                                 new List<SelectListItem>
+                                @Html.DropDownListFor(m => m.EmiDetail[i].FollowUp,
+                                                                new List<SelectListItem>
                                                                 {
                                                                 new SelectListItem { Text = "Yes", Value = "true" },
                                                                 new SelectListItem { Text = "No", Value = "false" }
                                                                 },
-                                                                                 "Select",
-                                                                                 new { @class = "form-select", required = "required" })
+                                                                "Select",
+                                                                new { @class = "form-select", required = "required" })
 
-                                        @Html.ValidationMessageFor(m => m.EmiDetail[i].FollowUp, "", new { @class = "text-danger small" })
-                                    </div>
-                                </div>
+                                @Html.ValidationMessageFor(m => m.EmiDetail[i].FollowUp, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
 
-                                <div class="col-md-auto col-sm-12 text-center">
+                        <div class="col-md-auto col-sm-12 text-center">
 
-                                    @if (i > 4)
-                                    {
-                                        <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
-                                        <button type="button" class="btn btn-danger btn-sm delete-emi-entry" title="Remove"> &times; </button>
-                                    }
-                                </div>
-
-
+                            @if (i > 4)
+                                {
+                                    <span class="d-block d-md-none fw-bold text-dark mb-1">Action</span>
+                                    <button type="button" class="btn btn-danger btn-sm delete-emi-entry" title="Remove"> &times; </button>
+                                }
                             </div>
 
-                            @* Floating delete button after 5th *@
+
+                        </div>
+
+                        @* Floating delete button after 5th *@
 
 
 
 
-                        }
                     }
+                                        }
 
                 </div>
             </div>
@@ -1680,9 +1635,9 @@
 
             <div class="col-12 col-md-6 text-md-start">
                 <input asp-for="EmiOneTimeLoanRepayment.OneTimeLoanRepayment"
-                class="form-control  amount-input"
-                style="max-width: 250px;"
-                placeholder="0.00" maxlength="15" />
+                       class="form-control  amount-input"
+                       style="max-width: 250px;"
+                       placeholder="0.00" maxlength="15" />
 
                 <span asp-validation-for="EmiOneTimeLoanRepayment.OneTimeLoanRepayment" class="text-danger small d-block mt-1"></span>
             </div>
@@ -1693,11 +1648,10 @@
 
 
     </fieldset>
-    @if (!iszero2one)
-    {
-        <!--5. Manage Suggested Modified Budget  -->
-        <fieldset class="d-flex flex-column gap-2 fieldset-green">
-            <legend class="d-flex justify-content-between align-items-center fw-bold" style="color: #3B3737;">
+
+    <!--5. Manage Suggested Modified Budget  -->
+    <fieldset class="d-flex flex-column gap-2 fieldset-green">
+        <legend class="d-flex justify-content-between align-items-center fw-bold" style="color: #3B3737;">
             💸 3.2 Suggested Modified Budget
 
         </legend>
@@ -1766,9 +1720,7 @@
         </div>
 
     </fieldset>
-    }
-    @if (!isBasicOrZero)
-{
+
     <!--6. Manage Net Worth  -->
     <fieldset class="d-flex flex-column gap-2 fieldset-blue">
         <legend style="color: #3B3737" class="fw-bold">
@@ -2058,15 +2010,15 @@
                 Liabilities
 
             </legend>
-            <div class="row g-3 ">
+            <div class="row g-3 d-none">
                 <!-- Other Assets -->
-      
-                 <!-- Home1Loan Loan -->
                 <div class="col-12 col-md-4">
-                    <label asp-for="netWorthViewModel.Home1Loan" class="form-label fw-semibold"></label>
-                    <input asp-for="netWorthViewModel.Home1Loan" class="form-control amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="netWorthViewModel.Home1Loan" class="text-danger small"></span>
+                    <label asp-for="netWorthViewModel.OtherAssetsOther" class="form-label fw-semibold"></label> it is changed duering testing
+
+                    <input asp-for="netWorthViewModel.OtherAssetsOther" class="form-control amount-input" placeholder="0.00" maxlength="15" readonly />
+                    <span asp-validation-for="netWorthViewModel.OtherAssetsOther" class="text-danger small"></span>
                 </div>
+
                 <!-- Home2 Loan -->
                 <div class="col-12 col-md-4">
                     <label asp-for="netWorthViewModel.Home2Loan" class="form-label fw-semibold"></label>
@@ -2080,13 +2032,7 @@
                     <input asp-for="netWorthViewModel.LandLoan" class="form-control amount-input" placeholder="0.00" maxlength="15" />
                     <span asp-validation-for="netWorthViewModel.LandLoan" class="text-danger small"></span>
                 </div>
-                     <!-- CarLoan -->
-                <div class="col-12 col-md-4">
-                    <label asp-for="netWorthViewModel.CarLoan" class="form-label fw-semibold"></label>
-                    <input asp-for="netWorthViewModel.CarLoan" class="form-control amount-input" placeholder="0.00" maxlength="15" />
-                    <span asp-validation-for="netWorthViewModel.CarLoan" class="text-danger small"></span>
-                </div>
-                
+
                 <!-- Commercial Property Loan -->
                 <div class="col-12 col-md-4">
                     <label asp-for="netWorthViewModel.CommercialPropertyLoan" class="form-label fw-semibold"></label>
@@ -2115,7 +2061,7 @@
                     <span asp-validation-for="netWorthViewModel.OtherLoan" class="text-danger small"></span>
                 </div>
             </div>
-  @*           <div class="row g-3">
+            <div class="row g-3">
 
                 @if (Model.EmiDetail != null && Model.EmiDetail.Any())
                 {
@@ -2136,8 +2082,8 @@
                 }
 
             </div>
-            <hr /> *@
-        @*     <div class="row g-3">
+            <hr />
+            <div class="row g-3">
                 @if (Model.NewLiabilities != null && Model.NewLiabilities.Any())
                 {
                     @for (int i = 0; i < Model.NewLiabilities.Count; i++)
@@ -2152,7 +2098,7 @@
                     }
 
                 }
-            </div> *@
+            </div>
             <hr />
             <div class="card shadow-sm rounded-3">
                 <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">
@@ -2278,10 +2224,6 @@
             </div>
         </div>
     </fieldset>
-    }
-
- @if (!iszero2one )
-{
     <!--8. Manage  Insurance  -->
     <fieldset class="d-flex flex-column gap-2 fieldset-blue">
         <legend class="d-flex justify-content-between align-items-center fw-bold" style="color: #3B3737;">
@@ -2469,7 +2411,7 @@
     </div>
     </div>
     </div> *@
-   }
+
 
 
     <div class="row g-3" style="color: #006400;">
@@ -2481,7 +2423,7 @@
     <div class="row g-3" mt-3 mx-5" style="color:	#006400">
         <!-- Previous (left) -->
         <div class="col-4 d-flex justify-content-start">
-            <a href="@Url.Action("Wings", userPlan, new { id = _profileId })"
+            <a href="@Url.Action("Wings", "Comprehensive", new { id = _profileId })"
                class="btn saveButton d-flex align-items-center justify-content-center"
                style="width: 150px; height: 45px;">
                 ⬅️ <span class="ms-2">Previous</span>
@@ -2500,7 +2442,7 @@
         <!-- Next (right) -->
         <div class="col-4 d-flex justify-content-end d-none" id="nextButtonContainer">
 
-            <a href="@Url.Action("KnowledgeThatMatters", @userPlan, new { id = _profileId })"
+            <a href="@Url.Action("KnowledgeThatMatters", "Comprehensive", new { id = _profileId })"
                class="btn saveButton d-flex align-items-center justify-content-center"
                style="width: 150px; height: 45px;">
                 <span class="me-2">Next</span> ➡️
@@ -2765,8 +2707,8 @@
                             </div>
                                           <div class="col-md-2">
                                                 <span class="d-block d-md-none fw-bold text-dark mb-1"> Monthly Contribution</span>
-                                        <input type="number" name="NewSavings[${index}].MonthlyContribution" placeholder="0.00" maxlength="15"  class="form-control" />
-                                
+                                        <input type="number" name="NewSavings[${index}].MonthlyContribution" placeholder="0.00" maxlength="15" required class="form-control" />
+                                <span class="field-validation-valid text-danger" data-valmsg-for="NewSavings[${index}].MonthlyContribution" data-valmsg-replace="true"></span>
                             </div>
                                      <div class="col-md-2">
                                                 <span class="d-block d-md-none fw-bold text-dark mb-1"> Till When (dd/MM/yyyy)</span>
@@ -3328,7 +3270,7 @@
             if (!form.valid()) return;
             const formData = form.serialize();
             $.ajax({
-                url: '@Url.Action("Alertness", @userPlan)',
+                url: '@Url.Action("Alertness", "Comprehensive")',
                 type: 'POST',
                 data: formData,
                 success: function (response) {

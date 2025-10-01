@@ -26,7 +26,7 @@ namespace FactFinderWeb.Services
 			_userID = Convert.ToInt64(userIdStr);
 		}
 
-		public async Task<Int64> UserAdd(TblFfRegisterUser user)
+		public async Task<TblffAwarenessProfileDetail> UserAdd(TblFfRegisterUser user)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             string Passwordhashed = UtilityHelperServices.PasswordHash(user.Password);
@@ -42,7 +42,7 @@ namespace FactFinderWeb.Services
 
             /// Add user profile details
 			TblffAwarenessProfileDetail userProfile = new TblffAwarenessProfileDetail();
-            userProfile.Profileid = user.Id;
+            userProfile.UserId = user.Id;
             userProfile.Name = user.Name;
             userProfile.Email = user.Email;
             userProfile.Phone = user.Mobile;
@@ -50,11 +50,13 @@ namespace FactFinderWeb.Services
             userProfile.PlanYear = DateTime.Now.Year;
             userProfile.CreateDate = DateTime.Now;
             userProfile.UpdateDate = DateTime.Now;
+			userProfile.ProfileStatus = "Draft";
+            userProfile.Registerid = user.Id;
             _context.TblffAwarenessProfileDetails.Add(userProfile);
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
-            return user.Id;
+            return userProfile;
         }
 
         public async void UserAddProfileDetail(TblFfRegisterUser user)
@@ -135,15 +137,15 @@ namespace FactFinderWeb.Services
 
 
 
-		public async Task<DashboardViewModel> UserDashboard()
+		public async Task<List<DashboardViewModel>> UserDashboard()
 		{
 
 
-			var user = (from o in _context.TblFfRegisterUsers
+			var user =await (from o in _context.TblFfRegisterUsers
 						join p in _context.TblffAwarenessProfileDetails
-						on o.Id equals p.Profileid
+						on o.Id equals p.UserId
                         join ad in _context.TblFfAdminUsers
-						on (long)o.Advisorid equals ad.Id into advisorJoin
+						on (long)p.Advisorid equals ad.Id into advisorJoin
                         //join ad in _context.TblFfAdminUsers
                         //  on o.Advisorid equals ad.Id into advisorJoin
                         from ad in advisorJoin.DefaultIfEmpty()
@@ -161,10 +163,13 @@ namespace FactFinderWeb.Services
 							UserActiveStatus = o.Activestatus,
 							UserEmailVerification = o.Emailverified,
 							Userptx = o.Password,
-							AdvisorName = ad.Name
+							AdvisorName = ad.Name,
+                            PlanCreatedDate =p.CreateDate,
+							PlanUpdatedDate= p.UpdateDate,
+							Profileid= p.Profileid,
+							ProfileStatus = p.ProfileStatus
 
-						}
-						).FirstOrDefault();
+                        }).ToListAsync();
 
 			return user;
 		}
@@ -175,7 +180,7 @@ namespace FactFinderWeb.Services
             var user = await _context.TblFfRegisterUsers.FirstOrDefaultAsync(u => u.Email == mVResetPassword.Email);
 			if (user == null) return "user not exist";
 
-			var confirmData = await _context.TblffPasswordResetRequests.FirstOrDefaultAsync(u => u.Profileid == user.Id && u.Token == mVResetPassword.code);
+			var confirmData = await _context.TblffPasswordResetRequests.FirstOrDefaultAsync(u => u.UserId == user.Id && u.Token == mVResetPassword.code);
 			if (confirmData != null)
 			{
 				confirmData.CreatedAt = DateTime.Now;
@@ -231,16 +236,17 @@ namespace FactFinderWeb.Services
 			
 			_context.TblffPasswordResetRequests.Add(new TblffPasswordResetRequest
 			{
-				Profileid = user.Id,
+				UserId = user.Id,
 				Token = token,
 				Expiration = expiration
 			});
 
-            //await _emailService.SendResetPasswordEmail(user.Email, resetLink);
-
+			//await _emailService.SendResetPasswordEmail(user.Email, resetLink);
+	
             int i = await _context.SaveChangesAsync();
 			if(i > 0)
 			{
+				
 				//string resetLink = $"https://yourapp.com/reset-password?token={token}";
                 return token;
             }

@@ -17,9 +17,10 @@ namespace FactFinderWeb.Controllers
     {
         private readonly ResellerBoyinawebFactFinderWebContext _context;
         private readonly AwarenessServices _AwarenessServices;
-        private readonly long _userID;
+       private readonly long _userID;
         private readonly HttpContext _httpContext;
         private readonly JSONDataUtility _jsonData;
+        private readonly long _profileId;
 
         int updateRows = 0;
 
@@ -29,9 +30,10 @@ namespace FactFinderWeb.Controllers
             _context = context;
             _AwarenessServices = awarenessServices;
             _jsonData = jSONDataUtility;
-
+            
             _httpContext = httpContextAccessor.HttpContext;
             var userIdStr = _httpContext.Session.GetString("UserId");
+            _profileId = Convert.ToInt64(_httpContext.Session.GetString("profileId"));
             _userID = Convert.ToInt64(userIdStr);
         }
 
@@ -73,7 +75,7 @@ namespace FactFinderWeb.Controllers
             {
                 return Unauthorized(); // manually block if not logged in
             }
-            var awarenessList = await _context.TblffAwarenessChildren.Where(c => c.Profileid == _userID).ToListAsync();
+            var awarenessList = await _context.TblffAwarenessChildren.Where(c => c.Profileid == _profileId).ToListAsync();
             return Ok(awarenessList); // Automatically serialized as JSON
         }
 
@@ -84,7 +86,7 @@ namespace FactFinderWeb.Controllers
             {
                 return Unauthorized(); // manually block if not logged in
             }
-            var child = await _context.TblffAwarenessChildren.FirstOrDefaultAsync(ChildDetails => ChildDetails.Id == id && ChildDetails.Profileid == _userID);
+            var child = await _context.TblffAwarenessChildren.FirstOrDefaultAsync(ChildDetails => ChildDetails.Id == id && ChildDetails.Profileid == _profileId);
 
             if (child == null)
             {
@@ -101,7 +103,7 @@ namespace FactFinderWeb.Controllers
                 return Unauthorized(); // manually block if not logged in
             }
             var child = await _context.TblffAwarenessChildren
-                .FirstOrDefaultAsync(c => c.Id == id && c.Profileid == _userID);
+                .FirstOrDefaultAsync(c => c.Id == id && c.Profileid == _profileId);
 
             if (child == null)
             {

@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.14">
       <PrivateAssets>all</PrivateAssets>
@@ -49,6 +48,13 @@
     <None Include="wwwroot\emailtemplates\FormSubmitSuccessTemplate.html" />
     <None Include="wwwroot\emailtemplates\ResendEmailVerification.html" />
     <None Include="wwwroot\emailtemplates\SignupSuccessTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\User\Dashboard - Copy.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

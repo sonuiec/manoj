@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Configuration;
 using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,12 +37,12 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("FactFinderDbCon"
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddSession(); // for session support
 
+//builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddControllersWithViews()
-        .AddRazorRuntimeCompilation();
-
+ 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(60); // Set session timeout
@@ -79,16 +80,18 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 //    app.UseHsts();
 //}
 
-
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage(); // ⚠️ remove after debugging
+    // Detailed errors for local debugging only
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-	app.UseExceptionHandler("/Shared/Error404.cshtml");
-	app.UseHsts(); // Production security
+    // Friendly error page + security in Production/Staging
+    app.UseExceptionHandler("/Error"); // <-- point to a controller/action or Razor page
+    app.UseHsts();
 }
+
 
 app.UseCors("AllowAll");
 

@@ -1,4 +1,5 @@
-﻿using FactFinderWeb.Models;
+﻿using FactFinderWeb.BLL;
+using FactFinderWeb.Models;
 using FactFinderWeb.ModelsView;
 using FactFinderWeb.ModelsView.AdminMV;
 using FactFinderWeb.Services;
@@ -82,13 +83,16 @@ namespace FactFinderWeb.Controllers
         [HttpPost("admin/UpdateAdvisor")]
         public async Task<IActionResult> UpdateAdvisor(int id, int advisorid)
         {
-            var user = await _context.TblFfRegisterUsers.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.TblffAwarenessProfileDetails.FirstOrDefaultAsync(u => u.Profileid == id);
             if (user == null)
             {
                 return NotFound();
             }
 
             user.Advisorid = advisorid;
+            user.ProfileStatus = "assign";
+            _context.TblffAwarenessProfileDetails.Update(user);
+
             await _context.SaveChangesAsync();
 
             return Json(new { success = true });
@@ -397,31 +401,34 @@ namespace FactFinderWeb.Controllers
 
             if (awarenessProfileDetail == null)
                 return NotFound("User not found.");
+            var awarenessusers = _context.TblFfRegisterUsers
+           .FirstOrDefault(u => u.Id == awarenessProfileDetail.UserId);
 
-            HttpContext.Session.SetString("UserFullName", awarenessProfileDetail.Name);
-            HttpContext.Session.SetString("Useremail", awarenessProfileDetail.Email);
+            HttpContext.Session.SetString("UserFullName", awarenessusers.Name);
+            HttpContext.Session.SetString("Useremail", awarenessusers.Email);
             HttpContext.Session.SetString("UserStep", "S1");
             HttpContext.Session.SetString("UserPlan", awarenessProfileDetail.PlanType);
-            HttpContext.Session.SetString("UserId", awarenessProfileDetail.Id.ToString());
+            HttpContext.Session.SetString("profileId", awarenessProfileDetail.Profileid.ToString());
+            HttpContext.Session.SetString("UserId", awarenessProfileDetail.UserId.ToString());
             HttpContext.Session.SetString("RegisterId", awarenessProfileDetail.Registerid.ToString());
+
 
             string planType = awarenessProfileDetail.PlanType;
             ViewData["msg"] = "";
             ViewData["Error"] = "";
 
-            if (AdminUserRole.ToLower() != "advisor")
-                return RedirectToAction("UserProfile", "User");
+            return RedirectToAction("userprofile", "User", new { id = awarenessProfileDetail.Profileid });
 
-            if (awarenessProfileDetail.Advisorid == AdminUserId)
-                return RedirectToAction("UserProfile", "User");
+
+
 
             return RedirectToAction("Dashboard", "Admin");
         }
 
 
         [HttpGet]
-        [Route("admin/editUserPlan/{userid}")]
-        public IActionResult editUserPlan(long userid)
+        [Route("admin/editUserPlan/{Profileid}")]
+        public IActionResult editUserPlan(long Profileid)
         {
             int AdminUserId = Convert.ToInt32(HttpContext.Session.GetString("AdminUserId") ?? "0");
             string AdminUserRole = HttpContext.Session.GetString("AdminUserRole");
@@ -430,20 +437,25 @@ namespace FactFinderWeb.Controllers
             if (AdminUserId <= 0)
                 return RedirectToAction("Login", "Admin");
 
-            if (userid <= 0)
+            if (Profileid <= 0)
                 return BadRequest("Invalid user ID.");
 
             var awarenessProfileDetail = _context.TblffAwarenessProfileDetails 
-                .FirstOrDefault(u => u.Profileid == userid);
+                .FirstOrDefault(u => u.Profileid == Profileid);
+
 
             if (awarenessProfileDetail == null)
                 return NotFound("User not found.");
 
-            HttpContext.Session.SetString("UserFullName", awarenessProfileDetail.Name);
-            HttpContext.Session.SetString("Useremail", awarenessProfileDetail.Email);
+            var awarenessusers= _context.TblFfRegisterUsers
+                .FirstOrDefault(u => u.Id == awarenessProfileDetail.UserId);
+
+            HttpContext.Session.SetString("UserFullName", awarenessusers.Name);
+            HttpContext.Session.SetString("Useremail", awarenessusers.Email);
             HttpContext.Session.SetString("UserStep", "S1");
             HttpContext.Session.SetString("UserPlan", awarenessProfileDetail.PlanType);
-            HttpContext.Session.SetString("UserId", awarenessProfileDetail.Id.ToString());
+            HttpContext.Session.SetString("profileId", awarenessProfileDetail.Profileid.ToString());
+            HttpContext.Session.SetString("UserId", awarenessProfileDetail.UserId.ToString());
             HttpContext.Session.SetString("RegisterId", awarenessProfileDetail.Registerid.ToString());
 
             string planType = awarenessProfileDetail.PlanType;
@@ -451,11 +463,11 @@ namespace FactFinderWeb.Controllers
             ViewData["msg"] = "";
             ViewData["Error"] = "";
 
-            if (AdminUserRole.ToLower() != "advisor")
-                return RedirectToAction("Awareness", planType);
+           
+                return RedirectToAction("Awareness", planType,  new { id = CryptoHelper.Encrypt(awarenessProfileDetail.Profileid) });
 
-            if (awarenessProfileDetail.Advisorid == AdminUserId)
-                return RedirectToAction("Awareness", planType);
+            //if (awarenessProfileDetail.Advisorid == AdminUserId)
+            //    return RedirectToAction("Awareness", planType);
 
             return RedirectToAction("Dashboard", "Admin");
         }
@@ -480,6 +492,7 @@ namespace FactFinderWeb.Controllers
 
 
         [HttpPost]
+      
         [Route("/admin/UserDetails/{id}")]
         public async Task<IActionResult> UserDetails(UserProfileViewModel userprofile)
         {

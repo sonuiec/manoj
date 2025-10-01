@@ -1,55 +1,49 @@
 ﻿@using FactFinderWeb.ModelsView
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-@using Microsoft.AspNetCore.Http;
-
 @model MVKnowledgeRisk
 @{
     ViewData["Title"] = "Knowledge that matters";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
-    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
-    var _profileId = HttpContextAccessor.HttpContext.Request.RouteValues["pid"]?.ToString();
-    var isBasicOrZero = ("basic|zero2one").Contains(userPlan?.ToLower() ?? "");
 }
 
 <style>
     .text-truncate-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
     }
 
     .help-section h1.hlp {
-    color: #007bff;
-    margin-bottom: 15px;
+        color: #007bff;
+        margin-bottom: 15px;
     }
 
     .help-section h1 {
-    color: #007bff;
-    margin-bottom: 15px;
-    float: left;
-    width: 100%;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 5px;
+        color: #007bff;
+        margin-bottom: 15px;
+        float: left;
+        width: 100%;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
     }
 
     .help-section p.parax span {
-    font-weight: bold;
-    font-size: 20px;
+        font-weight: bold;
+        font-size: 20px;
     }
 
     .riskk {
-    color: #FF1D58;
+        color: #FF1D58;
     }
 
     .formfield {
-    background-color: #f9f9f9;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    font-family: Arial, sans-serif;
-    color: #333;
-    text-align: left;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+        color: #333;
+        text-align: left;
     }
 </style>
 
@@ -73,21 +67,14 @@
 
 
     <!-- form -->
-    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded"
-          asp-controller="Comprehensive"
-          asp-route-planType="@userPlan"  asp-action="KnowledgeThatMatters" >
+    <form id="mainForm" style="background-color: #F5F5F5" class="mt-2 p-3 d-flex flex-column gap-4  rounded" asp-controller="Comprehensive" asp-action="KnowledgeThatMatters">
         <!--plan details -->
         <fieldset class="d-flex flex-column gap-2">
-            <input type="hidden" asp-for="Id" />
-
             <legend style="color: #3B3737" class="fw-bold">Risk Profile</legend>
             <div style="color:	#006400" class="row g-3 justify-content-md-center">
                 <div class="col-12 col-md-3  mx-0 mx-md-2  formfield">
                     <label class="form-label d-flex align-items-center gap-1" asp-for="@Model.RiskTolerance">
-                        Your Risk Tolerance    @if (!userPlan.ToLower().Equals("zero2one") && !userPlan.ToLower().Equals("basic"))
-                        {
-                            <span class="text-danger fw-bold">*</span>
-                        }
+                        Your Risk Tolerance<span class="text-danger fw-bold ">*</span>
                     </label>
                     <select asp-for="@Model.RiskTolerance" class="form-select outline-none w-fit rounded-lg mx-[10%] float-end peer focus:outline-secondary">
                         <option value="">Select</option>
@@ -102,10 +89,7 @@
                 <div class="col-12 col-md-3  mx-0 mx-md-2  formfield">
 
                     <label class="form-label d-flex align-items-center gap-1" asp-for="@Model.RiskCapacity">
-                        Your Risk Capacity    @if (!userPlan.ToLower().Equals("zero2one") && !userPlan.ToLower().Equals("basic"))
-                        {
-                            <span class="text-danger fw-bold">*</span>
-                        }
+                        Your Risk Capacity<span class="text-danger fw-bold ">*</span>
                     </label>
                     <select asp-for="@Model.RiskCapacity" class="form-select outline-none w-[40%] rounded-lg mx-[26%] float-end peer focus:outline-secondary">
                         <option value="">Select</option>
@@ -119,10 +103,7 @@
                 <div class="col-12 col-md-3  mx-0 mx-md-2  formfield">
 
                     <label class="form-label d-flex align-items-center gap-1" asp-for="@Model.RiskRequirement">
-                        Your Risk Requirement   @if (!userPlan.ToLower().Equals("zero2one") && !userPlan.ToLower().Equals("basic"))
-                        {
-                            <span class="text-danger fw-bold">*</span>
-                        }
+                        Your Risk Requirement<span class="text-danger fw-bold ">*</span>
                     </label>
                     <select asp-for="@Model.RiskRequirement" class="form-select outline-none w-[40%] rounded-lg mx-[26%] float-end peer focus:outline-secondary">
                         <option value="">Select</option>
@@ -135,52 +116,47 @@
 
 
             </div>
-            @if (!isBasicOrZero)
-            {
+            @{
+                /* This section is commented out  for future use if needed
+                <div style="color:	#006400" class="row g-3">
 
-                <div style="color:	#006400" class="row g-3 justify-content-md-center d-none">
+                <div class="col-12 col-md-4 formfield">
 
-
-                    <div class="col-12 col-md-3  mx-0 mx-md-2  formfield">
-
-                        <label class="form-label d-flex align-items-center gap-1" asp-for="@Model.TotalRiskProfileScore">
-                            Overall Risk Profile
-                        </label>
-                        <input asp-for="@Model.TotalRiskProfileScore" class="form-control inputnumyr outline-none w-fit rounded-lg mx-[10%] float-end peer focus:outline-secondary"  required maxlength="4" type="text" id="TotalRiskProfileScore" name="TotalRiskProfileScore" value="@Model.TotalRiskProfileScore" />
-                    </div>
-
-                    <div class="col-12 col-md-3  mx-0 mx-md-2  formfield">
-
-                        <label class="form-label d-flex align-items-center gap-1" asp-for="@Model.PlannerAssessmentOnRiskProfile">
-                            Financial Planner's Assessement on Risk Pofile
-                        </label>
-                        <select asp-for="@Model.PlannerAssessmentOnRiskProfile" class="form-select outline-none w-[40%] rounded-lg mx-[26%] float-end peer focus:outline-secondary">
-                            <option value="">Select</option>
-                            <option value="Conservative">Conservative</option>
-                            <option value="Moderately Conservative">Moderately Conservative</option>
-                            <option value="Moderate">Moderate</option>
-                            <option value="Moderately Aggressive">Moderately Aggressive</option>
-                            <option value="Aggressive">Aggressive</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-3  mx-0 mx-md-2  formfield">&nbsp;</div>
+                <label class="form-label d-flex align-items-center gap-1" asp-for="@Model.RiskRequirement">
+                Overall Risk Profile
+                </label>
+                <input asp-for="@Model.RiskRequirement" class="form-control inputnumyr outline-none w-fit rounded-lg mx-[10%] float-end peer focus:outline-secondary" readonly required maxlength="4" type="text" id="Overallriskprofile" name="Overallriskprofile" value="@Model.RiskRequirement" />
                 </div>
-            }
 
+                <div class="col-12 col-md-4 formfield">
+
+                <label class="form-label d-flex align-items-center gap-1" asp-for="@Model.RiskRequirement">
+                Financial Planner's Assessement on Risk Pofile
+                </label>
+                <select asp-for="@Model.RiskRequirement" class="form-select outline-none w-[40%] rounded-lg mx-[26%] float-end peer focus:outline-secondary">
+                <option value="">Select</option>
+                <option value="Conservative">Conservative</option>
+                <option value="Moderately Conservative">Moderately Conservative</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Moderately Aggressive">Moderately Aggressive</option>
+                <option value="Aggressive">Aggressive</option>
+                </select>
+                </div>
+                </div>
+                */
+            }
         </fieldset>
 
         <div class="d-flex justify-content-end mt-3 mx-2 ">
-            <a asp-action="Alertness" asp-controller="Comprehensive" asp-route-planType="Comprehensive" asp-route-pid="@_profileId" class="btn btn-secondary px-2 py-1 rounded mx-1">Previous</a>
+            <a asp-action="Alertness" class="btn btn-secondary  px-2 py-1 rounded mx-1">Previous</a>
 
-            <button type="submit" asp-action="KnowledgeThatMatters" asp-controller="Comprehensive" asp-route-planType="@userPlan" class="btn btn-primary px-3 py-1 rounded mx-2">Next</button>
-
+            <button name="btnSubmit" id="btnSubmit" class="btn btn-primary px-3 py-1 rounded  mx-2">Next</button>
             @Html.AntiForgeryToken()
         </div>
-        <div class="d-flex justify-content-start mt-1  ">
+        <div class="d-flex justify-content-end mt-1 mx-5 ">
             <span id="spmsg" class="d-none"></span>
             <span>
-                <b>  Please refer the following definitions or contact your advisor for more clarity.</b>
+                Please refer the following definitions or contact your advisor for more clarity.
             </span>
         </div>
 
@@ -231,29 +207,6 @@
 
                 form.submit();
             }
-          
-        $(document).ready(function () {
-            var userPlan = '@userPlan'.toLowerCase();
-
-            if (userPlan === "zero2one" || userPlan === "basic") {
-                // Remove client-side required validations
-                $("#RiskTolerance, #RiskCapacity, #RiskRequirement").each(function () {
-                    $(this).removeAttr("data-val")
-                           .removeAttr("data-val-required")
-                           .removeAttr("required")
-                           .removeClass("input-validation-error");
-
-                    // Remove validation message span
-                    $("[data-valmsg-for='" + this.name + "']").text("");
-                });
-
-                // Reset unobtrusive validation so MVC doesn’t complain
-                $("#mainForm").removeData("validator").removeData("unobtrusiveValidation");
-                $.validator.unobtrusive.parse("#mainForm");
-            }
-        });
- 
-
     </script>
     <partial name="_ValidationScriptsPartial" />
 

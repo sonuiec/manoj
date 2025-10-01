@@ -15,7 +15,8 @@ namespace FactFinderWeb.Services
     public class AwarenessServices : IAwareness
     {
         private ResellerBoyinawebFactFinderWebContext _context;
-        private readonly long _userID;
+        //private readonly long _userID;
+        private readonly long _profileId;
         private readonly HttpContext _httpContext;
         int updateRows = 0;
         int AddorUpdate = 0;
@@ -25,7 +26,8 @@ namespace FactFinderWeb.Services
             _context = context;
             _httpContext = httpContextAccessor.HttpContext;
             var userIdStr = _httpContext.Session.GetString("UserId");
-            _userID = Convert.ToInt64(userIdStr);
+            //_userID = Convert.ToInt64(userIdStr);
+            _profileId = Convert.ToInt64(_httpContext.Session.GetString("profileId"));
         }
         public async Task<AwarenessViewModel> AwarenessProfileDetail(long pid)
         {
@@ -140,7 +142,7 @@ namespace FactFinderWeb.Services
                 awarenessData.Assumptions.InflationRates = 7;
                 awarenessData.Assumptions.EducationInflation = 8;
                 awarenessData.Assumptions.ApplicantRetirement = null;
-                awarenessData.Assumptions.Profileid = _userID;
+                awarenessData.Assumptions.Profileid = _profileId;
             }
 
             return awarenessData;
@@ -158,7 +160,7 @@ namespace FactFinderWeb.Services
                     AddorUpdate = 1; // Add new record
                     TblffAwarenessProfileDetail tblffAwarenessProfileDetail = new TblffAwarenessProfileDetail();
                     awareness = tblffAwarenessProfileDetail;
-                    awareness.Profileid = profileID;
+                    //awareness.UserId = _userid;
                 }
                 //awareness.id =  awarenessProfileDetail.asdf;
                 
@@ -383,7 +385,7 @@ namespace FactFinderWeb.Services
 
             //awareness.id =  awarenessProfileDetail.asdf;
             //awareness.Profileid =  awarenessProfileDetail.asdf;
-            awarenessChild.Profileid = _userID;
+            awarenessChild.Profileid = _profileId;
             awarenessChild.ChildName = childDetails.ChildName;
             awarenessChild.ChildGender = childDetails.ChildGender;
             awarenessChild.ChildDob = childDetails.ChildDob;

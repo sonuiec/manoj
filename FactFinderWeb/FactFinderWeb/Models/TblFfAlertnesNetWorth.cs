@@ -41,6 +41,7 @@ public partial class TblFfAlertnesNetWorth
 
     public decimal? Home2Loan { get; set; }
 
+    public decimal? Home1Loan { get; set; }
     public decimal? LandLoan { get; set; }
 
     public decimal? CommercialPropertyLoan { get; set; }
@@ -52,4 +53,6 @@ public partial class TblFfAlertnesNetWorth
     public decimal? OtherLoan { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public decimal? CarLoan { get; set; }
 }

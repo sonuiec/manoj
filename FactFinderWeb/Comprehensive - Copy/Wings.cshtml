@@ -1,13 +1,8 @@
 ﻿@using FactFinderWeb.ModelsView
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-@using Microsoft.AspNetCore.Http;
-
 @model WingsViewModel
 @{
     ViewData["Title"] = "Wings";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
-    var userPlan = HttpContextAccessor.HttpContext.Session.GetString("UserPlan") ?? "Comprehensive";
-    var _profileId = HttpContextAccessor.HttpContext.Request.RouteValues["pid"]?.ToString();
 }
 
 <style>
@@ -144,11 +139,11 @@
         </section>
 
         <div class="d-flex justify-content-end mt-3 mx-2 ">
-            <a asp-action="Awareness" asp-controller="@userPlan" asp-route-id="@_profileId" class="btn btn-secondary  px-4 py-1 rounded mx-3">Previous</a>
+            <a asp-action="Awareness" class="btn btn-secondary  px-4 py-1 rounded mx-3">Previous</a>
 
-            <button type="button" name="saveGoalsBtn" asp-route-id="@_profileId" id="saveGoalsBtn" asp-controller="@userPlan" class="btn btn-primary px-4 py-1 rounded mx-3 ">Next</button>
+            <button type="button" name="saveGoalsBtn" id="saveGoalsBtn" class="btn btn-primary px-4 py-1 rounded mx-3 ">Next</button>
 
-            <button name="btnSubmit" id="btnSubmit" asp-route-id="@_profileId" class="d-none btn btn-primary px-5 py-1 rounded mx-3" asp-controller="@userPlan" asp-action="Wings" type="submit">Next</button>
+            <button name="btnSubmit" id="btnSubmit" class="d-none btn btn-primary px-5 py-1 rounded mx-3" asp-controller="Comprehensive" asp-action="Wings" type="submit">Next</button>
             @Html.AntiForgeryToken()
         </div>
         <div class="d-flex justify-content-end mt-3 mx-5">
@@ -253,7 +248,7 @@
   
             function toggleEndGoalInput() {
                 const selectedValue = goalDropdown.value;
-                                if (selectedValue === "Retirement - Accumulation" || selectedValue === "Regular Income") {// || selectedValue === "World Tour"
+                if (selectedValue === "Retirement - Accumulation") {// || selectedValue === "World Tour"
                     ///endGoalContainer.style.display = "block";
                       endGoalInput.disabled = true;
                    // endGoalInput.value = ""; // Allow user to enter
@@ -295,9 +290,9 @@
 
         // Convert the C# model to JSON
             let goalsdata = @Html.Raw(usergoalsJson);
-            let ApplicantData = @Html.Raw(ApplicantDataDto);
-            const ApplicantLifeExpectancy =@Model.ApplicantLifeExpectancy;
-                    
+            let ApplicantData = @Html.Raw(ApplicantDataDto); 
+
+
              // Get select and input elements
             const goalSelect = document.getElementById('UserWings_GoalName');
                     const planYearInput = document.getElementById('UserWings.GoalPlanYear');
@@ -313,15 +308,8 @@
                     startYearInput.value = ApplicantData.goalStartYear;
                     endYearInput.value = ApplicantData.goalEndYear;
                     TimeHorizonInput.value = startYearInput.value  - planYearInput.value ;
-                }
-                else if ( selectedGoal === 'Regular Income') {
-                  debugger;
-                startYearInput.value = parseInt(planYearInput.value);
-                endYearInput.value = parseInt(planYearInput.value) + parseInt(ApplicantLifeExpectancy);
-                                        TimeHorizonInput.value = parseInt(startYearInput.value) - parseInt(planYearInput.value);
-
-                }
-                else  {
+                } 
+                    else  {
                     startYearInput.value = '';
                     endYearInput.value = '';
                     TimeHorizonInput.value = '';
@@ -607,7 +595,7 @@ document.getElementById("goalStartYearError").textContent = `Start year must be 
             const goals = JSON.parse(localStorage.getItem("goals") || "[]");
             console.log(goals);
             e.preventDefault();
-                            fetch('/@userPlan/SaveGoals/@_profileId', {
+            fetch('/Comprehensive/SaveGoals', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'//,
@@ -621,8 +609,8 @@ document.getElementById("goalStartYearError").textContent = `Start year must be 
                     if (data.success){ 
                         //alert(data.message);                        
                     document.getElementById("spmsg").textContent = "Goals saved successfully.";
-                                    setTimeout(() => { window.location.href = '/@userPlan/Alertness/@_profileId'; }, 2000);
-                            // if (data.success) alert("Goals saved successfully.");
+                    setTimeout(() => { window.location.href = '/Comprehensive/Alertness'; }, 2000); 
+                    // if (data.success) alert("Goals saved successfully.");
                     }
                     else{ alert("Failed to save goals.");}
                 })
@@ -635,7 +623,7 @@ document.getElementById("goalStartYearError").textContent = `Start year must be 
                     console.log(goals);
                     document.getElementById("spmsgtop").textContent = "";
                     e.preventDefault();
-                                            fetch('/@userPlan/SaveGoalsOnLink/@_profileId', {
+                            fetch('/Comprehensive/SaveGoalsOnLink', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'//,

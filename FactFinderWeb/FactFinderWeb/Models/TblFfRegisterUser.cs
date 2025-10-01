@@ -35,5 +35,5 @@ public partial class TblFfRegisterUser
 
     public string? AdvisorName { get; set; }
 
-    public virtual ICollection<TblffPasswordResetRequest> TblffPasswordResetRequests { get; set; } = new List<TblffPasswordResetRequest>();
+   
 }
