@@ -113,6 +113,7 @@ namespace FactFinderWeb.ModelsView.AdminMV
     {
         public long Id { get; set; }
         public long ProfileId { get; set; }
+        public string? ProfileStatus { get; set; }
         public string? Name { get; set; }
         public string? planType { get; set; }
         public string? planYear { get; set; }

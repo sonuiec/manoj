@@ -2115,9 +2115,9 @@
                     <span asp-validation-for="netWorthViewModel.OtherLoan" class="text-danger small"></span>
                 </div>
             </div>
-  @*           <div class="row g-3">
+            <div class="row g-3">
 
-                @if (Model.EmiDetail != null && Model.EmiDetail.Any())
+               @*  @if (Model.EmiDetail != null && Model.EmiDetail.Any())
                 {
 
                     @for (int i = 0; i < Model.EmiDetail.Count; i++)
@@ -2135,9 +2135,9 @@
                     }
                 }
 
-            </div>
-            <hr /> *@
-        @*     <div class="row g-3">
+            </div> *@
+        
+            <div class="row g-3">
                 @if (Model.NewLiabilities != null && Model.NewLiabilities.Any())
                 {
                     @for (int i = 0; i < Model.NewLiabilities.Count; i++)
@@ -2152,7 +2152,7 @@
                     }
 
                 }
-            </div> *@
+            </div>
             <hr />
             <div class="card shadow-sm rounded-3">
                 <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between">

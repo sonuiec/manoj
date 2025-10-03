@@ -108,7 +108,10 @@
         }
                                 </select>  
 </td>
-                <td> Submitted to Awaken</td>                   
+                            <td>@(user.ProfileStatus == "Pending" ? "Submitted to Awaken" : user.ProfileStatus)</td>
+
+
+                              
                 <td  class="text-center"> @user.createddate.ToString("dd/MM/yyyy")</td>
                             <td class="text-center"> @user.activestatus </td>
                             <td class="text-left">

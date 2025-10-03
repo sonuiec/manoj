@@ -1290,39 +1290,6 @@
 
 
 
-
-       
-        $(function () {
-
-            function toggleSpouseFields() {
-                var occ = $("#SpouseDetails_SpouseOccupation").val();
-
-                if (occ === "Service" || occ === "Self Employed" || occ === "Professional") {
-                    $(".clsSpouse").show();
-
-                    // ✅ Re-enable validation
-                    $(".clsSpouse input")
-                        .attr("data-val", "true")
-                        .attr("data-val-required", "Please enter spouse retirement age")
-                        .attr("required", "required");
-                } else {
-                    $(".clsSpouse").hide();
-
-                    // ✅ Disable validation
-                    $(".clsSpouse input")
-                        .removeAttr("data-val")
-                        .removeAttr("data-val-required")
-                        .removeAttr("required");
-                }
-
-                // ✅ Re-parse unobtrusive validation
-                $.validator.unobtrusive.parse("form");
-            }
-
-            toggleSpouseFields(); // run on page load
-            $("#SpouseDetails_SpouseOccupation").on("change", toggleSpouseFields);
-
-        });
  
 
 

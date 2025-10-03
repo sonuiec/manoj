@@ -13,16 +13,16 @@
     <!-- Robust html2pdf loader (primary + fallback CDN) -->
     <script>
         (function loadHtml2Pdf(){
-          var primary  = 'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js';
-          var fallback = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-          function inject(src){
-            var s = document.createElement('script');
-            s.src = src; s.defer = true;
-            s.onload = function(){ console.log('html2pdf loaded:', src); };
-            s.onerror = function(){ if (src !== fallback) inject(fallback); };
-            document.head.appendChild(s);
-          }
-          inject(primary);
+        var primary  = 'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js';
+        var fallback = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        function inject(src){
+        var s = document.createElement('script');
+        s.src = src; s.defer = true;
+        s.onload = function(){ console.log('html2pdf loaded:', src); };
+        s.onerror = function(){ if (src !== fallback) inject(fallback); };
+        document.head.appendChild(s);
+        }
+        inject(primary);
         })();
     </script>
 
@@ -34,123 +34,123 @@
         }
 
         :root {
-            --ink: #111827;
-            --muted: #6b7280;
-            --line: #e5e7eb;
-            --soft: #f8fafc;
-            --brand: #0f766e;
-            --brand2: #0891b2;
+        --ink: #111827;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --soft: #f8fafc;
+        --brand: #0f766e;
+        --brand2: #0891b2;
         }
 
         html, body {
-            margin: 0;
-            padding: 0;
-            background: #fff;
-            color: var(--ink)
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        color: var(--ink)
         }
 
         .sheet {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 14mm;
-            margin: 10px auto;
-            background: #fff;
-            box-shadow: 0 0 0 1px var(--line),0 10px 24px rgba(0,0,0,.06)
+        width: 210mm;
+        min-height: 297mm;
+        padding: 14mm;
+        margin: 10px auto;
+        background: #fff;
+        box-shadow: 0 0 0 1px var(--line),0 10px 24px rgba(0,0,0,.06)
         }
 
         .section {
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 12px
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 12px
         }
 
         .section-title {
-            background: white;
-            color: #000;
-            padding: 10px 12px;
-            font-weight: 700;
-            font-size: 14px
+        background: white;
+        color: #000;
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 14px
         }
 
         .section-body {
-            padding: 10px 12px
+        padding: 10px 12px
         }
 
         table.ff2 {
-            width: 70%;
-            margin-left:15%;
-            border-collapse: collapse
+        width: 70%;
+        margin-left:15%;
+        border-collapse: collapse
         }
 
         table.ff {
-            width: 100%;
-            border-collapse: collapse
+        width: 100%;
+        border-collapse: collapse
         }
 
         .ff th, .ff td {
-            border: 1px solid var(--line);
-            padding: 5px;
-            font-size: 13px;
-            vertical-align: top
+        border: 1px solid var(--line);
+        padding: 5px;
+        font-size: 13px;
+        vertical-align: top
         }
 
         .ff th {
-            width: 32%;
-            background: #f3f4f6;
-            font-weight: 600
+        width: 32%;
+        background: #f3f4f6;
+        font-weight: 600
         }
 
         .kv {
-            font-size: 11px;
-            color: var(--muted)
+        font-size: 11px;
+        color: var(--muted)
         }
 
         .vv {
-            font-size: 12px;
-            font-weight: 600
+        font-size: 12px;
+        font-weight: 600
         }
 
         .grid2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px
         }
 
         .grid3 {
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 10px
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        gap: 10px
         }
 
         /* ===== LOADING OVERLAY ===== */
         #loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.92);
-            display: none; /* default hidden */
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 99999;
-            backdrop-filter: blur(2px);
+        position: fixed;
+        inset: 0;
+        background: rgba(255,255,255,0.92);
+        display: none; /* default hidden */
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 99999;
+        backdrop-filter: blur(2px);
         }
 
-            #loading-overlay img {
-                width: 64px;
-                height: 64px; /* adjust to your loader asset */
-                display: block;
-            }
+        #loading-overlay img {
+        width: 64px;
+        height: 64px; /* adjust to your loader asset */
+        display: block;
+        }
 
-            #loading-overlay .loading-text {
-                margin-top: 12px;
-                font: 600 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-                color: #111827;
-                letter-spacing: .2px;
-            }
+        #loading-overlay .loading-text {
+        margin-top: 12px;
+        font: 600 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: #111827;
+        letter-spacing: .2px;
+        }
         /* small helper classes (optional) */
         .is-loading #loading-overlay {
-            display: flex;
+        display: flex;
         }
 
     </style>
@@ -294,7 +294,7 @@
                             <td id="SpouseCmpCountry"></td>
                         </tr>
 
-                        
+
                     </table>
                 </div>
                 <!-- childs -->
@@ -348,13 +348,13 @@
                                 <td>PIN</td>
                                 <td id="addr_res_pin"></td>
                                 <td id="addr_perm_pin"></td>
-                                </tr>
+                            </tr>
                             <tr>
                                 <td>Country</td>
                                 <td id="addr_res_country"></td>
                                 <td id="addr_perm_country"></td>
-                                </tr>
-                                 
+                            </tr>
+
                         </table>
                         <table class="ff  d-none">
                             <caption class="fw-bold mb-1">Permanent</caption>
@@ -375,8 +375,8 @@
                         </table>
                     </div>
                 </div>
-                
-                
+
+
                 <!-- Family Financial --> 
 
                 <!-- assume -->
@@ -407,11 +407,11 @@
                             <tr>
                                 <td>Education Inflation %</td>
                                 <td id="ass_edu_infl" class="text-center"></td>
-                            <td></td>
-                            <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                         </table>
-                         
+
                         <table class="ff">
                             <tr><th colspan="4">Assumptions Related with Client's Profile</th></tr>
                             <tr>
@@ -454,7 +454,7 @@
             <!-- ALERTNESS-->
             <div class="section">
                 <h3 class="p-3">3. ALERTNESS with Time & Money</h3>
-                
+
                 <div class="section-title">
                     <h5>3.1 Budgeting</h5>
                 </div>
@@ -473,66 +473,84 @@
                                 <tfoot><tr><th class="text-center">Total </th><td id="sp_income_total" class="text-end"></td></tr></tfoot>
                             </table>
                         </div>
-                        
-                        
+
+
                         <div class="section-title">
                             <h5>3.1.2 Expenses</h5>
                         </div>
-                        <div class="section-body">
+                        @if (ViewBag.planType != "zero2one" && ViewBag.planType != "basic")
+                        {
+                            <div class="section-body">
                                 <table class="ff">
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Home Expenses</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Home Expenses</div></th></tr></thead>
                                     <tbody id="exp_home"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead>
                                         <tr>                                    
-                                    <th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Conveyance</div></th></tr></thead>
+                                            <th colspan="2">
+                                                <div class="fw-bold text-center mb-1">Conveyance</div></th></tr></thead>
                                     <tbody id="exp_conv"></tbody>
                                 </table>
                                 <table class="ff">                                    
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Communication</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Communication</div></th></tr></thead>
                                     <tbody id="exp_comm"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Utilities</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Utilities</div></th></tr></thead>
                                     <tbody id="exp_util"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Educational</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Educational</div></th></tr></thead>
                                     <tbody id="exp_edu"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Entertainment</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Entertainment</div></th></tr></thead>
                                     <tbody id="exp_ent"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Medical</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Medical</div></th></tr></thead>
                                     <tbody id="exp_med"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">New/Replacement</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">New/Replacement</div></th></tr></thead>
                                     <tbody id="exp_new"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead><tr><th colspan="2"> 
-                                        <div class="fw-bold text-center mb-1">Insurance</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Insurance</div></th></tr></thead>
                                     <tbody id="exp_ins"></tbody>
                                 </table>
                                 <table class="ff">
                                     <thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center mb-1">Other Expenses</div></th></tr></thead>
+                                                <div class="fw-bold text-center mb-1">Other Expenses</div></th></tr></thead>
                                     <tbody id="exp_oth"></tbody>
                                 </table>
 
-                        </div>
+                            </div>
+
+                        }else{
+                            <div class="section-body">
+                                <table class="ff">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <div class="fw-bold text-center mb-1">Total Expense</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="exp_totals"></tbody>
+                                </table>
+                            </div>
+                        }
+
                         <div class="section">
                             <div class="section-title"><h5>3.1.3 Committed Savings</h5></div>
                             <div class="section-body ">
@@ -550,8 +568,8 @@
                             </div>
                         </div>
 
-                            <div class="section">
-                                <div class="section-title"><h5>3.1.4 EMIs</h5></div>
+                        <div class="section">
+                            <div class="section-title"><h5>3.1.4 EMIs</h5></div>
                             <div class="section-body ">
                                 <h6 class="fw-bold text-center mb-1 py-2 shadow">EMIs</h6>
                                 <table class="ff">
@@ -566,87 +584,111 @@
                                         </tr></thead>
                                     <tbody id="emi_rows"></tbody>
                                 </table>
+
+                                <table class="ff">
+                                    <tbody id="emi_OneTimeLoanRepayment"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (ViewBag.planType != "zero2one" )
+                    {
+                        <div class="section">
+                            <div class="section-title">
+                                <h5> 3.2 Suggested Modified Budget</h5>
+                            </div>
+                            <div class="section-body ">
+                                <table class="ff">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <div class="fw-bold text-center  mb-1"></div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="postIncome_Details"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        @if (ViewBag.planType != "basic")
+                        {
+                            <div class="section">
+
+                                <div class="section-title">
+                                    <h5> 3.3 Networth</h5>
+                                </div>
+                                <div class="section-body ">
+                                    <table class="ff"><thead><tr><th colspan="2">
+                                                    <div class="fw-bold text-center  mb-1">Investments</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="nw_invest"></tbody></table>
+                                    <table class="ff"><thead><tr><th colspan="2">
+                                                    <div class="fw-bold text-center  mb-1">Other Assets</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="nw_assets"></tbody></table>
+                                    <table class="ff"><thead><tr><th colspan="2">
+                                                    <div class="fw-bold text-center  mb-1">Liabilities</div></th></tr></thead>
+                                        <tbody id="nw_liab"></tbody></table>
+                                </div>
+
+                                <div class="section-title">
+                                    <h5>
+                                        3.4 Debt
+                                    </h5>
+                                </div>
+                                <div class="section-body ">
+                                    <table class="ff"><thead><tr><th colspan="2">
+                                                    <div class="fw-bold text-center  mb-1">Bad Loans</div>
+                                                </th></tr></thead>
+                                        <tbody id="bad_loans"></tbody></table>
+                                    <table class="ff"><thead><tr><th colspan="2">
+                                                    <div class="fw-bold text-center  mb-1">Good Loans</div>
+                                                </th></tr></thead>
+                                        <tbody id="good_loans"></tbody></table>
                                 </div>
                             </div>
-                    </div>
+                        }
 
-                    <div class="section">
-                    <h5 class="d-none">
-                        3.2 Projected Future Income
-                    </h5>
 
-                    <div class="section-title">
-                            <h5> 3.2 Networth</h5>
-                    </div>
-                        <div class="section-body ">
-                        <table class="ff"><thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center  mb-1">Investments</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="nw_invest"></tbody></table>
-                        <table class="ff"><thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center  mb-1">Other Assets</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="nw_assets"></tbody></table>
-                        <table class="ff"><thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center  mb-1">Liabilities</div></th></tr></thead>
-                            <tbody id="nw_liab"></tbody></table>
+                        <div class="section-title">
+                            <h5>
+                                3.5 Insurance
+                            </h5>
                         </div>
-
-                    <div class="section-title">
-                        <h5>
-                            3.3 Debt
-                        </h5>
-                    </div>
                         <div class="section-body ">
-                        <table class="ff"><thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center  mb-1">Bad Loans</div>
-                                    </th></tr></thead>
-                            <tbody id="bad_loans"></tbody></table>
-                        <table class="ff"><thead><tr><th colspan="2">
-                                        <div class="fw-bold text-center  mb-1">Good Loans</div>
-                                    </th></tr></thead>
-                            <tbody id="good_loans"></tbody></table>
+                            <h6 class="fw-bold text-center  mb-1">Life Insurance</h6>
+                            <table class="ff">
+                                <thead>
+                                    <tr>
+                                        <th>Insurance Type</th>
+                                        <th>Name</th>
+                                        <th>Amount of Coverage</th>
+                                        <th style="width: 19%;">Premium Due </th>
+                                        <th style="width: 19%;">Maturity</th>
+                                    </tr>
+                                </thead> 
+                                <tbody id="life_ins"></tbody>
+                            </table>
+                            <h6 class="fw-bold text-center py-2 mb-1">General Insurance</h6>
+                            <table class="ff">
+                                <thead>
+                                    <tr>
+                                        <th>Insurance Type</th>
+                                        <th>Amount of Coverage</th>
+                                        <th style="width: 19%;">Premium Due</th>
+                                        <th style="width: 19%;">Maturity</th>
+                                    </tr>
+                                </thead> 
+                                <tbody id="gen_ins"></tbody>
+                            </table>
                         </div>
-                    </div>
-
-
-                    <div class="section-title">
-                        <h5>
-                            3.4 Insurance
-                        </h5>
-                    </div>
-                        <div class="section-body ">
-                        <h6 class="fw-bold text-center  mb-1">Life Insurance</h6>
-                    <table class="ff">
-                        <thead>
-                                <tr>
-                                    <th>Insurance Type</th>
-                                    <th>Name</th>
-                                    <th>Amount of Coverage</th>
-                                    <th style="width: 19%;">Premium Due </th>
-                                    <th style="width: 19%;">Maturity</th>
-                            </tr>
-                        </thead> 
-                        <tbody id="life_ins"></tbody>
-                        </table>
-                        <h6 class="fw-bold text-center py-2 mb-1">General Insurance</h6>
-                    <table class="ff">
-                        <thead>
-                            <tr>
-                                <th>Insurance Type</th>
-                                <th>Amount of Coverage</th>
-                                <th style="width: 19%;">Premium Due</th>
-                                <th style="width: 19%;">Maturity</th>
-                            </tr>
-                        </thead> 
-                        <tbody id="gen_ins"></tbody>
-                    </table>
-                        </div>
-
+                    }
                 </div>
             </div>
 
@@ -1130,19 +1172,40 @@
           const alert2 = get(root,'alertness.alertness',{});
           const inc = get(alert2,'incomeDetail.income',{});
           const spI = get(alert2,'incomeDetail.spouseIncome',{});
-
+                  const planType = "@ViewBag.planType";
           function objRows(obj, filterKeys=[]) {
             return Object.entries(obj||{})
               .filter(([k,v])=> typeof v!=='object' && (filterKeys.length? filterKeys.includes(k): true))
               .map(([k,v])=>`<tr><td style="width:70%;" >${k}</td><td class="text-end">${fmt(Number(v))}</td></tr>`).join('');
           }
           function numericSum(obj){ return Object.values(obj||{}).reduce((t,v)=> t + (typeof v==='object'?0:toNum(v)), 0); }
+debugger
 
+                        if(planType =="zero2one" || planType =="basic"){
+                     let hraOnly = Object.fromEntries(
+                              Object.entries(inc).filter(([k, v]) => k === "Post IT Income Monthly (Disposable Income)")
+                    );
+                                  const incBody = document.getElementById('income_rows'); if(incBody){ incBody.innerHTML = objRows(hraOnly); }
+                  setTxt('income_total', numericSum(inc).toLocaleString());
+                  let hraOnly1 = Object.fromEntries(
+                                      Object.entries(spI).filter(([k, v]) => k === "Post IT Income Monthly (Disposable Income)")
+                    );
+
+                          const spBody = document.getElementById('sp_income_rows'); if(spBody){ spBody.innerHTML = objRows(hraOnly1); }
+                  setTxt('sp_income_total', numericSum(spI).toLocaleString());
+
+                                            const totalexp = get(alert2,'incomeDetail.totalexp',{});
+                                            debugger;
+                                                           if(document.getElementById('exp_totals')){ document.getElementById('exp_totals').innerHTML = objRows(totalexp); }
+
+
+                }else{
+               
           const incBody = document.getElementById('income_rows'); if(incBody){ incBody.innerHTML = objRows(inc); }
           setTxt('income_total', numericSum(inc).toLocaleString());
           const spBody = document.getElementById('sp_income_rows'); if(spBody){ spBody.innerHTML = objRows(spI); }
           setTxt('sp_income_total', numericSum(spI).toLocaleString());
-
+          }
           // Expenses buckets
           const exp = get(alert2,'expenses',{});
           const buckets = [
@@ -1169,14 +1232,23 @@
           const emis = Array.isArray(get(alert2,'emi',[]))? get(alert2,'emi',[]):[];
           const emiEl = document.getElementById('emi_rows'); if(emiEl){ emiEl.innerHTML = emis.map(e=>`<tr>
           <td>${e.Name}</td>
-          <td class="text-end">${fmt1(e.Outstanding)} </td>
+            <td class="text-end">${fmt1(e.Monthly)}</td>
           <td class="text-end">${fmt1(e.Interest)} </td>
           <td class="text-end">${fmt1(e.Principal)} </td>
-          <td class="text-end">${fmt1(e.Monthly)}</td>
+                <td class="text-end">${fmt1(e.Outstanding)} </td>
           <td>${fmtDate(e.Till)}</td>
           <td>${e.FollowUp}</td>
           </tr>`).join('') || '<tr><td colspan="7" class="text-center">No records found.</td></tr>'; }
-          
+          debugger;
+                                   const OneTimeLoanRepayment = get(alert2,'OneTimeLoanRepayment',{});
+                                   if(document.getElementById('emi_OneTimeLoanRepayment')){ document.getElementById('emi_OneTimeLoanRepayment').innerHTML = "One-Time Loan Repayment: "+ OneTimeLoanRepayment }
+                                   
+
+                  
+          debugger;
+           const nw1 = get(alert2,'postIncomeDetails',{});
+          fillPairs(document.getElementById('postIncome_Details'), nw1);
+
           // Net Worth
           const nw = get(alert2,'netWorth',{});
           fillPairs(document.getElementById('nw_invest'), get(nw,'investments',{}));

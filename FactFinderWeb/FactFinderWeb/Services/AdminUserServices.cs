@@ -134,7 +134,7 @@ namespace FactFinderWeb.Services
             {
                  userList = await (from ruser in _context.TblFfRegisterUsers
                                       join profile in _context.TblffAwarenessProfileDetails on ruser.Id equals profile.UserId
-                                   where profile.Advisorid == advisorID && profile.ProfileStatus!="Draft"
+                                   where profile.Advisorid == advisorID //&& profile.ProfileStatus!="Draft"
                                    orderby ruser.Createddate descending
                                       select new MVADUserDetails
                                       {
@@ -148,7 +148,8 @@ namespace FactFinderWeb.Services
                                           userFile = ruser.Ptx, //UserFile
                                           ProfileId = profile.Profileid,
                                           Id = profile.Profileid,
-                                          advisorid = profile.Advisorid
+                                          advisorid = profile.Advisorid,
+                                          ProfileStatus = profile.ProfileStatus,
                                       }).ToListAsync();
             }
             else { 
@@ -156,7 +157,7 @@ namespace FactFinderWeb.Services
 
              userList = await (from ruser in _context.TblFfRegisterUsers
                                   join profile in _context.TblffAwarenessProfileDetails on ruser.Id equals profile.UserId 
-                                  where profile.ProfileStatus != "Draft"
+                                 // where profile.ProfileStatus != "Draft"
                                orderby ruser.Createddate descending
                                   select new MVADUserDetails
                                   {
@@ -170,7 +171,9 @@ namespace FactFinderWeb.Services
                                       userFile = ruser.Ptx, //UserFile
                                       ProfileId = profile.Profileid,
                                       Id = profile.Profileid,
-                                      advisorid = profile.Advisorid
+                                      advisorid = profile.Advisorid,
+                                      ProfileStatus = profile.ProfileStatus,
+
                                   }).ToListAsync();
             }
             return userList;

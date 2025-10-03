@@ -176,8 +176,11 @@
           const startYearEl = document.getElementById('UserWings.GoalStartYear');
           const planYearEl = document.getElementById('UserWings.GoalPlanYear');
           const timeHorizonEl = document.getElementById('UserWings.TimeHorizon');
-          
-        document.getElementById("goalPlanYearError").textContent = "";
+                                           const UserWings_GoalName = document.getElementById('UserWings_GoalName');
+
+                                 const GoalEndYear1 = document.getElementById('UserWings.GoalEndYear');
+
+                        document.getElementById("goalPlanYearError").textContent = "";
         document.getElementById("goalStartYearError").textContent = "";
 
           const startYear = startYearEl.value.trim();
@@ -221,14 +224,20 @@
            if (hasError) {
                return; // stop execution
            }
-
+           debugger;
             // Don't update TimeHorizon unless both are valid
             const startYearValid = isValidYear(startYear);
             const planYearValid = isValidYear(planYear);
 
             if (startYearValid && planYearValid) {
               const diff = parseInt(startYear) - parseInt(planYear);
+                      if(UserWings_GoalName.value=="Regular Income"){
+                                                   const diff1 = parseInt(GoalEndYear1.value) - parseInt(startYear);
+
+                                       timeHorizonEl.value = diff1 >= 0 ? diff1 : 0;
+              }else{
               timeHorizonEl.value = diff >= 0 ? diff : 0;
+              }
             }
         }
 
@@ -318,7 +327,7 @@
                   debugger;
                 startYearInput.value = parseInt(planYearInput.value);
                 endYearInput.value = parseInt(planYearInput.value) + parseInt(ApplicantLifeExpectancy);
-                                        TimeHorizonInput.value = parseInt(startYearInput.value) - parseInt(planYearInput.value);
+                    TimeHorizonInput.value = parseInt(endYearInput.value) - parseInt(startYearInput.value);
 
                 }
                 else  {

@@ -248,8 +248,11 @@ namespace FactFinderWeb.Controllers
             {
                 return RedirectToAction("Login");
             }
+            var user = _context.TblffAwarenessProfileDetails.Where(u => u.Profileid == profileId).FirstOrDefault();
             ViewBag.profileId = profileId;
             ViewData["UserId"] = UserId;
+            ViewBag.planType = user.PlanType?.ToLower(); ;
+
             return View(); // loads Razor view
         }
 
