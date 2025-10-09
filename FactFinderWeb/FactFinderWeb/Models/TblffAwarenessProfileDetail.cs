@@ -5,27 +5,27 @@ namespace FactFinderWeb.Models;
 
 public partial class TblffAwarenessProfileDetail
 {
-    public long UserId { get; set; }
+    public long ProfileId { get; set; }
 
-    public long Profileid { get; set; }
+    public long? UserId { get; set; }
 
-    public long Registerid { get; set; }
+    public long? Registerid { get; set; }
 
     public string? Awakenid { get; set; }
 
-    public string PlanType { get; set; }
+    public string PlanType { get; set; } = null!;
 
     public int PlanYear { get; set; }
 
     public string? PlanDuration { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public string? Gender { get; set; }
 
     public string? Dob { get; set; }
 
-    public string Phone { get; set; }
+    public string Phone { get; set; } = null!;
 
     public string? Altphone { get; set; }
 
@@ -59,7 +59,7 @@ public partial class TblffAwarenessProfileDetail
 
     public string? CompanyPincode { get; set; }
 
-    public bool IsSameAddress { get; set; }
+    public bool? IsSameAddress { get; set; }
 
     public string? ResAddress { get; set; }
 
@@ -104,4 +104,6 @@ public partial class TblffAwarenessProfileDetail
     public int? Advisorid { get; set; }
 
     public string? AdvisorName { get; set; }
+
+    public string? Uid { get; set; }
 }

@@ -164,8 +164,8 @@ namespace FactFinderWeb.Controllers
                             return RedirectToAction("dashboard", "User");//"Comprehensive"
                         else
                         {
-                            HttpContext.Session.SetString("profileId", existingProfile.Profileid.ToString());
-                            return RedirectToAction("Awareness", plantype, new { id = CryptoHelper.Encrypt(existingProfile.Profileid) });
+                            HttpContext.Session.SetString("profileId", existingProfile.ProfileId.ToString());
+                            return RedirectToAction("Awareness", plantype, new { id = CryptoHelper.Encrypt(existingProfile.ProfileId) });
                         }
                     }
                     else
@@ -216,7 +216,7 @@ namespace FactFinderWeb.Controllers
                 return Unauthorized(new { message = "User not logged in." });
             }
 
-            var user = _context.TblffAwarenessProfileDetails.Where(u =>  u.Profileid== profileId).FirstOrDefault();
+            var user = _context.TblffAwarenessProfileDetails.Where(u =>  u.ProfileId== profileId).FirstOrDefault();
             if(user == null)
             {
                 return Unauthorized(new { message = "User not logged in." });
@@ -248,7 +248,7 @@ namespace FactFinderWeb.Controllers
             {
                 return RedirectToAction("Login");
             }
-            var user = _context.TblffAwarenessProfileDetails.Where(u => u.Profileid == profileId).FirstOrDefault();
+            var user = _context.TblffAwarenessProfileDetails.Where(u => u.ProfileId == profileId).FirstOrDefault();
             ViewBag.profileId = profileId;
             ViewData["UserId"] = UserId;
             ViewBag.planType = user.PlanType?.ToLower(); ;
@@ -518,11 +518,11 @@ namespace FactFinderWeb.Controllers
                     planType = planType,   // taken from session
                     controller = "Comprehensive",
                     action = "Awareness",
-                    pid = CryptoHelper.Encrypt(newProfile.Profileid)
+                    pid = CryptoHelper.Encrypt(newProfile.ProfileId)
                 });
 
                 // redirect to awareness with new profile id
-               // return RedirectToAction("Awareness", planType,new { pid = CryptoHelper.Encrypt(newProfile.Profileid) });
+               // return RedirectToAction("Awareness", planType,new { pid = CryptoHelper.Encrypt(newProfile.ProfileId) });
             }
 
             return RedirectToAction("Dashboard");

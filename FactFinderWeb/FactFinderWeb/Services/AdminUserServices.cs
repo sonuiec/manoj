@@ -6,6 +6,7 @@ using FactFinderWeb.Utils;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -84,8 +85,8 @@ namespace FactFinderWeb.Services
         public async Task<List<SelectListItem>> GetAdvisorList()
         {
             var advisorListdata = await (from ruser in _context.TblFfAdminUsers
-                                  where ruser.AccountStatus.ToLower() =="active"
-                                  orderby ruser.Adminuserid descending
+                                  where ruser.AccountStatus.ToLower() =="active" && ruser.AdminRole== "admin"
+                                         orderby ruser.Adminuserid descending
                                   select new AdvisorList
                                   {
                                       AdvisorId = ruser.Id.ToString(),
@@ -146,8 +147,8 @@ namespace FactFinderWeb.Services
                                           activestatus = ruser.Activestatus == "1" ? "Active" : "Deactive",
                                           createddate = profile.CreateDate,
                                           userFile = ruser.Ptx, //UserFile
-                                          ProfileId = profile.Profileid,
-                                          Id = profile.Profileid,
+                                          ProfileId = profile.ProfileId,
+                                          Id = profile.ProfileId,
                                           advisorid = profile.Advisorid,
                                           ProfileStatus = profile.ProfileStatus,
                                       }).ToListAsync();
@@ -169,8 +170,8 @@ namespace FactFinderWeb.Services
                                       activestatus = ruser.Activestatus == "1" ? "Active" : "Deactive",
                                       createddate = profile.CreateDate,
                                       userFile = ruser.Ptx, //UserFile
-                                      ProfileId = profile.Profileid,
-                                      Id = profile.Profileid,
+                                      ProfileId = profile.ProfileId,
+                                      Id = profile.ProfileId,
                                       advisorid = profile.Advisorid,
                                       ProfileStatus = profile.ProfileStatus,
 
@@ -189,7 +190,7 @@ namespace FactFinderWeb.Services
             // MVADUserDetails userList = new MVADUserDetails();
             var userList = await (from ruser in _context.TblFfRegisterUsers
                                   join user in _context.TblffAwarenessProfileDetails 
-                                  on ruser.Id equals user.UserId where user.Profileid == profileid
+                                  on ruser.Id equals user.UserId where user.ProfileId == profileid
                                   orderby ruser.Createddate descending
                                   select new UserProfileViewModel
                                   {
@@ -216,7 +217,7 @@ namespace FactFinderWeb.Services
         {
 
 
-            TblffAwarenessProfileDetail userprofile = await _context.TblffAwarenessProfileDetails.Where(x => x.Profileid == Convert.ToInt64(userProfileViewModel.UId)).FirstOrDefaultAsync();
+            TblffAwarenessProfileDetail userprofile = await _context.TblffAwarenessProfileDetails.Where(x => x.ProfileId == Convert.ToInt64(userProfileViewModel.UId)).FirstOrDefaultAsync();
 
             if(userprofile == null)
             {
@@ -355,6 +356,45 @@ namespace FactFinderWeb.Services
             int resultCount = await _context.SaveChangesAsync();
             return resultCount;
         }
+        public string checkUseEmailExist(string email)
+        {
+            string ExistsUsername = _context.Set<TblFfRegisterUser>()
+                    .Where(o => o.Email == email)
+                    .Select(o => o.Email).FirstOrDefault();
 
+            return ExistsUsername;
+        }
+        public async Task<TblffAwarenessProfileDetail> UserAdds(TblFfRegisterUser user, int registerid)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            string Passwordhashed = UtilityHelperServices.PasswordHash(user.Password);
+            string emailVerifyToken = UtilityHelperServices.GenerateSecureToken(24);
+
+            user.Updatedate = DateTime.Now;
+            user.Mobile = user.Mobile;
+            user.Password = Passwordhashed; //user.Password = CommonUtillity.EncryptData(user.Password);
+            user.Emailverified = emailVerifyToken;
+            user.Createddate = DateTime.Now;
+            _context.TblFfRegisterUsers.Add(user);
+            await _context.SaveChangesAsync();
+
+            /// Add user profile details
+			TblffAwarenessProfileDetail userProfile = new TblffAwarenessProfileDetail();
+            userProfile.UserId = user.Id;
+            userProfile.Name = user.Name;
+            userProfile.Email = user.Email;
+            userProfile.Phone = user.Mobile;
+            userProfile.PlanType = user.Plantype;
+            userProfile.PlanYear = DateTime.Now.Year;
+            userProfile.CreateDate = DateTime.Now;
+            userProfile.UpdateDate = DateTime.Now;
+            userProfile.ProfileStatus = "Draft";
+            userProfile.Registerid = registerid;
+            _context.TblffAwarenessProfileDetails.Add(userProfile);
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return userProfile;
+        }
     }
 }

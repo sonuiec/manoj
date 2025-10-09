@@ -195,6 +195,8 @@
 			<table class="table table-bordered">
 				<thead class="table-light">
 					<tr>
+						<th>UID</th>
+						<th>Name</th>
 						<th>Plan Name</th>
 						<th>Plan Year</th>
 						<th>Advisor Name</th>
@@ -209,6 +211,8 @@
 {
   
 					<tr>
+							<td>@item.UId</td>
+							<td>@item.UserFullName</td>
 							<td>@item.UserPlan</td>
 							<td>@item.UserPlanYear</td>
 							<td>@item.AdvisorName</td>
@@ -216,10 +220,10 @@
 							<td>@item.PlanUpdatedDate</td>
 							<td>@item.ProfileStatus</td>
 						<td>
-							<a href="/@item.UserPlan.Trim().ToLower()/awareness/@CryptoHelper.Encrypt(item.Profileid??0)" class="text-primary mx-2">
+							<a href="/@item.UserPlan.Trim().ToLower()/awareness/@CryptoHelper.Encrypt(item.ProfileId??0)" class="text-primary mx-2">
 								Edit your fact finder
 							</a>
-								<a href="/userprofile/@item.Profileid" class="text-primary mx-2 " target="_blank">Download PDF</a>
+								<a href="/userprofile/@item.ProfileId" class="text-primary mx-2 " target="_blank">Download PDF</a>
 						</td>
 					</tr> 
 }

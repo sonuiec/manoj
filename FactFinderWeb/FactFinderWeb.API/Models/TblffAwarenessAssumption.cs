@@ -7,7 +7,7 @@ public partial class TblffAwarenessAssumption
 {
     public long Id { get; set; }
 
-    public long Profileid { get; set; }
+    public long ProfileId { get; set; }
 
     public int Equity { get; set; }
 

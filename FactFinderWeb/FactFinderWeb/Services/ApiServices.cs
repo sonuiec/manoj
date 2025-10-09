@@ -18,7 +18,7 @@ namespace FactFinderWeb.Services
         {
             var UserListData = (from user in _context.TblFfRegisterUsers
                         join profile in _context.TblffAwarenessProfileDetails
-                            on user.Id equals profile.Profileid
+                            on user.Id equals profile.ProfileId
                         select new UserProfileDto
                         {
                             UserId = user.Id,

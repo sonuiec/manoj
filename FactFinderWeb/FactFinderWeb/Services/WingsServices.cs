@@ -49,11 +49,11 @@ namespace FactFinderWeb.Services
         {
             var wingsViewModel = new WingsViewModel();
             var tblwings = await _context.TblffWings
-                .Where(x => x.Profileid == _profileId)
+                .Where(x => x.ProfileId == _profileId)
                 .Select(x => new UserWings
                 {
                     Id = x.Id,
-                    Profileid = x.Profileid,
+                    ProfileId = x.ProfileId,
                     GoalType = x.GoalType,
                     GoalPriority = x.GoalPriority,
                     GoalName = x.GoalName,
@@ -88,7 +88,7 @@ namespace FactFinderWeb.Services
         {
             var tblChildren = new List<ChildrenList>();
              tblChildren = await _context.TblffAwarenessChildren
-                .Where(x => x.Profileid == _profileId)
+                .Where(x => x.ProfileId == _profileId)
                 .Select(x => new ChildrenList
                 {
                     ChildName = x.ChildName,
@@ -102,7 +102,7 @@ namespace FactFinderWeb.Services
         {
             // Fetch children linked to profile
             var children = await _context.TblffAwarenessChildren
-                .Where(x => x.Profileid == _profileId)
+                .Where(x => x.ProfileId == _profileId)
                 .ToListAsync();
 
             // Default option
@@ -191,7 +191,7 @@ namespace FactFinderWeb.Services
         public async Task<List<SelectListItem>> WingsBindSelect(string planType)
         {
             var tblChildren = await _context.TblffAwarenessChildren
-                .Where(x => x.Profileid == _profileId)
+                .Where(x => x.ProfileId == _profileId)
                 .Select(x => new ChildrenList
                 {
                     ChildName = x.ChildName,
@@ -307,7 +307,7 @@ namespace FactFinderWeb.Services
         {
                // var wingsViewModel = new WingsViewModel();
                 var tblChildren = await _context.TblffAwarenessChildren
-               .Where(x => x.Profileid == _profileId)
+               .Where(x => x.ProfileId == _profileId)
                .Select(x => new ChildrenList
                {
                    ChildName = x.ChildName,
@@ -361,7 +361,7 @@ namespace FactFinderWeb.Services
         public async Task<int> WingsAddDeleteGoal(List<UserWingsUI> submittedGoals)
         {
             // Get all existing goals for this user UserWingsLocalStorageGoalDto
-            var existingGoals = _context.TblffWings.Where(g => g.Profileid == _profileId).ToList();
+            var existingGoals = _context.TblffWings.Where(g => g.ProfileId == _profileId).ToList();
 
             // Track changes
             var goalsToAdd = new List<TblffWing>();
@@ -403,7 +403,7 @@ namespace FactFinderWeb.Services
                     var newGoal = new TblffWing
                     {
 
-                        Profileid = _profileId,
+                        ProfileId = _profileId,
                         GoalPriority = submitted.priority,
                         GoalName = submitted.goal,
                         GoalPlanYear = submitted.planYear,
@@ -413,7 +413,7 @@ namespace FactFinderWeb.Services
                         NewGoals = submitted.NewGoals,
                         CreateDate = DateTime.Now,
                         UpdateDate = DateTime.Now,
-                        GoalId = goalId,
+                        Goalid = goalId,
                         GoalType = submitted.NewGoals == 1 ? "custom" : WingsSetGoalType(submitted.goal),
                     };
                     goalsToAdd.Add(newGoal);
@@ -514,7 +514,7 @@ namespace FactFinderWeb.Services
             var tblwings = new TblffWing();
 
             tblwings.Id = wings.Id;
-            tblwings.Profileid = _profileId;
+            tblwings.ProfileId = _profileId;
             tblwings.GoalType = wings.GoalType;
             tblwings.GoalPriority = wings.GoalPriority;
             tblwings.GoalName = wings.GoalName;
@@ -534,7 +534,7 @@ namespace FactFinderWeb.Services
         {
             var tblwings = new TblffWing();
             tblwings.Id = wings.Id;
-            tblwings.Profileid = wings.Profileid;
+            tblwings.ProfileId = wings.ProfileId;
             tblwings.GoalType = wings.GoalType;
             tblwings.GoalPriority = wings.GoalPriority;
             tblwings.GoalName = wings.GoalName;

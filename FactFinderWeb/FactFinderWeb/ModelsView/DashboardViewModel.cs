@@ -6,7 +6,7 @@ namespace FactFinderWeb.ModelsView
 	public class DashboardViewModel
 	{
 
-		public long? UId { get; set; }
+		public string UId { get; set; }
 
 		public string UserEmail { get; set; } = null!;
 
@@ -26,7 +26,7 @@ namespace FactFinderWeb.ModelsView
         public DateTime? PlanCreatedDate { get; set; }
         public DateTime? PlanUpdatedDate { get; set; }
 
-        public long? Profileid { get; set; }
+        public long? ProfileId { get; set; }
 
         public string? ProfileStatus { get; set; }
     }
@@ -45,17 +45,17 @@ namespace FactFinderWeb.ModelsView
         public long UserPlanYear { get; set; }
         public string? UserEmailVerification { get; set; }
 
-        [Required(ErrorMessage = "Please select account status.")]
+      //  [Required(ErrorMessage = "Please select account status.")]
         public string? UserActiveStatus { get; set; }
 
         public string? Userptx { get; set; }   //user submitted =pending or admin locked = locked
 
         public DateTime? UserRegisterDate { get; set; }
         
-        [Required(ErrorMessage = "Please select profile status.")]
+       // [Required(ErrorMessage = "Please select profile status.")]
         public string? ProfileStatus { get; set; }
         public string? AdvisorName { get; set; }
-        [Required(ErrorMessage = "Please select advisor name.")]
+      //  [Required(ErrorMessage = "Please select advisor name.")]
         public int? Advisorid { get; set; }
         public List<AdvisorList> AdvisorListSelect { get; set; } = new();
         public List<SelectListItem> AdvisorListOptions { get; set; } = new List<SelectListItem>();

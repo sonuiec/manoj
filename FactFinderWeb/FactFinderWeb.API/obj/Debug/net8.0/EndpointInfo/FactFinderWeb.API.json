@@ -1,18 +1,49 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "BaseWebApi",
+    "title": "FactFinder API",
     "version": "v1"
   },
   "paths": {
-    "/Export/userprofile/{id}": {
+    "/api/Auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Exports/profile/{uid}": {
       "get": {
         "tags": [
-          "Export"
+          "Exports"
         ],
         "parameters": [
           {
-            "name": "id",
+            "name": "uid",
             "in": "path",
             "required": true,
             "schema": {
@@ -27,10 +58,28 @@
         }
       }
     },
-    "/Export/ping1": {
+    "/api/Exports/profile": {
       "get": {
         "tags": [
-          "Export"
+          "Exports"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -39,41 +88,14 @@
         }
       }
     },
-    "/WeatherForecast": {
+    "/api/Exports/ping1": {
       "get": {
         "tags": [
-          "WeatherForecast"
+          "Exports"
         ],
-        "operationId": "GetWeatherForecast",
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -81,25 +103,20 @@
   },
   "components": {
     "schemas": {
-      "WeatherForecast": {
+      "LoginModel": {
+        "required": [
+          "email",
+          "password"
+        ],
         "type": "object",
         "properties": {
-          "date": {
-            "type": "string",
-            "format": "date"
+          "email": {
+            "minLength": 1,
+            "type": "string"
           },
-          "temperatureC": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "temperatureF": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "summary": {
-            "type": "string",
-            "nullable": true
+          "password": {
+            "minLength": 1,
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -108,7 +125,7 @@
     "securitySchemes": {
       "Bearer": {
         "type": "apiKey",
-        "description": "Jwt Authorization",
+        "description": "JWT Authorization using Bearer scheme. Example: 'Bearer {token}'",
         "name": "Authorization",
         "in": "header"
       }

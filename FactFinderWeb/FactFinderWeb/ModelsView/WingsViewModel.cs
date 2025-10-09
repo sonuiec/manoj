@@ -51,7 +51,7 @@ namespace FactFinderWeb.ModelsView
     {
         public long Id { get; set; }
 
-        public long Profileid { get; set; }
+        public long ProfileId { get; set; }
 
         public string? GoalType { get; set; }
 
@@ -88,7 +88,7 @@ namespace FactFinderWeb.ModelsView
     public class UserWingsUI
     {
         public long Id { get; set; }
-        //public long Profileid { get; set; }
+        //public long ProfileId { get; set; }
         //public int? Goalid { get; set; }
 
         public int priority { get; set; }

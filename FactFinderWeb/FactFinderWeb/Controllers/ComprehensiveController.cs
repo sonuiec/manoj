@@ -237,7 +237,7 @@ namespace FactFinderWeb.Controllers
             wingsViewModel.GoalOptions = await _WingsServices.WingsBindSelect(_planType);
             wingsViewModel.ChildrenLists = await _WingsServices.WingsChildrenList();
 
-            var ApplicantLifeExpectancy = (from a in _context.TblffAwarenessAssumptions where a.Profileid ==_profileId select a.ApplicantLifeExpectancy).FirstOrDefault();
+            var ApplicantLifeExpectancy = (from a in _context.TblffAwarenessAssumptions where a.ProfileId ==_profileId select a.ApplicantLifeExpectancy).FirstOrDefault();
             if (ApplicantLifeExpectancy != null)
             {
                 wingsViewModel.ApplicantLifeExpectancy = ApplicantLifeExpectancy;

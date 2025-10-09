@@ -26,5 +26,4 @@ public partial class TblffWingsGoalStep5ExecutionMaster
     public DateTime? UpdateDate { get; set; }
 
     public string? DealType { get; set; }
-    
 }

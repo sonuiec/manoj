@@ -75,7 +75,7 @@ namespace FactFinderWeb.Controllers
             {
                 return Unauthorized(); // manually block if not logged in
             }
-            var awarenessList = await _context.TblffAwarenessChildren.Where(c => c.Profileid == _profileId).ToListAsync();
+            var awarenessList = await _context.TblffAwarenessChildren.Where(c => c.ProfileId == _profileId).ToListAsync();
             return Ok(awarenessList); // Automatically serialized as JSON
         }
 
@@ -86,7 +86,7 @@ namespace FactFinderWeb.Controllers
             {
                 return Unauthorized(); // manually block if not logged in
             }
-            var child = await _context.TblffAwarenessChildren.FirstOrDefaultAsync(ChildDetails => ChildDetails.Id == id && ChildDetails.Profileid == _profileId);
+            var child = await _context.TblffAwarenessChildren.FirstOrDefaultAsync(ChildDetails => ChildDetails.Id == id && ChildDetails.ProfileId == _profileId);
 
             if (child == null)
             {
@@ -103,7 +103,7 @@ namespace FactFinderWeb.Controllers
                 return Unauthorized(); // manually block if not logged in
             }
             var child = await _context.TblffAwarenessChildren
-                .FirstOrDefaultAsync(c => c.Id == id && c.Profileid == _profileId);
+                .FirstOrDefaultAsync(c => c.Id == id && c.ProfileId == _profileId);
 
             if (child == null)
             {

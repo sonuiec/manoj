@@ -32,7 +32,7 @@ namespace FactFinderWeb.Services
         public async Task<AwarenessViewModel> AwarenessProfileDetail(long pid)
         {
             var awarenessData = await _context.TblffAwarenessProfileDetails
-                            .Where(p => p.Profileid == pid)
+                            .Where(p => p.ProfileId == pid)
                             .Select(p => new AwarenessViewModel
                             {
                                 ProfileDetail = new ProfileDetail
@@ -61,7 +61,7 @@ namespace FactFinderWeb.Services
                                     CompanyPINcode = p.CompanyPincode,
                                     CompanyState = p.CompanyState,
 
-                                    IsSameAddress = p.IsSameAddress,
+                                    IsSameAddress = p.IsSameAddress??false,
 
                                     ResAddress = p.ResAddress,
                                     ResCity = p.ResCity,
@@ -82,7 +82,7 @@ namespace FactFinderWeb.Services
                                     Shopping = p.Shopping
                                 },
 
-                                SpouseDetails = p.MaritalStatus.ToLower() != "married" ? new SpouseDetails() : _context.TblffAwarenessSpouses.Where(m => m.Profileid == p.Profileid)
+                                SpouseDetails = p.MaritalStatus.ToLower() != "married" ? new SpouseDetails() : _context.TblffAwarenessSpouses.Where(m => m.ProfileId == p.ProfileId)
                                     .Select(m => new SpouseDetails
                                     {
                                         SpouseName = m.SpouseName,
@@ -103,7 +103,7 @@ namespace FactFinderWeb.Services
                                         SpouseCompanyState = m.SpouseCompanyState
                                     }).FirstOrDefault(),
 
-                                Assumptions = _context.TblffAwarenessAssumptions.Where(m => m.Profileid == p.Profileid)
+                                Assumptions = _context.TblffAwarenessAssumptions.Where(m => m.ProfileId == p.ProfileId)
                                     .Select(m => new Assumptions
                                     {
                                         Equity = m.Equity,
@@ -119,7 +119,7 @@ namespace FactFinderWeb.Services
                                         SpouseLifeExpectancy = m.SpouseLifeExpectancy
                                     }).FirstOrDefault() ?? new Assumptions(),
 
-                                ChildrenDetails = p.HaveChildren.ToLower() == "no" ? null : _context.TblffAwarenessChildren.Where(c => c.Profileid == p.Profileid)
+                                ChildrenDetails = p.HaveChildren.ToLower() == "no" ? null : _context.TblffAwarenessChildren.Where(c => c.ProfileId == p.ProfileId)
                                     .Select(c => new ChildDetails
                                     {
                                         Id = c.Id,
@@ -132,7 +132,7 @@ namespace FactFinderWeb.Services
                                         ChildPan = c.ChildPan
                                     }).ToList()
                             }).FirstOrDefaultAsync();
-            var assumeData = _context.TblffAwarenessAssumptions.FirstOrDefault(m => m.Profileid == pid);
+            var assumeData = _context.TblffAwarenessAssumptions.FirstOrDefault(m => m.ProfileId == pid);
             if (assumeData == null) {
                 awarenessData.Assumptions.Equity = 12;
                 awarenessData.Assumptions.Debt = 7;
@@ -142,7 +142,7 @@ namespace FactFinderWeb.Services
                 awarenessData.Assumptions.InflationRates = 7;
                 awarenessData.Assumptions.EducationInflation = 8;
                 awarenessData.Assumptions.ApplicantRetirement = null;
-                awarenessData.Assumptions.Profileid = _profileId;
+                awarenessData.Assumptions.ProfileId = _profileId;
             }
 
             return awarenessData;
@@ -154,7 +154,7 @@ namespace FactFinderWeb.Services
             try
             {
                 AddorUpdate = 0;
-                TblffAwarenessProfileDetail awareness = await _context.TblffAwarenessProfileDetails.FirstOrDefaultAsync(x => x.Profileid == profileID);
+                TblffAwarenessProfileDetail awareness = await _context.TblffAwarenessProfileDetails.FirstOrDefaultAsync(x => x.ProfileId == profileID);
                 if (awareness == null)
                 {
                     AddorUpdate = 1; // Add new record
@@ -210,7 +210,7 @@ namespace FactFinderWeb.Services
                 //if (awarenessProfileDetail.MaritalStatus.ToLower() != "married")
                 if (!awarenessProfileDetail.MaritalStatus.Equals("married", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    TblffAwarenessSpouse SpouseDetail =await _context.TblffAwarenessSpouses.FirstOrDefaultAsync(x => x.Profileid == profileID);
+                    TblffAwarenessSpouse SpouseDetail =await _context.TblffAwarenessSpouses.FirstOrDefaultAsync(x => x.ProfileId == profileID);
                     if (SpouseDetail != null)
                     {
                         _context.TblffAwarenessSpouses.Remove(SpouseDetail);
@@ -221,7 +221,7 @@ namespace FactFinderWeb.Services
                         //if (awarenessProfileDetail.HaveChildren == "Yes")
                         //{
                         List<TblffAwarenessChild> childDetails = await _context.TblffAwarenessChildren
-                                                                .Where(x => x.Profileid == profileID).ToListAsync();
+                                                                .Where(x => x.ProfileId == profileID).ToListAsync();
                         if (childDetails.Any())
                         {
                             _context.TblffAwarenessChildren.RemoveRange(childDetails);
@@ -256,7 +256,7 @@ namespace FactFinderWeb.Services
         public async Task<int> AwarenessAddProfileSpouseDatail(SpouseDetails awarenessProfileSpouseDetail, long profileID)
         {
             AddorUpdate = 0;
-            TblffAwarenessSpouse awarenessSpouseDetail = await _context.TblffAwarenessSpouses.FirstOrDefaultAsync(x => x.Profileid == profileID);
+            TblffAwarenessSpouse awarenessSpouseDetail = await _context.TblffAwarenessSpouses.FirstOrDefaultAsync(x => x.ProfileId == profileID);
             if (awarenessSpouseDetail == null)
             {
                 AddorUpdate = 1; 
@@ -264,8 +264,8 @@ namespace FactFinderWeb.Services
                 awarenessSpouseDetail = TblffAwarenessSpousevar;
             }
             //awareness.id =  awarenessProfileDetail.asdf;
-            //awareness.Profileid =  awarenessProfileDetail.asdf;
-            awarenessSpouseDetail.Profileid = profileID;
+            //awareness.ProfileId =  awarenessProfileDetail.asdf;
+            awarenessSpouseDetail.ProfileId = profileID;
             awarenessSpouseDetail.SpouseName = awarenessProfileSpouseDetail.SpouseName;
             awarenessSpouseDetail.SpouseGender = awarenessProfileSpouseDetail.SpouseGender;
             awarenessSpouseDetail.SpouseDob = awarenessProfileSpouseDetail.SpouseDob;
@@ -302,7 +302,7 @@ namespace FactFinderWeb.Services
         public async Task<int> AwarenessAddProfileAssumptions(Assumptions awarenessProfileAssumptions, long profileID)
         {
             AddorUpdate = 0;
-            TblffAwarenessAssumption awarenessAssumptions = await _context.TblffAwarenessAssumptions.FirstOrDefaultAsync(x => x.Profileid == profileID);
+            TblffAwarenessAssumption awarenessAssumptions = await _context.TblffAwarenessAssumptions.FirstOrDefaultAsync(x => x.ProfileId == profileID);
             if (awarenessAssumptions == null)
             {
                 AddorUpdate = 1; // Add new record
@@ -311,8 +311,8 @@ namespace FactFinderWeb.Services
             }
 
             //awareness.id =  awarenessProfileDetail.asdf;
-            //awareness.Profileid =  awarenessProfileDetail.asdf;
-            awarenessAssumptions.Profileid = profileID;
+            //awareness.ProfileId =  awarenessProfileDetail.asdf;
+            awarenessAssumptions.ProfileId = profileID;
             awarenessAssumptions.Equity = awarenessProfileAssumptions.Equity;
             awarenessAssumptions.Debt = awarenessProfileAssumptions.Debt;
             awarenessAssumptions.Gold = awarenessProfileAssumptions.Gold;
@@ -342,7 +342,7 @@ namespace FactFinderWeb.Services
         {
 
             AddorUpdate = 0;
-            TblffAwarenessFamilyFinancial awarenessFamilyFinancial = await _context.TblffAwarenessFamilyFinancials.FirstOrDefaultAsync(x => x.Profileid == profileID);
+            TblffAwarenessFamilyFinancial awarenessFamilyFinancial = await _context.TblffAwarenessFamilyFinancials.FirstOrDefaultAsync(x => x.ProfileId == profileID);
             if (awarenessFamilyFinancial == null)
             {
                 AddorUpdate = 1; // Add new record
@@ -350,7 +350,7 @@ namespace FactFinderWeb.Services
                 awarenessFamilyFinancial = awarenessFamilyFinancialvar;
             }
 
-            awarenessFamilyFinancial.Profileid = profileID;
+            awarenessFamilyFinancial.ProfileId = profileID;
             awarenessFamilyFinancial.Stock = awarenessProfileFamilyFinancial.Stock;
             awarenessFamilyFinancial.Income = awarenessProfileFamilyFinancial.Income;
             awarenessFamilyFinancial.Payment = awarenessProfileFamilyFinancial.Payment;
@@ -384,8 +384,8 @@ namespace FactFinderWeb.Services
             }
 
             //awareness.id =  awarenessProfileDetail.asdf;
-            //awareness.Profileid =  awarenessProfileDetail.asdf;
-            awarenessChild.Profileid = _profileId;
+            //awareness.ProfileId =  awarenessProfileDetail.asdf;
+            awarenessChild.ProfileId = _profileId;
             awarenessChild.ChildName = childDetails.ChildName;
             awarenessChild.ChildGender = childDetails.ChildGender;
             awarenessChild.ChildDob = childDetails.ChildDob;
@@ -412,7 +412,7 @@ namespace FactFinderWeb.Services
         public async Task<int> AwarenessAddProfileChildrens(ChildDetails childDetails, long profileID)
         {
             AddorUpdate = 0;
-            TblffAwarenessChild awarenessChild = await _context.TblffAwarenessChildren.FirstOrDefaultAsync(x => x.Profileid == profileID);
+            TblffAwarenessChild awarenessChild = await _context.TblffAwarenessChildren.FirstOrDefaultAsync(x => x.ProfileId == profileID);
             if (awarenessChild == null)
             {
                 AddorUpdate = 1; // Add new record
@@ -421,8 +421,8 @@ namespace FactFinderWeb.Services
             }
 
             //awareness.id =  awarenessProfileDetail.asdf;
-            //awareness.Profileid =  awarenessProfileDetail.asdf;
-            awarenessChild.Profileid = profileID;
+            //awareness.ProfileId =  awarenessProfileDetail.asdf;
+            awarenessChild.ProfileId = profileID;
             awarenessChild.ChildName = childDetails.ChildName;
             awarenessChild.ChildGender = childDetails.ChildGender;
             awarenessChild.ChildDob = childDetails.ChildDob;
@@ -477,13 +477,13 @@ namespace FactFinderWeb.Services
         }
         public string checkEmailExistProfileTbl(long profileID)
         {
-            string ExistsUsername = _context.TblffAwarenessProfileDetails.Where(o => o.Profileid == profileID)
+            string ExistsUsername = _context.TblffAwarenessProfileDetails.Where(o => o.ProfileId == profileID)
                                     .Select(o => o.Email).FirstOrDefault();
             return ExistsUsername;
         }
         public bool checkPANExist(string PAN, long profileID)
         {
-            bool ExistsPAN = _context.TblffAwarenessProfileDetails.Any(o =>o.Pan == PAN && o.Profileid != profileID);
+            bool ExistsPAN = _context.TblffAwarenessProfileDetails.Any(o =>o.Pan == PAN && o.ProfileId != profileID);
 
             return ExistsPAN;
         }

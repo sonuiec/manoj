@@ -23,33 +23,29 @@ namespace FactFinderWeb.API.Services
             _expireMinutes = int.Parse(configuration["Jwt:ExpireMinutes"]);
         }
 
-        public string GenerateToken(string userId, string username, string IsAdmin, string IsCaregiver, string role,string CaregiverDB)
+        public string GenerateToken(string userId, string name, string isAdmin)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
+          
             var key = Encoding.ASCII.GetBytes(_key);
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Role, role),
+             
                 new Claim("UserId", userId),
-                new Claim("GivenName", username),
-                new Claim("IsAdmin", IsAdmin),
-                new Claim("IsCaregiver", IsCaregiver),
-                 new Claim("CaregiverDB", CaregiverDB),
+                new Claim("Name", name),
+                new Claim("Role", isAdmin),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(_expireMinutes),
-                Issuer = _issuer,
-                Audience = _audience,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            };
+            var token = new JwtSecurityToken(
+                    issuer: _issuer,
+                    audience: _audience,
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(_expireMinutes),
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+                );
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public static TokenModel GetUserFromToken(ClaimsPrincipal user)
@@ -88,10 +84,9 @@ namespace FactFinderWeb.API.Services
                 return new TokenModel
                 {
                     UserId = Convert.ToInt32( claims.FirstOrDefault(c => c.Type == "UserId")?.Value),
-                    GivenName = claims.FirstOrDefault(c => c.Type == "GivenName")?.Value,
+                    GivenName = claims.FirstOrDefault(c => c.Type == "Name")?.Value,
                     Role = claims.FirstOrDefault(c => c.Type == "role")?.Value,
-                    IsAdmin = bool.TryParse(claims.FirstOrDefault(c => c.Type == "IsAdmin")?.Value, out bool isAdmin) && isAdmin,
-                    IsCaregiver = bool.TryParse(claims.FirstOrDefault(c => c.Type == "IsCaregiver")?.Value, out bool isCaregiver) && isCaregiver,
+                    IsAdmin = bool.TryParse(claims.FirstOrDefault(c => c.Type == "Role")?.Value, out bool isAdmin) && isAdmin,
                     Expiration = DateTimeOffset.FromUnixTimeSeconds(long.Parse(jwtToken.Claims.First(c => c.Type == "exp").Value)).UtcDateTime
                 };
             }

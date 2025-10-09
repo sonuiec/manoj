@@ -604,9 +604,9 @@ namespace FactFinderWeb.Services
 
             var profileData = await (
                 from profile in _context.TblffAwarenessProfileDetails
-                where profile.Profileid == profileID
+                where profile.ProfileId == profileID
                 join spouse in _context.TblffAwarenessSpouses
-                    on profile.Profileid equals spouse.Profileid into spouseGroup
+                    on profile.ProfileId equals spouse.ProfileId into spouseGroup
                 from spouse in spouseGroup.DefaultIfEmpty()
                 select new ProfileDataDto
                 {

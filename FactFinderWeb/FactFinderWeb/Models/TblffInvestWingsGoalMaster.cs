@@ -7,7 +7,7 @@ public partial class TblffInvestWingsGoalMaster
 {
     public long Id { get; set; }
 
-    public long Profileid { get; set; }
+    public long ProfileId { get; set; }
 
     public decimal? MonthlySavings { get; set; }
 

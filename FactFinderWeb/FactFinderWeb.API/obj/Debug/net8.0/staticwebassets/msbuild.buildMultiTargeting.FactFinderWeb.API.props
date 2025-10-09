@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\FactFinderWeb.API.props" />
+</Project>

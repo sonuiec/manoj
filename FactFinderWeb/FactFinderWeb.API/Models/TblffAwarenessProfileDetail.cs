@@ -6,7 +6,8 @@ namespace FactFinderWeb.API.Models;
 public partial class TblffAwarenessProfileDetail
 {
     public long ProfileId { get; set; }
-
+    
+         public string? UId { get; set; }
     public long? UserId { get; set; }
 
     public long? Registerid { get; set; }

@@ -32,7 +32,7 @@ namespace FactFinderWeb.Services
         public async Task<int> InvestCheckDataThenUpdate(long profileId)
         {
             // Check if any records exist for the given profileId
-            bool dataExists = await _context.TblffInvestWingsGoals.AnyAsync(x => x.Profileid == profileId);
+            bool dataExists = await _context.TblffInvestWingsGoals.AnyAsync(x => x.ProfileId == profileId);
 
             if (!dataExists)
             {
@@ -49,15 +49,15 @@ namespace FactFinderWeb.Services
         public async Task<InvestViewModel> GetInvestData(long profileId)
         {
             var tblwings = await _context.TblffWings
-                .Where(x => x.Profileid == _profileId)
+                .Where(x => x.ProfileId == _profileId)
                 .Select(x => new UserWings
                 {
                     Id = x.Id,
-                    Profileid = x.Profileid,
+                    ProfileId = x.ProfileId,
                     GoalPriority = x.GoalPriority,
                 })
                 .ToListAsync();
-            var investData = await _context.TblffInvestWingsGoals.Where(x => x.Profileid == profileId).ToListAsync();
+            var investData = await _context.TblffInvestWingsGoals.Where(x => x.ProfileId == profileId).ToListAsync();
 
 
 
@@ -69,7 +69,7 @@ namespace FactFinderWeb.Services
                                             select new InvestMV
                                             {
                                                 Id = invest.Id,
-                                                Profileid = invest.Profileid,
+                                                ProfileId = invest.ProfileId,
                                                 Goalid = invest.Goalid,
                                                 GoalPriority = wings.GoalPriority,
                                                 GoalName = invest.GoalName,
@@ -80,11 +80,11 @@ namespace FactFinderWeb.Services
                                             }).OrderBy(x => x.GoalPriority) .ToList();
         
             var tblInvestmasterData =await  _context.TblffInvestWingsGoalMasters
-                .Where(x => x.Profileid == profileId)
+                .Where(x => x.ProfileId == profileId)
                 .Select(x => new TblffInvestWingsGoalMaster
                 {
                     Id = x.Id,
-                    Profileid = x.Profileid,
+                    ProfileId = x.ProfileId,
                     AvailableLumpsum = x.AvailableLumpsum,
                     IntendedSipmonthly = x.IntendedSipmonthly,
                     MonthlySavings = x.MonthlySavings,
@@ -122,7 +122,7 @@ namespace FactFinderWeb.Services
                 foreach (var goal in tblwings)
                 {
                     var investMV = new TblffInvestWingsGoal();
-                    investMV.Profileid = _profileId;
+                    investMV.ProfileId = _profileId;
                     investMV.Goalid = (int)goal.Id;
                     investMV.GoalName = goal.GoalName;
                     investMV.LumpsumAmount = 0;
@@ -142,11 +142,11 @@ namespace FactFinderWeb.Services
         public async Task<List<UserWings>> GetWingsData(long profileId)
         {
             var tblwings = await _context.TblffWings
-                .Where(x => x.Profileid == _profileId)
+                .Where(x => x.ProfileId == _profileId)
                 .Select(x => new UserWings
                 {
                     Id = x.Id,
-                    Profileid = x.Profileid,
+                    ProfileId = x.ProfileId,
                     GoalType = x.GoalType,
                     GoalPriority = x.GoalPriority,
                     GoalName = x.GoalName,
@@ -162,7 +162,7 @@ namespace FactFinderWeb.Services
         {
             // Fetch existing goals from the database for the current user
             var existingGoals = await _context.TblffInvestWingsGoals
-                .Where(x => x.Profileid == _profileId)
+                .Where(x => x.ProfileId == _profileId)
                 .ToListAsync();
 
             // Fetch the incoming goals (e.g., from TblffWings)
@@ -173,7 +173,7 @@ namespace FactFinderWeb.Services
                 .Where(incoming => !existingGoals.Any(existing => existing.Goalid == incoming.Id))
                 .Select(incoming => new TblffInvestWingsGoal
                 {
-                    Profileid = _profileId,
+                    ProfileId = _profileId,
                     Goalid = (int)incoming.Id,
                     GoalName = incoming.GoalName,
                     LumpsumAmount = 0,
@@ -216,13 +216,13 @@ namespace FactFinderWeb.Services
 
         public async Task<int> WingsUpdateInvestDataForWings(InvestViewModel investViewModel)
         {
-            var tblInvestMaster = await _context.TblffInvestWingsGoalMasters.FirstOrDefaultAsync(x => x.Profileid == _profileId);
+            var tblInvestMaster = await _context.TblffInvestWingsGoalMasters.FirstOrDefaultAsync(x => x.ProfileId == _profileId);
 
             if (tblInvestMaster == null)
             {
                 tblInvestMaster = new TblffInvestWingsGoalMaster
                 {
-                    Profileid = _profileId,
+                    ProfileId = _profileId,
                     AvailableLumpsum = investViewModel.AvailableLumpsum,
                     IntendedSipmonthly = investViewModel.IntendedSIPmonthly,
                     MonthlySavings = investViewModel.MonthlySavings,
@@ -235,7 +235,7 @@ namespace FactFinderWeb.Services
             }
             else
             {
-                tblInvestMaster.Profileid = _profileId;
+                tblInvestMaster.ProfileId = _profileId;
                 tblInvestMaster.AvailableLumpsum = investViewModel.AvailableLumpsum;
                 tblInvestMaster.IntendedSipmonthly = investViewModel.IntendedSIPmonthly;
                 tblInvestMaster.MonthlySavings = investViewModel.MonthlySavings;
@@ -246,7 +246,7 @@ namespace FactFinderWeb.Services
 
             foreach (var investMVgoal in investViewModel.InvestMVList)
             {
-                var dataToUpdate = await _context.TblffInvestWingsGoals.FirstOrDefaultAsync(x => x.Goalid == investMVgoal.Goalid && x.Profileid == _profileId);
+                var dataToUpdate = await _context.TblffInvestWingsGoals.FirstOrDefaultAsync(x => x.Goalid == investMVgoal.Goalid && x.ProfileId == _profileId);
                 //var dataToUpdate = new TblffInvestWingsGoal();
                 //var dataToUpdate =  await _context.TblffInvestWingsGoals.FindAsync(Convert.ToInt64(investMVgoal.Goalid));
                 if (dataToUpdate != null)
@@ -264,7 +264,7 @@ namespace FactFinderWeb.Services
             {
                 // Update the TblffWings table to set NewGoals to 0 for the current profile
                 var userProfileData = await _context.TblffAwarenessProfileDetails
-                    .Where(x => x.Profileid == _profileId)
+                    .Where(x => x.ProfileId == _profileId)
                     .FirstOrDefaultAsync();
                 if (userProfileData != null)
                 {

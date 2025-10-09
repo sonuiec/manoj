@@ -19,7 +19,7 @@ namespace FactFinderWeb.ModelsView
         public long Id { get; set; }
 
         //public long UserID { get; set; }
-        public long? Profileid { get; set; }
+        public long? ProfileId { get; set; }
 
         [Required(ErrorMessage = "Please select risk capacity.")]
         public string RiskCapacity { get; set; } = null!;

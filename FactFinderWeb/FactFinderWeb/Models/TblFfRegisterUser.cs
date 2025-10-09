@@ -34,6 +34,4 @@ public partial class TblFfRegisterUser
     public int? Advisorid { get; set; }
 
     public string? AdvisorName { get; set; }
-
-   
 }

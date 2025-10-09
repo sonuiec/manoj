@@ -18,7 +18,4 @@ public partial class TblffWingsGoalMaster
     public DateTime? CreateDate { get; set; }
 
     public DateTime? UpdateDate { get; set; }
-
-   
-     
 }

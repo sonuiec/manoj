@@ -747,7 +747,7 @@ public partial class FactFinderDbContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("pinCode");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.State)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -771,7 +771,7 @@ public partial class FactFinderDbContext : DbContext
             entity.Property(e => e.Gold).HasColumnName("gold");
             entity.Property(e => e.InflationRates).HasColumnName("inflationRates");
             entity.Property(e => e.LiquidFunds).HasColumnName("liquidFunds");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.RealEstateReturn).HasColumnName("realEstateReturn");
             entity.Property(e => e.SpouseLifeExpectancy).HasColumnName("spouseLifeExpectancy");
             entity.Property(e => e.SpouseRetirement).HasColumnName("spouseRetirement");
@@ -813,7 +813,7 @@ public partial class FactFinderDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createDate");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");
@@ -844,7 +844,7 @@ public partial class FactFinderDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("payment");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.Shopping)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -1024,6 +1024,10 @@ public partial class FactFinderDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("stock");
+            entity.Property(e => e.UId)
+              .HasMaxLength(100)
+              .HasColumnName("UId");
+
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");
@@ -1168,7 +1172,7 @@ public partial class FactFinderDbContext : DbContext
             entity.Property(e => e.ProfileStatus)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.ResAddress)
                 .HasMaxLength(150)
                 .IsUnicode(false);
@@ -1210,7 +1214,7 @@ public partial class FactFinderDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createDate");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.SpouseAadhaar)
                 .HasMaxLength(12)
                 .IsUnicode(false)
@@ -1291,7 +1295,7 @@ public partial class FactFinderDbContext : DbContext
                 .HasColumnName("goalName");
             entity.Property(e => e.Goalid).HasColumnName("goalid");
             entity.Property(e => e.LumpsumAmount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.Sipamount)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("SIPAmount");
@@ -1304,7 +1308,7 @@ public partial class FactFinderDbContext : DbContext
         {
             entity.ToTable("tblff_InvestWingsGoalMaster", "dbo");
 
-            entity.HasIndex(e => e.Profileid, "profileid_uqkey").IsUnique();
+            entity.HasIndex(e => e.ProfileId, "profileid_uqkey").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Addby).HasColumnName("addby");
@@ -1321,7 +1325,7 @@ public partial class FactFinderDbContext : DbContext
             entity.Property(e => e.MonthlySavings)
                 .HasDefaultValue(0m)
                 .HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");
@@ -1343,7 +1347,7 @@ public partial class FactFinderDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("plannerAssessmentOnRiskProfile");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.RiskCapacity)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -1402,7 +1406,7 @@ public partial class FactFinderDbContext : DbContext
                 .HasColumnName("goalType");
             entity.Property(e => e.Goalid).HasColumnName("goalid");
             entity.Property(e => e.NewGoals).HasColumnName("newGoals");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.TimeHorizon).HasColumnName("timeHorizon");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
@@ -1461,7 +1465,7 @@ public partial class FactFinderDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("goalName");
             entity.Property(e => e.Goalid).HasColumnName("goalid");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");

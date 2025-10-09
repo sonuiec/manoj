@@ -3,6 +3,7 @@ using FactFinderWeb.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace FactFinderWeb.Models;
 
@@ -760,7 +761,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("pinCode");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.State)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -784,7 +785,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.Property(e => e.Gold).HasColumnName("gold");
             entity.Property(e => e.InflationRates).HasColumnName("inflationRates");
             entity.Property(e => e.LiquidFunds).HasColumnName("liquidFunds");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.RealEstateReturn).HasColumnName("realEstateReturn");
             entity.Property(e => e.SpouseLifeExpectancy).HasColumnName("spouseLifeExpectancy");
             entity.Property(e => e.SpouseRetirement).HasColumnName("spouseRetirement");
@@ -826,7 +827,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createDate");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");
@@ -857,7 +858,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("payment");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.Shopping)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -873,11 +874,10 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
 
         modelBuilder.Entity<TblffAwarenessProfileDetail>(entity =>
         {
-            entity.HasKey(e => e.Profileid).HasName("PK_tblff_awareness_profileDetails");
+            entity.HasKey(e => e.ProfileId);
 
-            entity.ToTable("tblff_awareness_profileDetails", "dbo");
-            entity.Property(e => e.UserId).HasColumnName("UserId");
-            entity.Property(e => e.Profileid).HasColumnName("Profileid");
+            entity.ToTable("tblff_awareness_profileDetails", "dbo", tb => tb.HasTrigger("trg_SetProfileUId"));
+
             entity.Property(e => e.Aadhaar)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -887,10 +887,17 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("addby");
             entity.Property(e => e.Addbyid).HasColumnName("addbyid");
+            entity.Property(e => e.AdvisorName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.Altphone)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("altphone");
+            entity.Property(e => e.Awakenid)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("awakenid");
             entity.Property(e => e.CompanyAddress)
                 .HasMaxLength(150)
                 .IsUnicode(false)
@@ -999,7 +1006,10 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("planType");
             entity.Property(e => e.PlanYear).HasColumnName("planYear");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileStatus)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Registerid).HasColumnName("registerid");
             entity.Property(e => e.ResAddress)
                 .HasMaxLength(150)
                 .IsUnicode(false);
@@ -1028,20 +1038,12 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("stock");
+            entity.Property(e => e.Uid)
+                .HasMaxLength(100)
+                .HasColumnName("UId");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");
-
-            entity.Property(e => e.AdvisorName)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("advisorName");
-            entity.Property(e => e.Advisorid).HasColumnName("advisorid");
-            entity.Property(e => e.ProfileStatus)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("ProfileStatus");
-
         });
 
         modelBuilder.Entity<TblffAwarenessSpouse>(entity =>
@@ -1052,7 +1054,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createDate");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.SpouseAadhaar)
                 .HasMaxLength(12)
                 .IsUnicode(false)
@@ -1133,7 +1135,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasColumnName("goalName");
             entity.Property(e => e.Goalid).HasColumnName("goalid");
             entity.Property(e => e.LumpsumAmount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.Sipamount)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("SIPAmount");
@@ -1146,7 +1148,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
         {
             entity.ToTable("tblff_InvestWingsGoalMaster", "dbo");
 
-            entity.HasIndex(e => e.Profileid, "profileid_uqkey").IsUnique();
+            entity.HasIndex(e => e.ProfileId, "profileid_uqkey").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Addby).HasColumnName("addby");
@@ -1163,7 +1165,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.Property(e => e.MonthlySavings)
                 .HasDefaultValue(0m)
                 .HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");
@@ -1185,7 +1187,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("plannerAssessmentOnRiskProfile");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.RiskCapacity)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -1229,7 +1231,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
             entity.ToTable("tblff_wings", "dbo");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.GoalId).HasColumnName("goalid");
+            entity.Property(e => e.Goalid).HasColumnName("goalid");
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createDate");
@@ -1246,7 +1248,7 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("goalType");
             entity.Property(e => e.NewGoals).HasColumnName("newGoals");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.TimeHorizon).HasColumnName("timeHorizon");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
@@ -1305,9 +1307,9 @@ public partial class ResellerBoyinawebFactFinderWebContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("goalName");
-            entity.Property(e => e.WingId).HasColumnName("wingid");
+            entity.Property(e => e.Wingid).HasColumnName("wingid");
             entity.Property(e => e.Goalid).HasColumnName("goalid");
-            entity.Property(e => e.Profileid).HasColumnName("profileid");
+            entity.Property(e => e.ProfileId).HasColumnName("profileid");
             entity.Property(e => e.UpdateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("updateDate");

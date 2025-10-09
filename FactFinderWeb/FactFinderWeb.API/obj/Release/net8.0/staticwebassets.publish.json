@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "eWGfRRXhEGXmhujY9ic994OFBL6xlntnMesbZRr9juM=",
+  "Source": "FactFinderWeb.API",
+  "BasePath": "_content/FactFinderWeb.API",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

@@ -7,7 +7,7 @@ public partial class TblffAwarenessProfileDetailsBak20250903
 {
     public long Id { get; set; }
 
-    public long Profileid { get; set; }
+    public long ProfileId { get; set; }
 
     public string PlanType { get; set; } = null!;
 

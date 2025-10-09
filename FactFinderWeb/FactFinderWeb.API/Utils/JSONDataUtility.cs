@@ -10,6 +10,7 @@ using stJSON= System.Text.Json;
 using System.Collections.Generic;
 using FactFinderWeb.API.Models;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 //using NewtonsoftSerializer = Newtonsoft.Json.JsonConvert;
 
@@ -43,15 +44,13 @@ namespace FactFinderWeb.API.Utils
         {
             var result = new
             {
-                data = new
-                {
                     awareness = BuildAwarenessSection(profileId),
                     wings = BuildWingsSection(profileId),
                      alertness = BuildAlertnessSection(profileId),
                     knowledge = BuildKnowledgeSection(profileId),
                     executePlan = BuildExecutePlanSection(profileId),
                     invest = BuildInvestSection(profileId)
-                }
+               
             };
 
             return JsonConvert.SerializeObject(result, Formatting.Indented);
@@ -60,10 +59,10 @@ namespace FactFinderWeb.API.Utils
         private object BuildAwarenessSection(long profileId)
         {
             var profile = _context.TblffAwarenessProfileDetails.FirstOrDefault(p => p.ProfileId == profileId);
-            var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.Profileid == profileId);
-            var children = _context.TblffAwarenessChildren.Where(c => c.Profileid == profileId).ToList();
-            var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.Profileid == profileId).FirstOrDefault();
-            //var familyFinancial = _context.TblffAwarenessFamilyFinancials.FirstOrDefault(f => f.Profileid == profileId);
+            var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.ProfileId == profileId);
+            var children = _context.TblffAwarenessChildren.Where(c => c.ProfileId == profileId).ToList();
+            var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.ProfileId == profileId).FirstOrDefault();
+            //var familyFinancial = _context.TblffAwarenessFamilyFinancials.FirstOrDefault(f => f.ProfileId == profileId);
 
 
             return new
@@ -188,7 +187,7 @@ namespace FactFinderWeb.API.Utils
             //     "timeHorizon": 31, // it is also autopopulated field
             //     "newGoals": false // --- it tells whether it is newlyadded goal which can be added dynamically through the application
             // }*/
-            var WingsData = _context.TblffWings.Where(p => p.Profileid == profileId)
+            var WingsData = _context.TblffWings.Where(p => p.ProfileId == profileId)
                                    .Select(u => new { u.Id, u.GoalPriority, u.GoalName, u.GoalStartYear, u.GoalPlanYear, u.GoalEndYear, u.TimeHorizon, u.NewGoals }).ToList();
 
             ////var selectedFormsdata = new List<object>();
@@ -248,7 +247,7 @@ namespace FactFinderWeb.API.Utils
         }
         private object BuildKnowledgeSection(long profileId)
         {
-            var kData = _context.TblffKnowledgeRisks.Where(p => p.Profileid == profileId).FirstOrDefault();
+            var kData = _context.TblffKnowledgeRisks.Where(p => p.ProfileId == profileId).FirstOrDefault();
 
             return new
             {
@@ -256,8 +255,8 @@ namespace FactFinderWeb.API.Utils
                 {
             riskCapacity = string.IsNullOrEmpty(kData?.RiskCapacity) ? "" : kData.RiskCapacity,
             riskRequirement = string.IsNullOrEmpty(kData?.RiskRequirement) ? "" : kData.RiskRequirement,
-            totalRiskProfileScore = string.IsNullOrEmpty(kData?.TotalRiskProfileScore) ? "" : kData.TotalRiskProfileScore,
-                    plannerAssessmentOnRiskProfile = string.IsNullOrEmpty(kData?.PlannerAssessmentOnRiskProfile) ? "" : kData.PlannerAssessmentOnRiskProfile,
+          //  totalRiskProfileScore = string.IsNullOrEmpty(kData?.TotalRiskProfileScore) ? "" : kData.TotalRiskProfileScore,
+               //     plannerAssessmentOnRiskProfile = string.IsNullOrEmpty(kData?.PlannerAssessmentOnRiskProfile) ? "" : kData.PlannerAssessmentOnRiskProfile,
             riskTolerance = string.IsNullOrEmpty(kData?.RiskTolerance) ? "" : kData.RiskTolerance,
                 }
             };
@@ -266,15 +265,15 @@ namespace FactFinderWeb.API.Utils
         private object BuildExecutePlanSection(long profileId)
         {
             var executionData = _context.TblffWingsGoalStep5ExecutionData
-                .Where(p => p.Profileid == profileId)
-                .Select(u => new { u.GoalName, u.ExecutionDescription, u.ExecutionValue })
-                .ToList();
+      .Where(p => p.ProfileId == profileId)
+      .Select(u => new { u.GoalName, u.ExecutionDescription, u.ExecutionValue })
+      .ToList();
 
             var groupedGoals = executionData
                 .GroupBy(e => e.GoalName)
                 .Select(group =>
                 {
-                    var goalDict = new Dictionary<string, object>
+                    var goalDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
                     {
                         ["name"] = group.Key
                     };
@@ -282,23 +281,59 @@ namespace FactFinderWeb.API.Utils
                     foreach (var item in group)
                     {
                         var key = GetJsonKey(item.ExecutionDescription);
+
                         if (!goalDict.ContainsKey(key))
-                            goalDict[key] = item.ExecutionValue ?? "";
+                        {
+                            var rawValue = item.ExecutionValue?.ToString()?.Trim();
+
+                            // ✅ Handle null / placeholder values
+                            if (string.IsNullOrWhiteSpace(rawValue) ||
+                                rawValue.Equals("N/A", StringComparison.OrdinalIgnoreCase) ||
+                                rawValue.Equals("null", StringComparison.OrdinalIgnoreCase) ||
+                                rawValue.Equals("-", StringComparison.OrdinalIgnoreCase))
+                            {
+                                goalDict[key] = null;
+                                continue;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(rawValue) ||
+     rawValue.Equals("N/A", StringComparison.OrdinalIgnoreCase) ||
+     rawValue.Equals("null", StringComparison.OrdinalIgnoreCase) ||
+     rawValue.Equals("-", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // empty → null
+                                goalDict[key] = null;
+                            }
+                            else if (decimal.TryParse(rawValue, out decimal numberValue))
+                            {
+                                // numeric → number
+                                goalDict[key] = numberValue;
+                            }
+                            else
+                            {
+                                // keep as string
+                                goalDict[key] = rawValue.Trim();
+                            }
+                        }
                     }
+
                     return goalDict;
-                }).ToList();
-            //return new { goalData = groupedGoals };
+                })
+                .ToList();
+
+            // ✅ Optional: return as structured JSON
+            // return new { goalData = groupedGoals };
 
             return new
             {
-                executePlan = new
-                {
+              //  executePlan = new
+               //{
                     lifeInsurance = new { incomeUsedForFamily = "", fundsReturnRate = "", inflationRate = "" },
                     spouseDetails = new { Sliabilities = "" },
-                    goalNames = new { GoalsNameList },
+                    goalNames = GoalsNameList,
                     goalData = groupedGoals,
                     _id = profileId
-                }
+               // }
             };
 
         }
@@ -313,9 +348,9 @@ namespace FactFinderWeb.API.Utils
           SIP: "",
           selectedFundsOptions: [{ value: "", label: "Select Fund" }],*/
             /*
-            var InvestMasterDataUser = _context.TblffInvestWingsGoalMasters.Where(p => p.Profileid == profileId)
+            var InvestMasterDataUser = _context.TblffInvestWingsGoalMasters.Where(p => p.ProfileId == profileId)
                           .Select(u => new { u.Id, u.IntendedSipmonthly, u.AvailableLumpsum }).FirstOrDefault();
-            var InvestDataUser = _context.TblffInvestWingsGoals.Where(p => p.Profileid == profileId)
+            var InvestDataUser = _context.TblffInvestWingsGoals.Where(p => p.ProfileId == profileId)
                           .Select(u => new { 
                              id  = u.Id,
                               earmarkedForGoal = u.GoalName ?? "", 
@@ -326,17 +361,17 @@ namespace FactFinderWeb.API.Utils
                               SIP = u.Sipamount ?? 0,
                               selectedFundsOptions = new List<object>()
                           }).ToList();
-            var GeneralInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.Profileid == profileId)
+            var GeneralInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.ProfileId == profileId)
                          .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount }).ToList();
-            var LifeInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.Profileid == profileId)
+            var LifeInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.ProfileId == profileId)
                          .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount }).ToList();*/
             var InvestMasterDataUser = _context.TblffInvestWingsGoalMasters
-    .Where(p => p.Profileid == profileId)
+    .Where(p => p.ProfileId == profileId)
     .Select(u => new { u.Id, u.IntendedSipmonthly, u.AvailableLumpsum })
     .FirstOrDefault();
 
             var InvestDataUser = _context.TblffInvestWingsGoals
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new
                 {
                     id = u.Id,
@@ -350,12 +385,12 @@ namespace FactFinderWeb.API.Utils
                 }).ToList() ;
 
             var GeneralInsuranceDataUser = _context.TblffInvestWingsGoals
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount })
                 .ToList();//?? new List<object>()
 
             var LifeInsuranceDataUser = _context.TblffInvestWingsGoals
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount })
                 .ToList();//?? new List<object>()
 
@@ -496,55 +531,115 @@ namespace FactFinderWeb.API.Utils
         public static string GetJsonKey(string label)
         {
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "No of Months for which Emergency Fund may be Required", "monthsRequired" },
-                { "Amount availble for Emergency Fund", "availableEmergencyFund" },
-                { "Anunal Amount Going Towards Creating Emergency Fund", "annualAmountForFund" }, 
-                { "Available Funds meant for this goal", "availableFundsMeantForThisGoal" }, 
-                { "Monthly Retirement Expenses @ Current Cost", "monthlyRetirementExpenses" }, 
-                { "Existing Investments in EPF, Supper Annuation, PPF, NPS etc.", "ExistingInvestmentsEPFSupperAnnuationPPFNPS" }, //
-                { "Annual Contribution", "expectedAnnualIncrease" }, 
-                { "Expected Average Return in EPF, Supper Annuation, PPF, NPS etc.", "expectedReturnOnPortfolio" }, 
-                { "Value of Shares and MFs meant for retirement", "valueOfSharesMFSForRetirement" }, 
-                { "Any other Investments / Assets meant for this goal", "existingInvestments" }, 
-                { "Children Name", "name" }, 
-                { "Duration of Higher Education", "durationHigherEducation" }, 
-                { "Age of  at the start Higher Education", "ageOfAtTheStartHigherEducation" }, 
-                { "Yearly Expense for Higher Education @ Current Cost", "yearlyExpenseHigherEducation" }, 
-                { "Present Value of Funds Earmarked for this Goal", "presentValueFundsEarmarked" }, 
-                { "Expected Return on Funds Earmarked for this Goal", "expectedReturnFundsEarmarked" }, 
-                { "Cost of Dream Car @ Current Cost", "cost" }, 
-                { "Year of World Travel", "YearofWorldTravel" }, //
-                { "Repeat After Every(Years)", "repeatYears" }, 
-                { "Cost of World Tour  @ Current Cost", "cost" }, 
-                { "Child's Name", "childName" }, 
-                { "Expected Age for Marriage", "expectedAgeForMarriage" }, 
-                { "Period left for Marriage", "periodleftforMarriage" }, 
-                { "Peiod left for Marriage", "periodleftforMarriage" }, 
-                { "Expense for Marriage @ Current Cost", "expenseForMarriageAtCurrentCost" }, 
-                { "Cost of Dream Home @ Current Cost", "seedCost" }, 
-                { "Cost of Seed Capital @ Current Cost", "cost" }, 
-                { "Cost of Charity @ Current Cost", "cost" }, 
-                { "Cost of Custom Goal @ Current Cost", "cost" }
+{
+    // 🔹 Emergency Fund
+    { "No of Months for which Emergency Fund may be Required", "monthsRequired" },
+    { "Amount available for Emergency Fund", "availableEmergencyFund" },
+    { "Amount availble for Emergency Fund", "availableEmergencyFund" }, // alias (typo)
+    { "Annual Amount Going Towards Creating Emergency Fund", "annualAmountForFund" },
+    { "Anunal Amount Going Towards Creating Emergency Fund", "annualAmountForFund" }, // alias (typo)
+    { "Available Funds meant for this goal", "availableFundsMeantForThisGoal" },
+    { "Available Mutual Funds meant for this Goal", "availableMutualFundsForThisGoal" },
 
-                // Add more mappings here
-            };
+    // 🔹 Retirement
+    { "Monthly Retirement Expenses @ Current Cost", "monthlyRetirementExpenses" },
+    { "Existing Investments in EPF, Supper Annuation, PPF, NPS etc.", "existingInvestmentsEPFSuperAnnuationPPFNPS" },
+    { "Annual Contribution", "annualContribution" },
+    { "Expected Average Return in EPF, Supper Annuation, PPF, NPS etc.", "expectedReturnOnPortfolio" },
+    { "Expected Average Return in EPF, Supper Annuation, PPF, NPS etc (%)", "expectedReturnOnPortfolioPercent" },
+    { "Value of Shares and MFs meant for retirement", "valueOfSharesMfsForRetirement" },
+    { "Value of Existing Shares and MFs meant for this goal", "valueOfExistingSharesAndMfsForGoal" },
+    { "Existing Investments in Fixed Deposits", "existingInvestmentsInFixedDeposits" },
+    { "Expected Average Return in Fixed Deposits (%)", "expectedReturnInFixedDeposits" },
+    { "Existing Investments", "existingInvestments" },
+    { "Expected Return (%)", "expectedReturnPercent" },
 
-            return map.TryGetValue(label, out var key) ? key : ToCamelCase(label); // fallback
+    // 🔹 Education
+    { "Child's Name", "childName" },
+    { "Children Name", "childName" }, // alias
+    { "Duration of Higher Education", "durationHigherEducation" },
+    { "Age of the child when higher education funding needed", "ageOfChildWhenHigherEducationNeeded" },
+    { "Yearly Expense for Higher Education @ Current Cost", "yearlyExpenseHigherEducation" },
+    { "Present Value of Funds Earmarked for this Goal", "presentValueFundsEarmarked" },
+    { "Expected Return on Funds Earmarked for this Goal", "expectedReturnFundsEarmarked" },
+
+    // 🔹 Marriage
+    { "Expected Age for Marriage", "expectedAgeForMarriage" },
+    { "Period left for Marriage", "periodLeftForMarriage" },
+    { "Peiod left for Marriage", "periodLeftForMarriage" }, // alias (typo)
+    { "Expense for Marriage @ Current Cost", "expenseForMarriageAtCurrentCost" },
+
+    // 🔹 Travel / Vacation
+    { "Year of World Travel", "yearOfWorldTravel" },
+    { "Repeat After Every(Years)", "repeatYears" },
+    { "Repeat After Every (Years)", "repeatYears" }, // alias (spaced)
+    { "Cost of World Tour  @ Current Cost", "worldTourCost" },
+
+    // 🔹 Goal Costs / Assets
+    { "Cost of Dream Car @ Current Cost", "dreamCarCost" },
+    { "Cost of Dream Home @ Current Cost", "dreamHomeCost" },
+    { "Cost of Seed Capital @ Current Cost", "seedCapitalCost" },
+    { "Cost of Charity @ Current Cost", "charityCost" },
+    { "Cost of Custom Goal @ Current Cost", "customGoalCost" },
+    { "Cost of the Goal @ Current Cost", "goalCost" },
+
+    // 🔹 Generic goal funds
+    { "Any other Investments / Assets meant for this goal", "existingInvestments" },
+    { "Any other Investments/Assets meant for this Goal", "existingInvestments" }, // alias (slash spacing)
+    { "Other corpus available for this goal", "otherCorpusAvailableForGoal" },
+    { "FD Corpus available for this Goal", "fdCorpusAvailableForGoal" },
+    { "MF & Shares available for this Goal", "mfAndSharesAvailableForGoal" },
+    { "Cash available for this Goal", "cashAvailableForGoal" },
+    { "Investable Amount for this Goal", "investableAmountForGoal" },
+
+    // 🔹 Investment inputs / projections
+    { "Expected annual Top-up % on Monthly SIP", "expectedAnnualTopupOnMonthlySIP" },
+    { "Planned Monthly SIP", "plannedMonthlySIP" },
+    { "Annual Top up rate on SIP (if any)", "annualTopupRateOnSIP" },
+    { "Intended Lump Sum", "intendedLumpSum" },
+    { "Intended SIP", "intendedSIP" },
+    { "Annual Top-Up Rate (%)", "annualTopupRate" },
+    { "Monthly Income Requirement", "monthlyIncomeRequirement" }
+};
+
+
+            label = label.Trim();
+
+            // ✅ Check dictionary (case-insensitive)
+            if (map.TryGetValue(label, out var key))
+                return key;
+
+            // ✅ Fallback: convert any unmatched label → camelCase key
+            return ToCamelCase(label);
+
         }
         public static string ToCamelCase(string label)
-        {        // Example: "Age of at the start Higher Education" → "ageOfAtTheStartHigherEducation"
+        {
+            // Example: "Age of at the start Higher Education" → "ageOfAtTheStartHigherEducation"
             if (string.IsNullOrWhiteSpace(label))
-                return label;
+                return string.Empty;
 
-            var words = label.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(w => char.ToUpper(w[0]) + w.Substring(1).ToLower());
+            // 1️⃣ Remove special characters except letters, numbers, and spaces
+            label = Regex.Replace(label, @"[^A-Za-z0-9 ]+", " ").Trim();
 
+            // 2️⃣ Split by spaces
+            var words = label
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(w => w.Length == 1
+                    ? w.ToUpper()
+                    : char.ToUpper(w[0]) + w.Substring(1).ToLower())
+                .ToList();
+
+            if (words.Count == 0)
+                return string.Empty;
+
+            // 3️⃣ Combine and lowercase the first letter (camelCase)
             var camel = string.Concat(words);
-            return char.ToLower(camel[0]) + camel.Substring(1);
+            return char.ToLowerInvariant(camel[0]) + camel.Substring(1);
         }
 
-         
+
+
 
 
     }

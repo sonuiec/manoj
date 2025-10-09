@@ -241,7 +241,7 @@ namespace FactFinderWeb.ModelsView
     public class Assumptions
     {
         public long Id { get; set; }
-        public long Profileid { get; set; }
+        public long ProfileId { get; set; }
 
         [Required(ErrorMessage = "Please enter assumptions in equity.")]
         public int Equity { get; set; }

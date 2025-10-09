@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json;
+using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 
 namespace FactFinderWeb.Controllers
@@ -83,7 +84,7 @@ namespace FactFinderWeb.Controllers
         [HttpPost("admin/UpdateAdvisor")]
         public async Task<IActionResult> UpdateAdvisor(int id, int advisorid)
         {
-            var user = await _context.TblffAwarenessProfileDetails.FirstOrDefaultAsync(u => u.Profileid == id);
+            var user = await _context.TblffAwarenessProfileDetails.FirstOrDefaultAsync(u => u.ProfileId == id);
             if (user == null)
             {
                 return NotFound();
@@ -397,7 +398,7 @@ namespace FactFinderWeb.Controllers
                 return BadRequest("Invalid user ID.");
 
             var awarenessProfileDetail = _context.TblffAwarenessProfileDetails
-                .FirstOrDefault(u => u.Profileid == userid);
+                .FirstOrDefault(u => u.ProfileId == userid);
 
             if (awarenessProfileDetail == null)
                 return NotFound("User not found.");
@@ -408,7 +409,7 @@ namespace FactFinderWeb.Controllers
             HttpContext.Session.SetString("Useremail", awarenessusers.Email);
             HttpContext.Session.SetString("UserStep", "S1");
             HttpContext.Session.SetString("UserPlan", awarenessProfileDetail.PlanType);
-            HttpContext.Session.SetString("profileId", awarenessProfileDetail.Profileid.ToString());
+            HttpContext.Session.SetString("profileId", awarenessProfileDetail.ProfileId.ToString());
             HttpContext.Session.SetString("UserId", awarenessProfileDetail.UserId.ToString());
             HttpContext.Session.SetString("RegisterId", awarenessProfileDetail.Registerid.ToString());
 
@@ -417,7 +418,7 @@ namespace FactFinderWeb.Controllers
             ViewData["msg"] = "";
             ViewData["Error"] = "";
 
-            return RedirectToAction("userprofile", "User", new { id = awarenessProfileDetail.Profileid });
+            return RedirectToAction("userprofile", "User", new { id = awarenessProfileDetail.ProfileId });
 
 
 
@@ -427,8 +428,8 @@ namespace FactFinderWeb.Controllers
 
 
         [HttpGet]
-        [Route("admin/editUserPlan/{Profileid}")]
-        public IActionResult editUserPlan(long Profileid)
+        [Route("admin/editUserPlan/{ProfileId}")]
+        public IActionResult editUserPlan(long ProfileId)
         {
             int AdminUserId = Convert.ToInt32(HttpContext.Session.GetString("AdminUserId") ?? "0");
             string AdminUserRole = HttpContext.Session.GetString("AdminUserRole");
@@ -437,11 +438,11 @@ namespace FactFinderWeb.Controllers
             if (AdminUserId <= 0)
                 return RedirectToAction("Login", "Admin");
 
-            if (Profileid <= 0)
+            if (ProfileId <= 0)
                 return BadRequest("Invalid user ID.");
 
             var awarenessProfileDetail = _context.TblffAwarenessProfileDetails 
-                .FirstOrDefault(u => u.Profileid == Profileid);
+                .FirstOrDefault(u => u.ProfileId == ProfileId);
 
 
             if (awarenessProfileDetail == null)
@@ -454,7 +455,7 @@ namespace FactFinderWeb.Controllers
             HttpContext.Session.SetString("Useremail", awarenessusers.Email);
             HttpContext.Session.SetString("UserStep", "S1");
             HttpContext.Session.SetString("UserPlan", awarenessProfileDetail.PlanType);
-            HttpContext.Session.SetString("profileId", awarenessProfileDetail.Profileid.ToString());
+            HttpContext.Session.SetString("profileId", awarenessProfileDetail.ProfileId.ToString());
             HttpContext.Session.SetString("UserId", awarenessProfileDetail.UserId.ToString());
             HttpContext.Session.SetString("RegisterId", awarenessProfileDetail.Registerid.ToString());
 
@@ -464,7 +465,7 @@ namespace FactFinderWeb.Controllers
             ViewData["Error"] = "";
 
            
-                return RedirectToAction("Awareness", planType,  new { id = CryptoHelper.Encrypt(awarenessProfileDetail.Profileid) });
+                return RedirectToAction("Awareness", planType,  new { id = CryptoHelper.Encrypt(awarenessProfileDetail.ProfileId) });
 
             //if (awarenessProfileDetail.Advisorid == AdminUserId)
             //    return RedirectToAction("Awareness", planType);
@@ -511,7 +512,7 @@ namespace FactFinderWeb.Controllers
             string AdminUserRole = HttpContext.Session.GetString("AdminUserRole");
             AdminUserRole = string.IsNullOrEmpty(AdminUserRole) ? "advisor" : AdminUserRole;
 
-            int updaterow = await _AdminUserServices.UserUpdate(userprofile, AdminUserRole);
+            int updaterow = await _AdminUserServices.UserUpdate(userprofile);
 
             if (updaterow > 0)
                 ViewData["msg"] = "User details updated successfully.";
@@ -542,6 +543,100 @@ namespace FactFinderWeb.Controllers
         //    return RedirectToAction("Dashboard", new { id });
         //}
 
+
+        [HttpGet]
+        [Route("/admin/register")]  // Custom Route: /register
+        public IActionResult register()
+        {
+            if (Convert.ToInt32(HttpContext.Session.GetString("AdminUserId") ?? "0") <= 0)
+                return RedirectToAction("Login", "Admin");
+
+            ViewData["Error"] = "";
+            //return View();
+
+            var model = new MVLoginRegister();
+            return View(model);
+        }
+
+        [HttpPost]
+        [Route("/admin/register")]
+        public async Task<IActionResult> register(MVLoginRegister mVLogin)
+        {
+            if (Convert.ToInt32(HttpContext.Session.GetString("AdminUserId") ?? "0") <= 0)
+                return RedirectToAction("Login", "Admin");
+
+            if (!ModelState.IsValid)
+            {
+                return View(mVLogin);
+            }
+            string UserEmail = _AdminUserServices.checkUseEmailExist(mVLogin.Email);
+           int AdminUserId= Convert.ToInt32(HttpContext.Session.GetString("AdminUserId") ?? "0");
+
+            if (UserEmail == null)
+            {
+                var newRegister = new TblFfRegisterUser
+                {
+                    Name = mVLogin.Name,
+                    Email = mVLogin.Email,
+                    Mobile = mVLogin.Mobile,
+                    Password = mVLogin.Password, // Hash the password in a real application
+                    Plantype = mVLogin.PlanType,
+                    Createddate = DateTime.Now,
+                    Updatedate = DateTime.Now
+                };
+
+                TblffAwarenessProfileDetail userProfile = await _AdminUserServices.UserAdds(newRegister, AdminUserId);
+                if (userProfile.UserId > 0)
+                {
+                      
+
+                    string weburl = _utilService.webAppURL();
+                    await _utilService.SendEmailAsync(
+                    toEmail: mVLogin.Email,// "user@example.com",
+                    subject: "SignUp Successfully - FactFinder",
+                    templatePath: Path.Combine(_env.WebRootPath, "emailtemplates", "SignupSuccessTemplateAdmin.html"),
+                    placeholders: new Dictionary<string, string>
+                    {
+                                { "UserName", mVLogin.Name},
+                                { "LoginUrl", weburl+"/login/"  },
+                                 { "Email", mVLogin.Email},
+                                 { "Password", mVLogin.Password},
+
+                    });
+                    //<p>Please click this link to open the fact finder-</p>
+                    mVLogin = new MVLoginRegister();
+                    //return Ok(new { message = "Success" });
+                    HttpContext.Session.SetString("UserFullName", userProfile.Name);
+                    HttpContext.Session.SetString("Useremail", userProfile.Email);
+                    HttpContext.Session.SetString("UserStep", "S1");
+                    HttpContext.Session.SetString("UserPlan", userProfile.PlanType);
+                    HttpContext.Session.SetString("profileId", userProfile.ProfileId.ToString());
+                    HttpContext.Session.SetString("UserId", userProfile.UserId.ToString());
+                    HttpContext.Session.SetString("RegisterId", userProfile.Registerid.ToString());
+
+                    return RedirectToAction("Awareness", userProfile.PlanType.ToLower(), new { id = CryptoHelper.Encrypt(userProfile.ProfileId) });
+                }
+                else
+                {
+                    string error = "<b>We're sorry!...</b><br/>Errors occurred. Please correct them and try again.<br/><br/>";
+                    ViewData["Error"] = error;
+                    return BadRequest(new { message = error });
+                }
+
+                //if (mVLogin.Email == "admin" && mVLogin.Password == "password") // Dummy validation
+                //{
+                //	HttpContext.Session.SetString("Username", mVLogin.Email);
+                //	return RedirectToAction("Dashboard");
+                //}
+            }
+            else
+            {
+                ViewData["Error"] = "Email already exists.";
+                return View(mVLogin);
+            }
+            return View(mVLogin);
+        }
+      
 
 
     }

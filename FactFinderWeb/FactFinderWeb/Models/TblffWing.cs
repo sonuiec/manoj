@@ -7,7 +7,7 @@ public partial class TblffWing
 {
     public long Id { get; set; }
 
-    public long Profileid { get; set; }
+    public long ProfileId { get; set; }
 
     public string? GoalType { get; set; }
 
@@ -28,5 +28,6 @@ public partial class TblffWing
     public DateTime? UpdateDate { get; set; }
 
     public byte? NewGoals { get; set; }
-    public long? GoalId { get; set; }
+
+    public long? Goalid { get; set; }
 }

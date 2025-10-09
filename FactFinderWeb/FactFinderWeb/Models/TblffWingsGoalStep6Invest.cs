@@ -7,7 +7,7 @@ public partial class TblffWingsGoalStep6Invest
 {
     public long Id { get; set; }
 
-    public long? Profileid { get; set; }
+    public long? ProfileId { get; set; }
 
     public int? Goalid { get; set; }
 

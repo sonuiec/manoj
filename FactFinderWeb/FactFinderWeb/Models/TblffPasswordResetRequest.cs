@@ -5,7 +5,6 @@ namespace FactFinderWeb.Models;
 
 public partial class TblffPasswordResetRequest
 {
-
     public int Id { get; set; }
 
     public long? UserId { get; set; }

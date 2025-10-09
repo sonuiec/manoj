@@ -28,20 +28,20 @@ namespace FactFinderWeb.Utils
         public async Task<string> GetAwareness(long profileId)
         {
             var jsonString= string.Empty;
-            var profile = _context.TblffAwarenessProfileDetails.FirstOrDefault(p => p.Profileid == profileId);
+            var profile = _context.TblffAwarenessProfileDetails.FirstOrDefault(p => p.ProfileId == profileId);
 
             if (profile != null)
             {
-                var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.Profileid == profileId);
-                var children = _context.TblffAwarenessChildren.Where(c => c.Profileid == profileId).ToList();
-                var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.Profileid == profileId).FirstOrDefault();
+                var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.ProfileId == profileId);
+                var children = _context.TblffAwarenessChildren.Where(c => c.ProfileId == profileId).ToList();
+                var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.ProfileId == profileId).FirstOrDefault();
 
                 /* var profile = await _context.TblffAwarenessProfileDetails
                 //.Include(p => p.Addresses)
                 .Include(ps => _context.TblffAwarenessSpouses)//(p => p.Spouse)
                 .Include(pc => _context.TblffAwarenessChildren)
                 .Include(pff => _context.TblffAwarenessFamilyFinancials)
-                //.Include(p => p.FamilyFinancial).FirstOrDefaultAsync(p => p.Profileid == profileId);*/
+                //.Include(p => p.FamilyFinancial).FirstOrDefaultAsync(p => p.ProfileId == profileId);*/
 
                 if (profile == null) return null;// NotFound();
 
@@ -192,11 +192,11 @@ namespace FactFinderWeb.Utils
 
         private object BuildAwarenessSection(long profileId)
         {
-            var profile = _context.TblffAwarenessProfileDetails.FirstOrDefault(p => p.Profileid == profileId);
-            var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.Profileid == profileId);
-            var children = _context.TblffAwarenessChildren.Where(c => c.Profileid == profileId).ToList();
-            var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.Profileid == profileId).FirstOrDefault();
-            //var familyFinancial = _context.TblffAwarenessFamilyFinancials.FirstOrDefault(f => f.Profileid == profileId);
+            var profile = _context.TblffAwarenessProfileDetails.FirstOrDefault(p => p.ProfileId == profileId);
+            var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.ProfileId == profileId);
+            var children = _context.TblffAwarenessChildren.Where(c => c.ProfileId == profileId).ToList();
+            var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.ProfileId == profileId).FirstOrDefault();
+            //var familyFinancial = _context.TblffAwarenessFamilyFinancials.FirstOrDefault(f => f.ProfileId == profileId);
 
 
             return new
@@ -320,7 +320,7 @@ namespace FactFinderWeb.Utils
             //     "timeHorizon": 31, // it is also autopopulated field
             //     "newGoals": false // --- it tells whether it is newlyadded goal which can be added dynamically through the application
             // }*/
-            var WingsData = _context.TblffWings.Where(p => p.Profileid == profileId)
+            var WingsData = _context.TblffWings.Where(p => p.ProfileId == profileId)
                                    .Select(u => new { u.Id, u.GoalPriority, u.GoalName, u.GoalStartYear, u.GoalPlanYear, u.GoalEndYear, u.TimeHorizon, u.NewGoals }).ToList();
 
             ////var selectedFormsdata = new List<object>();
@@ -381,7 +381,7 @@ namespace FactFinderWeb.Utils
 
         private object BuildKnowledgeSection(long profileId)
         {
-            var kData = _context.TblffKnowledgeRisks.Where(p => p.Profileid == profileId).FirstOrDefault();
+            var kData = _context.TblffKnowledgeRisks.Where(p => p.ProfileId == profileId).FirstOrDefault();
 
             return new
             {
@@ -399,7 +399,7 @@ namespace FactFinderWeb.Utils
         private object BuildExecutePlanSection(long profileId)
         {
             var executionData = _context.TblffWingsGoalStep5ExecutionData
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new { u.GoalName, u.ExecutionDescription, u.ExecutionValue })
                 .ToList();
 
@@ -445,9 +445,9 @@ namespace FactFinderWeb.Utils
           SIP: "",
           selectedFundsOptions: [{ value: "", label: "Select Fund" }],*/
             /*
-            var InvestMasterDataUser = _context.TblffInvestWingsGoalMasters.Where(p => p.Profileid == profileId)
+            var InvestMasterDataUser = _context.TblffInvestWingsGoalMasters.Where(p => p.ProfileId == profileId)
                           .Select(u => new { u.Id, u.IntendedSipmonthly, u.AvailableLumpsum }).FirstOrDefault();
-            var InvestDataUser = _context.TblffInvestWingsGoals.Where(p => p.Profileid == profileId)
+            var InvestDataUser = _context.TblffInvestWingsGoals.Where(p => p.ProfileId == profileId)
                           .Select(u => new { 
                              id  = u.Id,
                               earmarkedForGoal = u.GoalName ?? "", 
@@ -458,17 +458,17 @@ namespace FactFinderWeb.Utils
                               SIP = u.Sipamount ?? 0,
                               selectedFundsOptions = new List<object>()
                           }).ToList();
-            var GeneralInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.Profileid == profileId)
+            var GeneralInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.ProfileId == profileId)
                          .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount }).ToList();
-            var LifeInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.Profileid == profileId)
+            var LifeInsuranceDataUser = _context.TblffInvestWingsGoals.Where(p => p.ProfileId == profileId)
                          .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount }).ToList();*/
             var InvestMasterDataUser = _context.TblffInvestWingsGoalMasters
-    .Where(p => p.Profileid == profileId)
+    .Where(p => p.ProfileId == profileId)
     .Select(u => new { u.Id, u.IntendedSipmonthly, u.AvailableLumpsum })
     .FirstOrDefault();
 
             var InvestDataUser = _context.TblffInvestWingsGoals
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new
                 {
                     id = u.Id,
@@ -482,12 +482,12 @@ namespace FactFinderWeb.Utils
                 }).ToList() ;
 
             var GeneralInsuranceDataUser = _context.TblffInvestWingsGoals
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount })
                 .ToList();//?? new List<object>()
 
             var LifeInsuranceDataUser = _context.TblffInvestWingsGoals
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount })
                 .ToList();//?? new List<object>()
 
@@ -699,11 +699,11 @@ namespace FactFinderWeb.Utils
 
         private object UserBuildAwarenessSection(long profileId)
         {
-            var profile = _context.TblffAwarenessProfileDetails.FirstOrDefault(p => p.Profileid == profileId);
-            var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.Profileid == profileId);
-            var children = _context.TblffAwarenessChildren.Where(c => c.Profileid == profileId).ToList();
-            var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.Profileid == profileId).FirstOrDefault();
-            //var familyFinancial = _context.TblffAwarenessFamilyFinancials.FirstOrDefault(f => f.Profileid == profileId);
+            var profile = _context.TblffAwarenessProfileDetails.FirstOrDefault(p => p.ProfileId == profileId);
+            var spouse = _context.TblffAwarenessSpouses.FirstOrDefault(s => s.ProfileId == profileId);
+            var children = _context.TblffAwarenessChildren.Where(c => c.ProfileId == profileId).ToList();
+            var Assumptions = _context.TblffAwarenessAssumptions.Where(c => c.ProfileId == profileId).FirstOrDefault();
+            //var familyFinancial = _context.TblffAwarenessFamilyFinancials.FirstOrDefault(f => f.ProfileId == profileId);
 
 
             return new
@@ -835,7 +835,7 @@ namespace FactFinderWeb.Utils
             //     "timeHorizon": 31, // it is also autopopulated field
             //     "newGoals": false // --- it tells whether it is newlyadded goal which can be added dynamically through the application
             // }*/
-            var WingsData = _context.TblffWings.Where(p => p.Profileid == profileId).OrderBy(u => u.GoalPriority)
+            var WingsData = _context.TblffWings.Where(p => p.ProfileId == profileId).OrderBy(u => u.GoalPriority)
                                    .Select(u => new { u.Id, u.GoalPriority, u.GoalName, u.GoalStartYear, u.GoalPlanYear, u.GoalEndYear, u.TimeHorizon, u.NewGoals }).ToList();
 
             ////var selectedFormsdata = new List<object>();
@@ -897,7 +897,7 @@ namespace FactFinderWeb.Utils
 
         private object UserBuildKnowledgeSection(long profileId)
         {
-            var kData = _context.TblffKnowledgeRisks.Where(p => p.Profileid == profileId).FirstOrDefault();
+            var kData = _context.TblffKnowledgeRisks.Where(p => p.ProfileId == profileId).FirstOrDefault();
 
             return new
             {
@@ -928,7 +928,7 @@ namespace FactFinderWeb.Utils
         private object UserBuildExecutePlanSection(long profileId)
         {
             var executionData = _context.TblffWingsGoalStep5ExecutionData
-                            .Where(p => p.Profileid == profileId)
+                            .Where(p => p.ProfileId == profileId)
                             .Select(u => new { u.GoalName, u.ExecutionDescription, u.ExecutionValue })
                             .ToList();
             //.Select(u => new { u.GoalName, u.ExecutionDescription, u.ExecutionValue })
@@ -991,12 +991,12 @@ namespace FactFinderWeb.Utils
         private object UserBuildInvestSection(long profileId)
         {
             var InvestMasterDataUser = _context.TblffInvestWingsGoalMasters
-                                    .Where(p => p.Profileid == profileId)
+                                    .Where(p => p.ProfileId == profileId)
                                     .Select(u => new { u.Id, u.IntendedSipmonthly, u.AvailableLumpsum, u.MonthlySavings })
                                     .FirstOrDefault();
 
             var InvestDataUser = _context.TblffInvestWingsGoals
-                .Where(p => p.Profileid == profileId)
+                .Where(p => p.ProfileId == profileId)
                 .Select(u => new
                 {
                     //id = u.Id,
@@ -1010,12 +1010,12 @@ namespace FactFinderWeb.Utils
                 }).ToList();
 
             //var GeneralInsuranceDataUser = _context.TblffInvestWingsGoals
-            //    .Where(p => p.Profileid == profileId)
+            //    .Where(p => p.ProfileId == profileId)
             //    .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount })
             //    .ToList();//?? new List<object>()
 
             //var LifeInsuranceDataUser = _context.TblffInvestWingsGoals
-            //    .Where(p => p.Profileid == profileId)
+            //    .Where(p => p.ProfileId == profileId)
             //    .Select(u => new { u.Id, u.GoalName, u.LumpsumAmount, u.Sipamount })
             //    .ToList();//?? new List<object>()
 

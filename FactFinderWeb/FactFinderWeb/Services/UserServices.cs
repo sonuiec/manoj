@@ -35,7 +35,7 @@ namespace FactFinderWeb.Services
             user.Updatedate = DateTime.Now;
             user.Mobile = user.Mobile; 
             user.Password = Passwordhashed; //user.Password = CommonUtillity.EncryptData(user.Password);
-			user.Emailverified = emailVerifyToken;
+			user.Emailverified = "yesverified";
             user.Createddate = DateTime.Now;
             _context.TblFfRegisterUsers.Add(user);
             await _context.SaveChangesAsync();
@@ -62,7 +62,7 @@ namespace FactFinderWeb.Services
         public async void UserAddProfileDetail(TblFfRegisterUser user)
         {
 			TblffAwarenessProfileDetail userProfile = new TblffAwarenessProfileDetail();
-            userProfile.Profileid = user.Id;
+            userProfile.ProfileId = user.Id;
 			userProfile.Name = user.Name;
 			userProfile.Email = user.Email;
 			userProfile.Phone = user.Mobile;
@@ -153,7 +153,7 @@ namespace FactFinderWeb.Services
 						where o.Id == _userID
 						select new DashboardViewModel
 						{
-							UId = o.Id,
+							UId = p.Uid,
 							UserEmail = o.Email,
 							UserFullName = p.Name,
 							UserMobile = p.Phone,
@@ -166,7 +166,7 @@ namespace FactFinderWeb.Services
 							AdvisorName = ad.Name,
                             PlanCreatedDate =p.CreateDate,
 							PlanUpdatedDate= p.UpdateDate,
-							Profileid= p.Profileid,
+							ProfileId= p.ProfileId,
 							ProfileStatus = p.ProfileStatus
 
                         }).ToListAsync();

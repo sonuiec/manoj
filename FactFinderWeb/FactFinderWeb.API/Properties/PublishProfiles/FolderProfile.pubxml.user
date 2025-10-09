@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Users\ajay.chaudhary\Documents\api</_PublishTargetUrl>
+    <History>True|2025-10-09T03:57:40.7837662Z||;True|2025-10-08T17:51:52.7979733+05:30||;True|2025-10-04T14:26:20.3344197+05:30||;True|2025-10-04T13:55:25.3547021+05:30||;True|2025-10-04T13:55:00.4682434+05:30||;True|2025-10-04T13:54:31.2001342+05:30||;True|2025-10-04T13:53:42.4890856+05:30||;True|2025-10-04T13:52:07.4320120+05:30||;True|2025-10-04T13:49:40.7544462+05:30||;True|2025-10-04T13:24:12.8379714+05:30||;True|2025-10-04T12:14:45.9464980+05:30||;True|2025-10-04T11:53:49.8016366+05:30||;True|2025-10-04T11:20:55.1913521+05:30||;True|2025-10-04T11:06:52.9120520+05:30||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

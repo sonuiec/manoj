@@ -1,49 +1,65 @@
 [
   {
-    "ContainingType": "FactFinderWeb.API.Controllers.ExportController",
-    "Method": "Ping1",
-    "RelativePath": "Export/ping1",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "FactFinderWeb.API.Controllers.ExportController",
-    "Method": "GetUserProfile",
-    "RelativePath": "Export/userprofile/{id}",
-    "HttpMethod": "GET",
+    "ContainingType": "FactFinderWeb.API.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
-        "Type": "System.String",
+        "Name": "model",
+        "Type": "FactFinderWeb.API.Controllers.AuthController\u002BLoginModel",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "FactFinderWeb.API.Controllers.WeatherForecastController",
-    "Method": "Get",
-    "RelativePath": "WeatherForecast",
+    "ContainingType": "FactFinderWeb.API.Controllers.ExportsController",
+    "Method": "Ping1",
+    "RelativePath": "api/Exports/ping1",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": [
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FactFinderWeb.API.Controllers.ExportsController",
+    "Method": "ExportProfilesByDateRange",
+    "RelativePath": "api/Exports/profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[FactFinderWeb.API.WeatherForecast, FactFinderWeb.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
+        "Name": "from",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "to",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
       }
     ],
-    "EndpointName": "GetWeatherForecast"
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FactFinderWeb.API.Controllers.ExportsController",
+    "Method": "GetUserProfile",
+    "RelativePath": "api/Exports/profile/{uid}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "uid",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

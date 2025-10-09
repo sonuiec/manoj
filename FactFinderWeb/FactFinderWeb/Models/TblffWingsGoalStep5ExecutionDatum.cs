@@ -7,7 +7,7 @@ public partial class TblffWingsGoalStep5ExecutionDatum
 {
     public long Id { get; set; }
 
-    public long? Profileid { get; set; }
+    public long? ProfileId { get; set; }
 
     public long? Step5ExecutionMasterid { get; set; }
 
@@ -25,6 +25,5 @@ public partial class TblffWingsGoalStep5ExecutionDatum
 
     public DateTime? UpdateDate { get; set; }
 
-    public long? WingId { get; set; }
-    
+    public long? Wingid { get; set; }
 }

@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models1\**" />
+    <Content Remove="Models1\**" />
+    <EmbeddedResource Remove="Models1\**" />
+    <None Remove="Models1\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Services\AdminUserServices - Copy.cs" />
   </ItemGroup>
 
@@ -51,6 +58,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Admin\Dashboard - Copy.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Admin\register.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\User\Dashboard - Copy.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

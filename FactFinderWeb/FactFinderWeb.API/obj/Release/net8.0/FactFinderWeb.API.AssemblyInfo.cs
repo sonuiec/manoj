@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FactFinderWeb.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+acd4e726203fd4b9a8607e2533df5a04ca28cd39")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3084e4a1d386f1227724a896f8802b740cef1cb2")]
 [assembly: System.Reflection.AssemblyProductAttribute("FactFinderWeb.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FactFinderWeb.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
